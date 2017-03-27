@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<TubeReport>
+    <Header>
+        <PList>Program List</PList>
+        <Name>W3+C5P4-001</Name>
+        <BarCName>KATOWNIK-001</BarCName>
+        <Comment />
+        <Material-Name> P-SPH5.0S</Material-Name>
+        <Material-Type> SPC</Material-Type>
+        <Machine>FOM2RI3015-S</Machine>
+        <BarCMcName>FOM2RI3015-S</BarCMcName>
+        <Thickness> 5.</Thickness>
+        <PiercePosition> 320.</PiercePosition>
+        <SupportPosition> </SupportPosition>
+        <SupportPosFromEdge> </SupportPosFromEdge>
+        <PipeLength> 6000.</PipeLength>
+        <TotalLength> 401.12</TotalLength>
+        <WidthHeightDiameter> 50. X 50.</WidthHeightDiameter>
+        <WidthHeight> 50. X 50.</WidthHeight>
+        <Diameter> 0</Diameter>
+        <CPipeCornerR> 0.</CPipeCornerR>
+        <CreateDate> 2016/04/18</CreateDate>
+        <DueDate> 2016/04/18</DueDate>
+        <FolderName />
+        <Qty> 100</Qty>
+        <TotalPartsWeight> 1560</TotalPartsWeight>
+        <Utilization> 6.7</Utilization>
+        <TimeStudy> 00:03:14</TimeStudy>
+        <MainChuckPosition> B</MainChuckPosition>
+        <SeamPosition> None</SeamPosition>
+        <Repositioning> None</Repositioning>
+        <SyncProcessing> A</SyncProcessing>
+        <JawHorizontal> D, E</JawHorizontal>
+        <JawVertical> D, E</JawVertical>
+        <ClampBlock> S, M, L</ClampBlock>
+        <ClampPad> F, V</ClampPad>
+        <SSupportChuck> Usable</SSupportChuck>
+        <CutDivision> Use(Width:600.)</CutDivision>
+        <NozzlePosition> Machine Origin</NozzlePosition>
+        <GaugeOffset> 0 Point Side / 320.</GaugeOffset>
+        <ChuckPattern />
+        <SupportType />
+        <MaterialShape> Equal Angle</MaterialShape>
+        <SupportChuck> Sync.</SupportChuck>
+        <Tab>Tab000</Tab>
+    </Header>
+    <Part ID="1" Name=" W5X1-SPC-35-BP">
+        <Comment> </Comment>
+        <Size> 80.</Size>
+        <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Part1.bmp</BMPName>
+    </Part>
+</TubeReport>

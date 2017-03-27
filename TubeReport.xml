@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Nesting>
+    <TubeReport>
+        <Header>
+            <PList>Program List</PList>
+            <Name>W3+C40-001</Name>
+            <BarCName>W3+C40-001</BarCName>
+            <Comment />
+            <Material-Name> P-C-SPC4.0S</Material-Name>
+            <Material-Type> SPC</Material-Type>
+            <Machine>FOM2RI3015-S</Machine>
+            <BarCMcName>FOM2RI3015-S</BarCMcName>
+            <Thickness> 4.</Thickness>
+            <PiercePosition> 320.</PiercePosition>
+            <SupportPosition> </SupportPosition>
+            <SupportPosFromEdge> </SupportPosFromEdge>
+            <PipeLength> 6000.</PipeLength>
+            <TotalLength> 5754.69</TotalLength>
+            <WidthHeightDiameter> 140. X 65. R6.5</WidthHeightDiameter>
+            <WidthHeight> 140. X 65. R6.5</WidthHeight>
+            <Diameter> 0</Diameter>
+            <CPipeCornerR> 6.5</CPipeCornerR>
+            <CreateDate> 2016/10/20</CreateDate>
+            <DueDate> 2016/10/20</DueDate>
+            <FolderName />
+            <Qty> 2</Qty>
+            <TotalPartsWeight> 55703</TotalPartsWeight>
+            <Utilization> 74.6</Utilization>
+            <TimeStudy> 02:00:03</TimeStudy>
+            <MainChuckPosition> B</MainChuckPosition>
+            <SeamPosition> None</SeamPosition>
+            <Repositioning> Exist</Repositioning>
+            <SyncProcessing> AB</SyncProcessing>
+            <JawHorizontal> B</JawHorizontal>
+            <JawVertical> D, E</JawVertical>
+            <ClampBlock> M</ClampBlock>
+            <ClampPad> F</ClampPad>
+            <SSupportChuck> Unusable</SSupportChuck>
+            <CutDivision> Use(Width:500.)</CutDivision>
+            <NozzlePosition> Machine Origin</NozzlePosition>
+            <GaugeOffset> 0 Point Side / 320.</GaugeOffset>
+            <ChuckPattern />
+            <SupportType />
+            <MaterialShape> SQ(RECT) Tube</MaterialShape>
+            <SupportChuck> Sync.</SupportChuck>
+            <Tab>Tab001</Tab>
+        </Header>
+        <Part ID="1" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part1.bmp</BMPName>
+        </Part>
+        <Part ID="2" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part2.bmp</BMPName>
+        </Part>
+        <Part ID="3" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part3.bmp</BMPName>
+        </Part>
+        <Part ID="4" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part4.bmp</BMPName>
+        </Part>
+        <Part ID="5" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part5.bmp</BMPName>
+        </Part>
+        <Part ID="6" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part6.bmp</BMPName>
+        </Part>
+        <Part ID="7" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part7.bmp</BMPName>
+        </Part>
+        <Part ID="8" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part8.bmp</BMPName>
+        </Part>
+        <Part ID="9" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part9.bmp</BMPName>
+        </Part>
+        <Part ID="10" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part10.bmp</BMPName>
+        </Part>
+        <Part ID="11" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part11.bmp</BMPName>
+        </Part>
+        <Part ID="12" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part12.bmp</BMPName>
+        </Part>
+        <Part ID="13" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part13.bmp</BMPName>
+        </Part>
+        <Part ID="14" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part14.bmp</BMPName>
+        </Part>
+        <Part ID="15" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part15.bmp</BMPName>
+        </Part>
+        <Part ID="16" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part16.bmp</BMPName>
+        </Part>
+        <Part ID="17" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part17.bmp</BMPName>
+        </Part>
+        <Part ID="18" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part18.bmp</BMPName>
+        </Part>
+        <Part ID="19" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part19.bmp</BMPName>
+        </Part>
+        <Part ID="20" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab001\Part20.bmp</BMPName>
+        </Part>
+    </TubeReport>
+    <TubeReport>
+        <Header>
+            <PList>Program List</PList>
+            <Name>W3+C40-002</Name>
+            <BarCName>W3+C40-002</BarCName>
+            <Comment />
+            <Material-Name> P-C-SPC4.0S</Material-Name>
+            <Material-Type> SPC</Material-Type>
+            <Machine>FOM2RI3015-S</Machine>
+            <BarCMcName>FOM2RI3015-S</BarCMcName>
+            <Thickness> 4.</Thickness>
+            <PiercePosition> 320.</PiercePosition>
+            <SupportPosition> </SupportPosition>
+            <SupportPosFromEdge> </SupportPosFromEdge>
+            <PipeLength> 6000.</PipeLength>
+            <TotalLength> 2910.11</TotalLength>
+            <WidthHeightDiameter> 140. X 65. R6.5</WidthHeightDiameter>
+            <WidthHeight> 140. X 65. R6.5</WidthHeight>
+            <Diameter> 0</Diameter>
+            <CPipeCornerR> 6.5</CPipeCornerR>
+            <CreateDate> 2016/10/20</CreateDate>
+            <DueDate> 2016/10/20</DueDate>
+            <FolderName />
+            <Qty> 1</Qty>
+            <TotalPartsWeight> 27851</TotalPartsWeight>
+            <Utilization> 37.3</Utilization>
+            <TimeStudy> 00:59:52</TimeStudy>
+            <MainChuckPosition> B</MainChuckPosition>
+            <SeamPosition> None</SeamPosition>
+            <Repositioning> Exist</Repositioning>
+            <SyncProcessing> A</SyncProcessing>
+            <JawHorizontal> B</JawHorizontal>
+            <JawVertical> D, E</JawVertical>
+            <ClampBlock> M</ClampBlock>
+            <ClampPad> F</ClampPad>
+            <SSupportChuck> Unusable</SSupportChuck>
+            <CutDivision> Use(Width:500.)</CutDivision>
+            <NozzlePosition> Machine Origin</NozzlePosition>
+            <GaugeOffset> 0 Point Side / 320.</GaugeOffset>
+            <ChuckPattern />
+            <SupportType />
+            <MaterialShape> SQ(RECT) Tube</MaterialShape>
+            <SupportChuck> Sync.</SupportChuck>
+            <Tab>Tab002</Tab>
+        </Header>
+        <Part ID="1" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part1.bmp</BMPName>
+        </Part>
+        <Part ID="2" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part2.bmp</BMPName>
+        </Part>
+        <Part ID="3" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part3.bmp</BMPName>
+        </Part>
+        <Part ID="4" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part4.bmp</BMPName>
+        </Part>
+        <Part ID="5" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part5.bmp</BMPName>
+        </Part>
+        <Part ID="6" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part6.bmp</BMPName>
+        </Part>
+        <Part ID="7" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part7.bmp</BMPName>
+        </Part>
+        <Part ID="8" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part8.bmp</BMPName>
+        </Part>
+        <Part ID="9" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part9.bmp</BMPName>
+        </Part>
+        <Part ID="10" Name=" W50X4-C-197">
+            <Comment> </Comment>
+            <Size> 360.</Size>
+            <BMPName>C:\Program Files (x86)\Amada\AICAM_Tube\3D-Laser\ViewData\PrintViews\Tab002\Part10.bmp</BMPName>
+        </Part>
+    </TubeReport>
+</Nesting>

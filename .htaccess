@@ -1,0 +1,12 @@
+RewriteEngine on
+
+RewriteBase /
+
+RewriteRule ^site/(.+)/(.+)$ /manager/index.php?site=$1
+RewriteRule ^view/(.+)/(.+)/(.+)$ /manager/index.php?site=$1&add=$2
+RewriteRule ^costing/(.+)/(.+)/$ /manager/index.php?site=600&url=$1&did=$2
+RewriteRule ^project/(.+)/(.+)/$ /manager/index.php?site=$1&plist=$2
+RewriteRule ^galery/(.+)/(.+)/$ /manager/index.php?site=$1&pid=$2
+RewriteRule ^order/(.+)/$ /manager/index.php?site=13&oid=$1
+RewriteRule ^detail/(.+)/$ /manager/index.php?site=14&did=$1
+RewriteRule ^program/(.+)/$ /manager/index.php?site=16&pid=$1
