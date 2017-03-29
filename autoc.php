@@ -82,11 +82,16 @@ if ($p_a == 1) { //Program add
 } else if ($p_a == "check_costing_line") { //Check detail in costing line
     $code = $_GET["code"];
 
-    $detail = $db->query("SELECT COUNT(*) FROM `mpw` WHERE `code` = '$code'");
-    if (intval($detail->fetch()[0]) > 0) {
-        die("1");
+    $detail = $db->query("SELECT * FROM `mpw` WHERE `code` = '$code'");
+    if ($data = $detail->fetch()) {
+        echo json_encode($data);
     }
-    die("0");
+    else
+    {
+        echo json_encode(null);
+    }
+
+    die();
 }
 
 $delete = false;
