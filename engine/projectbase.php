@@ -285,7 +285,7 @@ if ($action == 1) { //AJAX client list
                 edit_id = parseInt($(this).parent().attr("id"));
                 App.blockUI({boxed: !0});
                 $.ajax({
-                    url: "<?php echo $site_path; ?>/engine/projectbase.php?a=5&pid=" + edit_id;
+                    url: "<?php echo $site_path; ?>/engine/projectbase.php?a=5&pid=" + edit_id
                 }).done(function (msg) {
                     var returns;
                     if (msg != "") {
