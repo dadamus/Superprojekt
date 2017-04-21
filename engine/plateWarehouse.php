@@ -235,15 +235,15 @@ if ($a == 1) {
                                     </tr>
                                     <tr>
                                         <td>Wymiary</td>
-                                        <td><input type="text" class="form-control" name="Width" placeholder="Szerokość"/></td>
+                                        <td><input type="text" class="form-control" name="Width" id="newSheetWidth" placeholder="Szerokość"/></td>
                                     </tr>
                                     <tr>
                                         <td></td>
-                                        <td><input type="text" class="form-control" name="Height" placeholder="Wysokość"/></td>
+                                        <td><input type="text" class="form-control" name="Height" id="newSheetHeight" placeholder="Wysokość"/></td>
                                     </tr>
                                     <tr>
                                         <td>Grubość</td>
-                                        <td><input type="text" class="form-control" name="Thickness"/></td>
+                                        <td><input type="text" class="form-control" name="Thickness" id="newSheetThickness" /></td>
                                     </tr>
                                     <tr>
                                         <td>Sztuk</td>
@@ -267,7 +267,19 @@ if ($a == 1) {
                                     </tr>
                                     <tr>
                                         <td>SheetCode</td>
-                                        <td><input type="text" name="SheetCode" class="form-control"/></td>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-sm-12 col-lg-6">
+                                                    <input type="text" name="SheetCode" id="newSheetCode" class="form-control" readonly/>
+                                                </div>
+                                                <div class="col-sm-12 col-lg-1" style="text-align: center">
+                                                    <span style="font-size: xx-large">-</span>
+                                                </div>
+                                                <div class="col-sm-12 col-lg-5">
+                                                    <input type="text" name="SheetCodeComment" class="form-control"/>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Waga</td>
@@ -294,13 +306,8 @@ if ($a == 1) {
                                     <tr>
                                         <td>Dzień przyjęcia</td>
                                         <td>
-                                            <div class="input-group date date-picker" data-date-format="yyyy-mm-dd" data-date-start-date="+0d">
-                                                <input type="text" class="form-control" name="pdate" readonly>
-                                                <span class="input-group-btn">
-                                                    <button class="btn default" type="button">
-                                                        <i class="fa fa-calendar"></i>
-                                                    </button>
-                                                </span>
+                                            <div class="input-group">
+                                                <input class="form-control form-control-inline input-medium date-picker" size="16" id="newSheetDate" type="text" name="pdate" data-date-format="dd-mm-yyyy" value="">
                                             </div>
                                         </td>
                                     </tr>
@@ -350,6 +357,8 @@ if ($a == 1) {
 
 
 <script type="text/javascript">
+    var $sheetCodeInput = $("#paddf input[name='SheetCode']");
+
     function reloadDetails(type)
     {
         if (typeof (type) == 'undefined') {
@@ -383,8 +392,10 @@ if ($a == 1) {
     }
 
     function resetFilter() {
-        $("#filter select").val(0);
-        $("#filter select").selectpicker('render');
+        var $filter = $("#filter select");
+
+        $filter.val(0);
+        $filter.selectpicker('render');
         $("#filter input").val('');
 
         $("#filter input[name='date']").val('');
@@ -404,9 +415,58 @@ if ($a == 1) {
 
     var provider = "";
     var cpm = 1;
+    var sheet_code_ready = false;
+
+    function getFloat(value, def)
+    {
+        var _v = parseFloat(value.replace(",", "."));
+        if (_v > 0) {
+            return _v;
+        }
+
+        return def;
+    }
+
+    var $newSheetDate = $("#newSheetDate");
+
+    function SheetCodeGenerator() {
+        var _scr = true;
+
+        var x = getFloat($("#newSheetWidth").val(), "x");
+        var y = getFloat($("#newSheetHeight").val(), "y");
+        var z = getFloat($("#newSheetThickness").val(), "z");
+
+        var mm = "M";
+        var yy = "Y";
+
+        var date = moment($newSheetDate.val(), "DD-MM-YYYY");
+        if (date.isValid())
+        {
+            mm = date.months() + 1;
+            if (mm < 10) {
+                mm = "0" + mm;
+            }
+
+            yy = date.years();
+        }
+
+        $("#newSheetCode").val(x + "X" + y + "X" + z + "-" + mm + "" + yy);
+
+        if (x == "x" || y == "y" || z == "z" || !date.isValid()) {
+            _scr = false;
+        }
+
+        sheet_code_ready = _scr;
+    }
 
     $(document).ready(function () {
         $(".bs-select").selectpicker({iconBase: "fa", tickIcon: "fa-check"});
+
+        $(".date-picker").datetimepicker({
+            minView : 2,
+            language: 'pl',
+            pickerPosition: "top-left"
+        });
         $("#defaultrange").daterangepicker({
             opens: App.isRTL() ? "left" : "right",
             format: "MM/DD/YYYY",
@@ -451,11 +511,18 @@ if ($a == 1) {
                 App.unblockUI();
             });
         });
+
+        var $padf = $("#paddf input");
+
         $("#npn").on("click", function () {
+            SheetCodeGenerator();
             provider = $("#plist").val();
-            $("#paddf input").parent().removeClass("has-error");
+            $padf.parent().removeClass("has-error");
             $("#mnewp").modal('hide');
-            $("#mnewp2").modal('show');
+
+            var $mnewp2 = $("#mnewp2");
+            $mnewp2.modal('show');
+            $mnewp2.find("input").val("");
         });
         $("#cpm").on("click", "a", function () {
             cpm = parseInt($(this).attr("id"));
@@ -466,11 +533,25 @@ if ($a == 1) {
             $("#paddf").submit();
         });
 
+        //CodeGenerate
+        $padf.on("keyup", function () {
+            SheetCodeGenerator();
+        });
+
+        $newSheetDate.on("change", function () {
+            SheetCodeGenerator();
+        });
+
         $("#paddf").on("submit", function (e) {
             e.preventDefault();
 
+            if (sheet_code_ready == false) {
+                $sheetCodeInput.parent().addClass("has-error");
+                return false;
+            }
+
             var check = true;
-            $("#paddf input").each(function (index, cobject) {
+            $padf.each(function (index, cobject) {
                 if ($(cobject).val().length == 0) {
                     check = false;
                     $(cobject).parent().addClass("has-error");
@@ -488,10 +569,27 @@ if ($a == 1) {
                 }).done(function (msg) {
                     App.unblockUI();
                     if (msg == "e1") {
-                        $("#paddf input[name='SheetCode']").parent().addClass("has-error");
+                        $sheetCodeInput.parent().addClass("has-error");
                     } else {
-                        alert(msg);
+                        toastr.success("Blacha została dodana do magazynu id: " + msg, "Dodałem blache!");
+
+                        toastr.options = {
+                            "closeButton": true,
+                            "debug": false,
+                            "positionClass": "toast-bottom-right",
+                            "onclick": null,
+                            "showDuration": "1000",
+                            "hideDuration": "1000",
+                            "timeOut": "5000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+                        $("#mnewp2").modal('hide');
                     }
+                    sheet_code_ready = false;
                 });
             }
         });

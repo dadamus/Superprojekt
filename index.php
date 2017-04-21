@@ -35,6 +35,7 @@ require_once dirname(__FILE__) . '/config.php';
         <link href="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo $site_path; ?>/assets/global/plugins/clockface/css/clockface.css" rel="stylesheet" type="text/css" />
+        <link href="<?php echo $site_path; ?>/assets/global/plugins/clockface/css/clockface.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo $site_path; ?>/assets/global/plugins/typeahead/typeahead.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo $site_path; ?>/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo $site_path; ?>/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -78,6 +79,8 @@ require_once dirname(__FILE__) . '/config.php';
         <script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js" type="text/javascript"></script>
+        <script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+        <script src="<?php echo $site_path; ?>/assets/global/plugins/clockface/js/clockface.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/morris/morris.min.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/morris/raphael-min.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/counterup/jquery.waypoints.min.js" type="text/javascript"></script>

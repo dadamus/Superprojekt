@@ -92,16 +92,21 @@ if ($p_a == 1) { //Program add
     }
 
     die();
+} else if ($p_a == "tube_single") {
+    require_once dirname(__FILE__) . '/aengine/mpc.php';
+} else if ($p_a == "add_plate_costing_single") {
+    require_once dirname(__FILE__) . '/engine/costing/plateSinglePart.php';
+
+    $plateData = new plateSinglePart($data_src . "temp/plate.csv");
+    $plateData->saveImage();
+    $plateData->saveInputData();
 }
 
-$delete = false;
+/*$delete = false;
 if (count($files) == 1) {
     switch ($files[0]) {
         case "PrintData.xml":
             require_once dirname(__FILE__) . '/aengine/sptc.php';
-            break;
-        case "TubeReport.xml":
-            require_once dirname(__FILE__) . '/aengine/mpc.php';
             break;
         default:
             //Error delete all files
@@ -110,4 +115,4 @@ if (count($files) == 1) {
             }
             break;
     }
-}
+}*/

@@ -28,17 +28,20 @@ class Imap {
     }
 
     public function getMail($date = '22 August 2016') {
-        $content = array();
+        $content = [];
         $emails = imap_search($this->imap, 'SINCE "' . $date . '"');
         if (is_array($emails) || is_object($emails)) {
             foreach ($emails as $eid) {
                 $header = imap_fetch_overview($this->imap, $eid, 0);
                 mb_internal_encoding("UTF-8");
 
-                array_push($content, array("uid" => $eid, "subject" => mb_decode_mimeheader($header[0]->subject), "content" => imap_body($this->imap, $eid)));
+                $content[] = [
+                    "uid" => $eid, 
+                    "subject" => mb_decode_mimeheader($header[0]->subject), 
+                    "content" => imap_body($this->imap, $eid)
+                ];
             }
         }
         return $content;
     }
-
 }

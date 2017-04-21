@@ -138,7 +138,7 @@ function createCosting() {
         $radius = floatval($_POST["radius"]);
         $file_dir = "roto";
     } else {
-        $dile_dir = "sheet";
+        $file_dir = "sheet";
     }
 
 //DETAIL EXIST?
@@ -362,7 +362,6 @@ if ($action == 6) {
 //PRICED LIST
 if ($action == 7) {
     $pid = $_COOKIE["plProjectId"];
-
     $ql = $db->prepare("SELECT * FROM `mpw` WHERE `pid` = :pid AND `type` = '1' OR `pid` = :pid AND `type` = '3' OR `pid` = :pid AND `type` = '5'");
     $ql->bindValue(":pid", $pid, PDO::PARAM_INT);
     $ql->execute();
