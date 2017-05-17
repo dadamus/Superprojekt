@@ -9,23 +9,27 @@
  */
 
 error_reporting(-1);
+
+require_once dirname(__FILE__) . "/engine/tools/toolsEngine.php";
+
 //DB SETTINGS
-/* $user = "adrian";
-  $pass = "adrian123";
-  $dbname = "abl_manager"; */
 $user = "adrian";
 $pass = "adrian123";
 $dbname = "abl_manager";
+//$user = "15760473_ablm";
+//$pass = "ABLManager1";
+//$dbname = "15760473_ablm";
+
 
 $cpt = "profile_costing"; // Profile costing table name in db
 $cplt = "plate_costing"; // Plate - || -
 //SRC SETTING
-/* $data_src = dirname(__FILE__) . "/data/";
-  $site_path = ""; //bez / na koncu
-  $user_name = "laser"; */
 $data_src = dirname(__FILE__) . "/data/";
 $site_path = ""; //bez / na koncu
 $user_name = "laser";
+//$data_src = dirname(__FILE__) . "/DATA/";
+//$site_path = "http://serwer1423535.home.pl/manager"; //bez / na koncu
+//$user_name = "laser";
 
 $mFolderName = array();
 $mFolderName[1] = "blacha1";
@@ -84,6 +88,8 @@ function make_dir($src) {
 
 function _getChecboxText($id) {
     $id = intval($id);
+    var_dump($id);
+    $t = null;
     switch ($id) {
         case 1:
             $t = "B";
@@ -105,9 +111,6 @@ function _getChecboxText($id) {
             break;
         case 7:
             $t = "Cc";
-        default:
-            $t = "-";
-            break;
     }
     return $t;
 }

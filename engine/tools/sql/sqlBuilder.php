@@ -8,7 +8,7 @@
  */
 class sqlBuilder
 {
-    public  static $INSERT = "INSERT";
+    public static $INSERT = "INSERT";
 
     /**
      * @var PDOStatement $_query
@@ -29,16 +29,31 @@ class sqlBuilder
      * @param $type
      * @param $table
      */
-    public function __construct($type, $table)
+    public function __construct($type = "SELECT", $table = null)
     {
-        switch ($this->type)
-        {
+        switch ($type) {
             case "INSERT":
                 $this->from = "INSERT INTO `$table` ";
+                break;
+			case "UPDATE":
+				$this->from = "UPDATE `$table` ";
+				break;
+            case "SELECT":
+                $this->from = "FROM `$table`";
                 break;
         }
         $this->type = $type;
     }
+
+	/**
+	 * @param $query
+	 * @return PDOStatement
+	 */
+    public function Query($query)
+	{
+		global $db;
+		return $db->query($query);
+	}
 
     public function generateQuery()
     {
@@ -46,9 +61,41 @@ class sqlBuilder
             case "INSERT":
                 return $this->generateInsertQuery();
                 break;
+			case "UPDATE":
+				return $this->generateUpdateQuery();
+				break;
+            case "SELECT":
+                return $this->generateSelectQuery();
+                break;
         }
 
         return false;
+    }
+
+    private function generateUpdateQuery()
+	{
+		$updateBidString = "";
+
+		foreach ($this->values_data as $key => $value) {
+			if (strlen($updateBidString) > 0) {
+				$updateBidString .= ", ";
+			}
+			$updateBidString .= "`$key` = :$key";
+		}
+
+		$this->query = $this->from . " SET " . $updateBidString . " WHERE " . $this->where;
+		return true;
+	}
+
+    public function addCondition($sql)
+    {
+        $this->where = $sql;
+    }
+
+    private function generateSelectQuery()
+    {
+        $this->query = "SELECT " . $this->bind . " " . $this->from . "  " . $this->join . " WHERE " . $this->where;
+        return true;
     }
 
     public function flush()
@@ -58,15 +105,38 @@ class sqlBuilder
         $this->executeQuery();
     }
 
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        $this->flush();
+        return $this->_query->fetchAll();
+    }
+
     public function prepareQuery()
     {
         switch ($this->type) {
             case "INSERT":
                 return $this->prepareInsertQuery();
                 break;
+			case "UPDATE":
+				return $this->prepareInsertQuery();
+				break;
+            case "SELECT":
+                return $this->prepareSelectQuery();
+                break;
         }
 
         return false;
+    }
+
+    private function prepareSelectQuery()
+    {
+        global $db;
+
+        $this->_query = $db->prepare($this->query);
+        return true;
     }
 
     public function executeQuery()
@@ -79,7 +149,7 @@ class sqlBuilder
         global $db;
 
         $this->_query = $db->prepare($this->query);
-        foreach($this->values_data as $key => $value) {
+        foreach ($this->values_data as $key => $value) {
             $this->_query->bindValue(":$key", $value["value"], $value["type"]);
         }
 
@@ -112,12 +182,24 @@ class sqlBuilder
     /**
      * @param $name
      */
-    private function addBind($name)
+    public function addBind($name, $mark = "`")
     {
         if ($this->bind != null) {
             $this->bind .= ", ";
         }
-        $this->bind .= "`$name`";
+        $this->bind .= $mark.$name.$mark;
+    }
+
+    /**
+     * @param array $names
+     */
+    public function addBinds($names)
+    {
+        if (is_array($names)) {
+            foreach($names as $name) {
+                $this->addBind($name);
+            }
+        }
     }
 
     /**
@@ -130,9 +212,9 @@ class sqlBuilder
         if (isset($this->values_data[$name])) {
             throw new Exception("Juz zbindowalem! $name");
         }
-        $this->values_data[$name] = [
+        $this->values_data[$name] = array(
             "value" => $value,
             "type" => $type
-        ];
+        );
     }
 }

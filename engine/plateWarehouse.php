@@ -51,12 +51,18 @@ if ($a == 1) {
         die("e1");
     }
 
-    $sc = str_replace("-", "p", $_POST["SheetCode"]);
-    if (!ctype_alnum($sc)) {
-        die("e1");
+    $sc = str_replace([".", ","], ["P", "P"], $_POST["SheetCode"]);
+
+    $sheetCodeComent = strtoupper($_POST["SheetCodeComment"]);
+    if (strlen($sheetCodeComent) > 0) {
+        if (!ctype_alnum($sheetCodeComent)) {
+            die("e2");
+        }
+
+        $sc .= "-".$sheetCodeComent;
     }
 
-    $SheetCode = strtoupper($_POST["SheetCode"]);
+    $SheetCode = strtoupper($sc);
     $date = date("Y-m-d H:i:s");
     $db->query("INSERT INTO `plate_warehouse` (`SheetCode`, `MaterialName`, `QtyAvailable`, `GrainDirection`, `Width`, `Height`, `SpecialInfo`, `SheetType`, `Price`, `Priority`, `Thickness`, `MaterialTypeName`, `type`, `date`, `pdate`, `ndp`) VALUES ('$SheetCode', '', '" . $_POST['QtyAvailable'] . "', '" . $_POST['GrainDirection'] . "', '" . $_POST['Width'] . "', '" . $_POST['Height'] . "', '" . $_POST['SpecialInfo'] . "', '" . $_POST['SheetType'] . "', '" . $_POST['Price'] . "', '" . $_POST['Priority'] . "', '" . $_POST['Thickness'] . "', '" . $_POST['MaterialTypeName'] . "', '1', '$date', '" . $_POST['pdate'] . "', '" . $_POST['ndp'] . "')");
     die($db->lastInsertId());
@@ -552,7 +558,7 @@ if ($a == 1) {
 
             var check = true;
             $padf.each(function (index, cobject) {
-                if ($(cobject).val().length == 0) {
+                if ($(cobject).val().length == 0 && !$(cobject).prop('readonly')) {
                     check = false;
                     $(cobject).parent().addClass("has-error");
                 } else if ($(cobject).parent().hasClass("has-error")) {
@@ -570,6 +576,8 @@ if ($a == 1) {
                     App.unblockUI();
                     if (msg == "e1") {
                         $sheetCodeInput.parent().addClass("has-error");
+                    } else if (msg == "e2") {
+                        $("input[name='SheetCodeComment']").parent().addClass("has-error");
                     } else {
                         toastr.success("Blacha została dodana do magazynu id: " + msg, "Dodałem blache!");
 
