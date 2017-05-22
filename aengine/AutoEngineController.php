@@ -187,7 +187,7 @@ class AutoEngineController
 	private function SyncFromMDBAction()
 	{
 		$input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST["toSync"]));
-		$data = json_decode(str_replace("\\", "", $input), true);
+		$data = json_decode($input, true);
 		$plateToCheck = "";
 		$plates = [];
 		foreach ($data as $plate) {
@@ -272,5 +272,22 @@ class AutoEngineController
 		];
 
 		return json_encode($response);
+	}
+
+	private function SyncFromMDBError()
+	{
+		global $db;
+		$input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST["orders"]));
+		$orders = json_decode($input, true);
+
+		$query = $db->prepare("UPDATE `plate_warehouse` SET `SheetCode` = concat(`SheetCode`, '_bkp'), `state` = 'other' WHERE `SheetCode` = :sheetCode");
+		foreach ($orders as $order) {
+			$query->bindParam(":sheetCode", $order["sheetCode"], PDO::PARAM_STR);
+			$query->execute();
+		}
+
+		return json_encode([
+			"ok"
+		]);
 	}
 }

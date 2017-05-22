@@ -21,7 +21,8 @@ class router
 			"add_plate_costing_single" => "AddSingleCostingAction",
 			"plate_warehouse_sync_data" => "GetSyncDataAction",
 			"plate_warehouse_sync_respond" => "SetSyncedAction",
-			"plate_warehouse_sync_new" => "SyncFromMDBAction"
+			"plate_warehouse_sync_new" => "SyncFromMDBAction",
+			"plate_warehouse_sync_error" => "SyncFromMDBError",
         ];
     }
 }

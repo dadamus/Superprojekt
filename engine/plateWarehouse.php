@@ -6,7 +6,15 @@ if (!empty($a)) {
     require_once dirname(__FILE__) . '/class/notification.php';
 }
 if ($a == 1) {
-    $type = @$_GET["type"];
+	$warehouseTypes = [
+			0 => "default",
+			1 => "default",
+			2 => "reservation",
+			3 => "deleted",
+			4 => "other"
+	];
+
+    $type = $warehouseTypes[@$_GET["type"]];
 
     //FILTR
     $filtr = "";
@@ -37,10 +45,11 @@ if ($a == 1) {
     }
 
     //die("SELECT * FROM `plate_warehouse` WHERE `type` = '$type' ".$filtr);
-    $pselect = $db->query("SELECT * FROM `plate_warehouse` WHERE `type` = '$type' " . $filtr);
+    $pselect = $db->query("SELECT * FROM `plate_warehouse` WHERE `state` = '$type' " . $filtr);
+	$data = $pselect->fetchAll(PDO::FETCH_ASSOC);
 
     $table = "";
-    foreach ($pselect as $row) {
+    foreach($data as $row) {
         $table .= "<tr><td>" . $row['SheetCode'] . "</td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['pdate'] . "</td><td>" . $row['QtyAvailable'] . "</td></tr>";
     }
     die($table);

@@ -13,13 +13,29 @@ class plateSinglePart
      */
     private $data;
 
+	/**
+	 * @var int $data_id
+	 */
+	private $data_id;
+
     /**
      * plateSinglePart constructor.
      * @param string $data
      */
-    public function __construct($data)
+    public function __construct($data, $file = true)
     {
         $plateData = new plateSinglePartData();
+
+        $this->data_id = 1;
+        $this->data = $this->getInputData();
+        die;
+
+        if ($file = false)
+		{
+			$this->data_id = intval($data);
+			$this->data = $this->getInputData();
+			return true;
+		}
 
         if (($file = fopen($data, "r")) !== false) {
             while (($data = fgetcsv($file)) !== false) {
@@ -88,7 +104,7 @@ class plateSinglePart
 
             $plateData->calculateSheetUnfold();
 
-            //unlink($data); //todo usunac koment
+            unlink($data); //todo usunac koment
         } else {
             throw new \Exception("Brak pliku!");
         }
@@ -130,7 +146,6 @@ class plateSinglePart
         $sqlBuilder->bindValue("detal_code",        $this->data->getDetalName(),        PDO::PARAM_STR);
         $sqlBuilder->bindValue("ext_size_X",        $this->data->getExtSizeX(),         PDO::PARAM_STR);
         $sqlBuilder->bindValue("ext_size_Y",        $this->data->getExtSizeY(),         PDO::PARAM_STR);
-        $sqlBuilder->bindValue("ext_size_X",        $this->data->getExtSizeX(),         PDO::PARAM_STR);
         $sqlBuilder->bindValue("ext_size_unf",      $this->data->getExtSizeUnf(),       PDO::PARAM_STR);
         $sqlBuilder->bindValue("real_size_unf",     $this->data->getRealSizeUnf(),      PDO::PARAM_STR);
         $sqlBuilder->bindValue("part_count",        $this->data->getPartCount(),        PDO::PARAM_INT);
@@ -144,6 +159,66 @@ class plateSinglePart
 
         $sqlBuilder->flush();
     }
+
+    public function getInputData()
+	{
+		$sqlBuilder = new sqlBuilder('SELECT', "plate_singlePartCosting");
+
+		$sqlBuilder->addCondition("id = ".$this->data_id);
+
+		$sqlBuilder->addBind("detal_code");
+		$sqlBuilder->addBind("ext_size_X");
+		$sqlBuilder->addBind("ext_size_Y");
+		$sqlBuilder->addBind("ext_size_unf");
+		$sqlBuilder->addBind("real_size_unf");
+		$sqlBuilder->addBind("part_count");
+		$sqlBuilder->addBind("sheet_name");
+		$sqlBuilder->addBind("material_type");
+		$sqlBuilder->addBind("sheet_thickness");
+		$sqlBuilder->addBind("sheet_size_x");
+		$sqlBuilder->addBind("sheet_size_y");
+		$sqlBuilder->addBind("sheet_code");
+		$sqlBuilder->addBind("sheet_unfold");
+
+		$queryResult = $sqlBuilder->getData();
+		if (count($queryResult) >= 1) {
+			$data = $queryResult[0];
+
+			$inputData = new plateSinglePartData();
+			$inputData->setDetalName($data['detal_code']);
+			$inputData->setExtSizeX($data["ext_size_X"]);
+			$inputData->setExtSizeY($data["ext_size_Y"]);
+			$inputData->setExtSizeUnf($data["ext_size_unf"]);
+			$inputData->setRealSizeUnf($data["real_size_unf"]);
+			$inputData->setPartCount($data["part_count"]);
+			$inputData->setSheetName($data["sheet_name"]);
+			$inputData->setMaterialType($data["material_type"]);
+			$inputData->setSheetThickness($data["sheet_thickness"]);
+			$inputData->setSheetSizeX($data["sheet_size_x"]);
+			$inputData->setSheetSizeY($data["sheet_size_y"]);
+			$inputData->setSheetCode($data["sheet_code"]);
+			$inputData->calculateSheetUnfold();
+
+			$this->data = $inputData;
+		} else {
+			throw new \Exception("Brak danych dla wyceny: !" . $this->data_id);
+		}
+	}
+
+	public function getMaterialData()
+	{
+		if (is_empty($this->data)) {
+			throw new Exception("Brak danych wejsciowych!");
+		}
+
+		$sheetCode = $this->data->getSheetCode();
+
+	}
+
+    public function calculate()
+	{
+
+	}
 }
 
 class plateSinglePartData

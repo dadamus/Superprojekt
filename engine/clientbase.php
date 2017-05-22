@@ -22,7 +22,7 @@ if (@$_GET["a"] == 1) { // AJAX New client
     $_id = $db->lastInsertId();
     $directories = array();
     foreach (glob($data_src . "*", GLOB_ONLYDIR) as $directory) {
-        array_push($directories, end((explode("/", $directory))));
+        array_push($directories, end(explode("/", $directory)));
     }
 
     function pushClient() {
