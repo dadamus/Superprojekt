@@ -25,8 +25,9 @@ class PlateSyncResponse
 
 	/**
 	 * @param array $data
+	 * @param string $columnKey
 	 */
-	public function addUpdate($data)
+	public function addUpdate($data, $columnKey)
 	{
 		$dataSet = "";
 		foreach ($data as $name => $value) {
@@ -37,17 +38,23 @@ class PlateSyncResponse
 			if (strlen($dataSet) > 0) {
 				$dataSet .= ",";
 			}
-			$dataSet .= "`$name` = '$value'";
+
+			$mark = "'";
+			if (is_numeric($value)) {
+				$mark = "";
+			}
+			$dataSet .= "`$name` = " . $mark . "$value" . $mark;
 		}
 
-		$this->update_id[] = $data["SheetCode"];
-		$this->update .= "UPDATE :TableName SET $dataSet WHERE SheetCode = '" . $data["SheetCode"] . "';";
+		$this->update_id[] = $data[$columnKey];
+		$this->update .= "UPDATE :TableName SET $dataSet WHERE $columnKey = '" . $data[$columnKey] . "';";
 	}
 
 	/**
 	 * @param array $data
+	 * @param string $columnKey
 	 */
-	public function addInsert($data)
+	public function addInsert($data, $columnKey)
 	{
 		$dataHeader = "";
 		$dataValues = "";
@@ -62,20 +69,30 @@ class PlateSyncResponse
 				$dataValues .= ",";
 			}
 			$dataHeader .= "`$name`";
-			$dataValues .= "'$value'";
+
+			$mark = "'";
+			if (is_numeric($value)) {
+				$mark = "";
+			}
+			$dataValues .= $mark.$value.$mark;
 		}
 
-		$this->insert_id[] = $data["SheetCode"];
+		$this->insert_id[] = $data[$columnKey];
 		$this->insert .= "INSERT INTO :TableName ($dataHeader) VALUES ($dataValues);";
 	}
 
 	/**
-	 * @param string $data
+	 * @param array $data
+	 * @param string $columnKey
 	 */
-	public function addDelete($data)
+	public function addDelete($data, $columnKey)
 	{
-		$this->delete_id[] = $data["SheetCode"];
-		$this->delete .= "DELETE FROM :TableName WHERE `SheetCode` = '" . $data["SheetCode"] . "';";
+		$this->delete_id[] = $data[$columnKey];
+		$mark = "'";
+		if (is_numeric($data[$columnKey])) {
+			$mark = "";
+		}
+		$this->delete .= "DELETE FROM :TableName WHERE `" . $columnKey . "` = " . $mark . $data[$columnKey] . $mark .";";
 	}
 
 	/**

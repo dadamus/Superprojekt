@@ -18,26 +18,65 @@ class plateSinglePart
 	 */
 	private $data_id;
 
+	/**
+	 * @var plateSinglePartCostingData $costingData
+	 */
+	private $costingData;
+
+	/**
+	 * @var float
+	 */
+	private $frameAreaValue;
+
+	/**
+	 * @var float
+	 */
+	private $scrapPrice;
+
+	/**
+	 * @var float
+	 */
+	private $scrapFactor;
+
+	/**
+	 * @var float
+	 */
+	private $cutPrice;
+
+	/**
+	 * @var float
+	 */
+	private $pFactor;
+
+	/**
+	 * @var float
+	 */
+	private $oTime;
+
+	/**
+	 * @var float
+	 */
+	private $oCost;
+
     /**
      * plateSinglePart constructor.
-     * @param string $data
+     * @param string $fileUrl
+     * @param bool $file
      */
-    public function __construct($data, $file = true)
+    public function __construct($fileUrl, $file = true)
     {
         $plateData = new plateSinglePartData();
 
         $this->data_id = 1;
-        $this->data = $this->getInputData();
-        die;
 
         if ($file = false)
 		{
-			$this->data_id = intval($data);
+			$this->data_id = intval($fileUrl);
 			$this->data = $this->getInputData();
 			return true;
 		}
 
-        if (($file = fopen($data, "r")) !== false) {
+        if (($file = fopen($fileUrl, "r")) !== false) {
             while (($data = fgetcsv($file)) !== false) {
                 $value = $data[1];
 
@@ -89,12 +128,18 @@ class plateSinglePart
                     case "db_UsedRatio":
                         $plateData->setUsedRatio($value);
                         break;
-                    case "CutPathTime":
+                    case "db_CutPathTime":
                         $plateData->setCutPathTime($value);
                         break;
-                    case "MoveTime":
+                    case "db_MoveTime":
                         $plateData->setMoveTime($value);
                         break;
+					case "db_SHCutTime":
+						$plateData->setSHCutTime($value);
+						break;
+					case "db_PierceTime":
+						$plateData->setPierceTime($value);
+						break;
                     case "db_Image":
                         $plateData->setDbImage($value);
                         break;
@@ -104,7 +149,7 @@ class plateSinglePart
 
             $plateData->calculateSheetUnfold();
 
-            unlink($data); //todo usunac koment
+            //unlink($fileUrl); //todo usunac koment
         } else {
             throw new \Exception("Brak pliku!");
         }
@@ -113,11 +158,86 @@ class plateSinglePart
         return true;
     }
 
+    public function getMaterialData()
+	{
+		global $db;
 
-    /**
-     * @throws Exception
-     */
-    public function saveImage()
+		$materialQuery = $db->prepare("
+			SELECT
+			m.waste as scrapPrice,
+			s.value as scrapFactor
+			FROM
+			material m
+			LEFT JOIN settings s ON s.id = 5
+			WHERE
+			m.`name` = :materialType
+		");
+		$materialQuery->bindValue(":materialType", $this->data->getMaterialType(), PDO::PARAM_STR);
+		$materialQuery->execute();
+		$materialData = $materialQuery->fetch();
+
+		$cutPriceQuery = $db->query("SELECT value as cutPrice FROM settings WHERE id = 1");
+		$cutPriceData = $cutPriceQuery->fetch();
+
+		$pFactorQuery = $db->query("SELECT value as pFactor FROM settings WHERE id = 2");
+		$pFactorData = $pFactorQuery->fetch();
+
+		$oTimeQuery = $db->query("SELECT value as oTime FROM settings WHERE id = 3");
+		$oTimeData = $oTimeQuery->fetch();
+
+		$oCostQuery = $db->query("SELECT value as oCost FROM settings WHERE id = 4");
+		$oCostData = $oCostQuery->fetch();
+
+		$this->scrapFactor = $materialData["scrapFactor"];
+		$this->scrapPrice = $materialData["scrapPrice"];
+		$this->cutPrice = $cutPriceData["cutPrice"];
+		$this->pFactor = $pFactorData["pFactor"];
+		$this->oTime = $oTimeData["oTime"];
+		$this->oCost = $oCostData["oCost"];
+	}
+
+	public function checkMPW()
+	{
+		global $db;
+		$name = $this->data->getDetalName();
+
+		$mpwQuery = $db->prepare("SELECT * FROM `mpw` WHERE code = :detailName");
+		$mpwQuery->bindValue(":detailName", $name, PDO::PARAM_STR);
+		$mpwQuery->execute();
+
+		$mpwData = $mpwQuery->fetchAll();
+		if (count($mpwData) == 0) {
+			throw new \Exception("Brak wyceny o nazwie: $name!");
+		}
+		$mpw = $mpwData[0];
+
+		if ($mpw["pieces"] != $this->data->getPartCount()) {
+			throw new \Exception("Liczba detali (" . $this->data->getPartCount() . ") sie nie zgadza: " . $mpw["pieces"]);
+		}
+
+		if ($mpw["thickness"] != $this->data->getSheetThickness()) {
+			throw new \Exception("Grubosc blachy (" . $this->data->getSheetThickness() . ") jest inna: " . $mpw["thickness"]);
+		}
+	}
+
+	/**
+	 * @param int $frameId
+	 */
+	public function updateMpwImg(int $frameId)
+	{
+		global $db;
+
+		$query = $db->prepare("UPDATE mpw SET frame = :frameId WHERE code = :code");
+		$query->bindValue(":frameId", $frameId, PDO::PARAM_INT);
+		$query->bindValue(":code", $this->data->getDetalName(), PDO::PARAM_STR);
+		$query->execute();
+	}
+
+	/**
+	 * @param int $costingId
+	 * @throws Exception
+	 */
+    public function saveImage(int $costingId)
     {
         global $data_src, $db;
 
@@ -132,32 +252,50 @@ class plateSinglePart
         }
 
         $newPath = $data_src . "temp/plateData/" . $newImageName;
+        if (!file_exists($data_src . 'temp/plateData/')) {
+            mkdir($data_src . 'temp/plateData/', 0777, true);
+        }
         rename($filePath, $newPath);
-        $query = $db->prepare("INSERT INTO `plate_singlePartCosting_image` (`path`, `costing_name`) VALUES (:newPath, :costingName)");
+        $query = $db->prepare("INSERT INTO `plate_singlePartCosting_image` (`path`, `plate_costingId`, `plate_costingType`, `costing_name`) VALUES (:newPath, :plateCostingId, :plate_costingType, :costingName)");
         $query->bindValue(":newPath", $newPath, PDO::PARAM_STR);
+        $query->bindValue(":plateCostingId", $costingId, PDO::PARAM_INT);
+        $query->bindValue(":plate_costingType", "singePartCosting", PDO::PARAM_STR);
         $query->bindValue(":costingName", $costingName, PDO::PARAM_STR);
         $query->execute();
+
+        $imgId = $db->lastInsertId();
+		$frameId = $this->createFrame($imgId);
+		$this->updateMpwImg($frameId);
     }
 
-    public function saveInputData()
+	/**
+	 * @return int
+	 */
+    public function saveInputData(): int
     {
+    	global $db;
         $sqlBuilder = new sqlBuilder("INSERT", "plate_singlePartCosting");
 
-        $sqlBuilder->bindValue("detal_code",        $this->data->getDetalName(),        PDO::PARAM_STR);
-        $sqlBuilder->bindValue("ext_size_X",        $this->data->getExtSizeX(),         PDO::PARAM_STR);
-        $sqlBuilder->bindValue("ext_size_Y",        $this->data->getExtSizeY(),         PDO::PARAM_STR);
-        $sqlBuilder->bindValue("ext_size_unf",      $this->data->getExtSizeUnf(),       PDO::PARAM_STR);
-        $sqlBuilder->bindValue("real_size_unf",     $this->data->getRealSizeUnf(),      PDO::PARAM_STR);
-        $sqlBuilder->bindValue("part_count",        $this->data->getPartCount(),        PDO::PARAM_INT);
-        $sqlBuilder->bindValue("sheet_name",        $this->data->getSheetName(),        PDO::PARAM_STR);
-        $sqlBuilder->bindValue("material_type",     $this->data->getMaterialType(),     PDO::PARAM_STR);
-        $sqlBuilder->bindValue("sheet_thickness",   $this->data->getSheetThickness(),   PDO::PARAM_STR);
-        $sqlBuilder->bindValue("sheet_size_x",      $this->data->getSheetSizeX(),       PDO::PARAM_STR);
-        $sqlBuilder->bindValue("sheet_size_y",      $this->data->getSheetSizeY(),       PDO::PARAM_STR);
-        $sqlBuilder->bindValue("sheet_code",        $this->data->getSheetCode(),        PDO::PARAM_STR);
-        $sqlBuilder->bindValue("sheet_unfold",      $this->data->getSheetUnfold(),      PDO::PARAM_STR);
+        $sqlBuilder->bindValue("detal_code",        	$this->data->getDetalName(),        PDO::PARAM_STR);
+        $sqlBuilder->bindValue("ext_size_X",        	$this->data->getExtSizeX(),         PDO::PARAM_STR);
+        $sqlBuilder->bindValue("ext_size_Y",        	$this->data->getExtSizeY(),         PDO::PARAM_STR);
+        $sqlBuilder->bindValue("ext_size_unf",      	$this->data->getExtSizeUnf(),       PDO::PARAM_STR);
+        $sqlBuilder->bindValue("real_size_unf",     	$this->data->getRealSizeUnf(),      PDO::PARAM_STR);
+        $sqlBuilder->bindValue("part_count",        	$this->data->getPartCount(),        PDO::PARAM_INT);
+        $sqlBuilder->bindValue("sheet_name",        	$this->data->getSheetName(),        PDO::PARAM_STR);
+        $sqlBuilder->bindValue("material_type",     	$this->data->getMaterialType(),     PDO::PARAM_STR);
+        $sqlBuilder->bindValue("sheet_thickness",   	$this->data->getSheetThickness(),   PDO::PARAM_STR);
+        $sqlBuilder->bindValue("sheet_size_x",      	$this->data->getSheetSizeX(),       PDO::PARAM_STR);
+        $sqlBuilder->bindValue("sheet_size_y",      	$this->data->getSheetSizeY(),       PDO::PARAM_STR);
+        $sqlBuilder->bindValue("sheet_code",        	$this->data->getSheetCode(),        PDO::PARAM_STR);
+        $sqlBuilder->bindValue("sheet_unfold",      	$this->data->getSheetUnfold(),      PDO::PARAM_STR);
+		$sqlBuilder->bindValue("cut_path_time",		$this->data->getCutPathTime(),		PDO::PARAM_STR);
+		$sqlBuilder->bindValue("move_time",			$this->data->getMoveTime(),			PDO::PARAM_STR);
+		$sqlBuilder->bindValue("sh_cut_time",			$this->data->getSHCutTime(),		PDO::PARAM_STR);
+		$sqlBuilder->bindValue("pierce_time", 		$this->data->getPierceTime(),		PDO::PARAM_STR);
 
         $sqlBuilder->flush();
+        return $db->lastInsertId();
     }
 
     public function getInputData()
@@ -180,6 +318,12 @@ class plateSinglePart
 		$sqlBuilder->addBind("sheet_code");
 		$sqlBuilder->addBind("sheet_unfold");
 
+		$sqlBuilder->addBind("cut_path_time");
+		$sqlBuilder->addBind("move_time");
+		$sqlBuilder->addBind("sh_cut_time");
+		$sqlBuilder->addBind("pierce_time");
+
+
 		$queryResult = $sqlBuilder->getData();
 		if (count($queryResult) >= 1) {
 			$data = $queryResult[0];
@@ -198,26 +342,475 @@ class plateSinglePart
 			$inputData->setSheetSizeY($data["sheet_size_y"]);
 			$inputData->setSheetCode($data["sheet_code"]);
 			$inputData->calculateSheetUnfold();
+			$inputData->setCutPathTime($data["cut_path_time"]);
+			$inputData->setMoveTime($data["move_time"]);
+			$inputData->setSHCutTime($data["sh_cut_time"]);
+			$inputData->setPierceTime($data["pierce_time"]);
 
 			$this->data = $inputData;
 		} else {
-			throw new \Exception("Brak danych dla wyceny: !" . $this->data_id);
+            ob_start();
+            var_dump($queryResult);
+			throw new \Exception("Brak danych dla wyceny: !" . $this->data_id . ob_get_clean());
 		}
 	}
 
-	public function getMaterialData()
+	/**
+	 * @param int $imageId
+	 * @param string $frameType
+	 * @return int
+	 */
+	public function createFrame(int $imageId, string $frameType = 'singePartCosting')
 	{
-		if (is_empty($this->data)) {
-			throw new Exception("Brak danych wejsciowych!");
-		}
+		global $db;
+		$imageQuery = new sqlBuilder("INSERT", "plate_costingFrame");
+		$imageQuery->bindValue("imageId", $imageId, PDO::PARAM_INT);
+		$imageQuery->bindValue("type", $frameType, PDO::PARAM_STR);
+		$imageQuery->flush();
+		return $db->lastInsertId();
+	}
 
-		$sheetCode = $this->data->getSheetCode();
-
+	/**
+	 * @param $areaValue
+	 */
+	public function setFrameData($areaValue)
+	{
+		$this->frameAreaValue = $areaValue;
 	}
 
     public function calculate()
 	{
+		$costingData = new plateSinglePartCostingData();
+		$costingData->setDetailsAllUnf($this->data->getPartCount(), $this->data->getExtSizeX(), $this->data->getExtSizeY());
+		$costingData->setDetailsAllUnfPer($costingData->getDetailsAllUnf(), $this->data->getSheetUnfold());
+		$costingData->setDetailsExtUnf($this->data->getExtSizeX(), $this->data->getExtSizeY(), $this->data->getRealSizeUnf(), $this->data->getPartCount());
+		$costingData->setDetailsExtUnfPer($costingData->setDetailsExtUnf(), $this->data->getSheetUnfold());
+		$costingData->setDetailsIntUnf($this->data->getRealSizeUnf(), $this->data->getExtSizeUnf(), $this->data->getPartCount());
+		$costingData->setDetailsIntUnfPer($costingData->getDetailsIntUnf(), $this->data->getSheetUnfold());
+		$costingData->setDetailsRealUnf($this->data->getExtSizeUnf(), $this->data->getPartCount());
+		$costingData->setDetailsRealUnfPer($costingData->getDetailsRealUnf(), $this->data->getSheetUnfold());
 
+		$costingData->setRemnantUnfPer($costingData->getDetailsRealUnfPer(), $this->frameAreaValue);
+		$costingData->setRemnantUnf($costingData->getRemnantUnfPer(), $this->data->getSheetWeight());
+
+		$this->getMaterialData();
+		$costingData->setRemnantUnfValue($costingData->getRemnantUnf(), $this->scrapPrice, $this->scrapFactor);
+
+		$costingData->setDetailMatPrice($this->data->getSheetPriceAll(), $costingData->getRemnantUnfValue(), $this->data->getPartCount());
+
+		$costingData->setCutTime($this->data->getCutPathTime(), $this->data->getMoveTime(), $this->data->getSHCutTime(), $this->data->getPierceTime());
+		$costingData->setCleanCut($costingData->getCutTime(), $this->cutPrice);
+		$costingData->setCutKompN($costingData->getCleanCut(), $this->pFactor, $this->oTime, $this->oCost);
+		$costingData->setCutDetalN($costingData->getCutKompN(), $this->data->getPartCount());
+		$costingData->setPriceKomN($costingData->getDetailMatPrice(), $costingData->getCutKompN(), 0);//Todo checkbox
+		$costingData->setPriceKomB($costingData->getPriceKomN());
+		$costingData->setPriceDetN($costingData->getPriceKomN(), $this->data->getPartCount());
+		$costingData->setPriceDetB($costingData->getPriceDetN());
+
+		$this->costingData = $costingData;
+	}
+
+	public function saveCostingData()
+	{
+		global $db;
+		$sqlBuilder = new sqlBuilder("INSERT", "plate_singlePartCostingCalculate");
+		$sqlBuilder->bindValue("plate_singlePartCosting", $this->data_id, PDO::PARAM_INT);
+		$sqlBuilder->bindValue("details_all_unf", $this->costingData->getDetailsAllUnf(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("details_all_unf_per", $this->costingData->getDetailsAllUnfPer(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("details_ext_unf", $this->costingData->getDetailsExtUnf(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("details_ext_unf_per", $this->costingData->getDetailsExtUnfPer(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("details_int_unf", $this->costingData->getDetailsIntUnf(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("details_int_unf_per", $this->costingData->getDetailsIntUnfPer(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("details_real_unf", $this->costingData->getDetailsRealUnf(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("details_real_unf_per", $this->costingData->getDetailsRealUnfPer(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("remnant_unf_per", $this->costingData->getRemnantUnfPer(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("remnant_unf", $this->costingData->getRemnantUnf(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("remnant_unf_value", $this->costingData->getRemnantUnfValue(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("detail_mat_price", $this->costingData->getDetailMatPrice(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("cut_time", $this->costingData->getCutTime(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("clean_cut", $this->costingData->getCleanCut(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("cut_komp_n", $this->costingData->getCutKompN(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("cut_detal_n", $this->costingData->getCutDetalN(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("price_kom_n", $this->costingData->getPriceKomN(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("price_kom_b", $this->costingData->getPriceKomB(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("price_det_n", $this->costingData->getPriceDetN(), PDO::PARAM_STR);
+		$sqlBuilder->bindValue("price_det_b", $this->costingData->getPriceDetB(), PDO::PARAM_STR);
+
+		$sqlBuilder->flush();
+		return $db->lastInsertId();
+	}
+}
+
+class plateSinglePartCostingData
+{
+	private $details_all_unf;
+	private $details_all_unf_per;
+	private $details_ext_unf;
+	private $details_ext_unf_per;
+	private $details_int_unf;
+	private $details_int_unf_per;
+	private $details_real_unf;
+	private $details_real_unf_per;
+	private $remnant_unf_per;
+	private $remnant_unf;
+	private $remnant_unf_value;
+	private $detail_mat_price;
+	private $cut_time;
+	private $clean_cut;
+	private $cut_komp_n;
+	private $cut_detal_n;
+	private $price_kom_n;
+	private $price_kom_b;
+	private $price_det_n;
+	private $price_det_b;
+
+	/**
+	 * @return mixed
+	 */
+	public function getPriceDetB()
+	{
+		return $this->price_det_b;
+	}
+
+	/**
+	 * @param $price_det_n
+	 */
+	public function setPriceDetB($price_det_n)
+	{
+		$this->price_det_b = $price_det_n * 1.23;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPriceDetN()
+	{
+		return $this->price_det_n;
+	}
+
+	/**
+	 * @param $price_kom_n
+	 * @param $partCount
+	 */
+	public function setPriceDetN($price_kom_n, $partCount)
+	{
+		$this->price_det_n = $price_kom_n / intval($partCount);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPriceKomB()
+	{
+		return $this->price_kom_b;
+	}
+
+	/**
+	 * @param $price_kom_n
+	 */
+	public function setPriceKomB($price_kom_n)
+	{
+		$this->price_kom_b = $price_kom_n * 1.23;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPriceKomN()
+	{
+		return $this->price_kom_n;
+	}
+
+	/**
+	 * @param $detail_mat_price
+	 * @param $cut_komp_n
+	 * @param $checkbox
+	 */
+	public function setPriceKomN($detail_mat_price, $cut_komp_n, $checkbox)
+	{
+		$this->price_kom_n = $detail_mat_price + $cut_komp_n + $checkbox;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCutDetalN()
+	{
+		return $this->cut_detal_n;
+	}
+
+	/**
+	 * @param $cut_komp_n
+	 * @param $qty
+	 */
+	public function setCutDetalN($cut_komp_n, $qty)
+	{
+		$this->cut_detal_n = $cut_komp_n * intval($qty);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCutKompN()
+	{
+		return $this->cut_komp_n;
+	}
+
+	/**
+	 * @param $clean_cut
+	 * @param $p_factor
+	 * @param $czas_przelad
+	 * @param $cena_przeladunku
+	 */
+	public function setCutKompN($clean_cut, $p_factor, $czas_przelad, $cena_przeladunku)
+	{
+		$this->cut_komp_n = $clean_cut * $p_factor + ($czas_przelad * $cena_przeladunku);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCleanCut()
+	{
+		return $this->clean_cut;
+	}
+
+	/**
+	 * @param $cut_time
+	 * @param $cutPrice
+	 */
+	public function setCleanCut($cut_time, $cutPrice)
+	{
+		$this->clean_cut = $cut_time * $cutPrice;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCutTime()
+	{
+		return $this->cut_time;
+	}
+
+	/**
+	 * @param $CutPathTime
+	 * @param $MoveTime
+	 * @param $SHCutTime
+	 * @param $PierceTime
+	 */
+	public function setCutTime($CutPathTime, $MoveTime, $SHCutTime, $PierceTime)
+	{
+		$this->cut_time = globalTools::calculate_second($CutPathTime) + globalTools::calculate_second($MoveTime) + globalTools::calculate_second($SHCutTime) + globalTools::calculate_second($PierceTime);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDetailMatPrice()
+	{
+		return $this->detail_mat_price;
+	}
+
+	/**
+	 * @param $sheet_price_all
+	 * @param $remnant_unf_value_sum
+	 * @param $PartCount
+	 */
+	public function setDetailMatPrice($sheet_price_all, $remnant_unf_value, $PartCount)
+	{
+		$this->detail_mat_price = floatval($sheet_price_all) - $remnant_unf_value / intval($PartCount);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getRemnantUnfValue()
+	{
+		return $this->remnant_unf_value;
+	}
+
+	/**
+	 * @param $remnant_unf
+	 * @param $scrapPrice
+	 * @param $scrapFactor
+	 */
+	public function setRemnantUnfValue($remnant_unf, $scrapPrice, $scrapFactor)
+	{
+		$this->remnant_unf_value = $remnant_unf * floatval($scrapPrice) * floatval($scrapFactor);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getRemnantUnf()
+	{
+		return $this->remnant_unf;
+	}
+
+	/**
+	 * @param $remnant_unf_per
+	 * @param $sheet_weight
+	 */
+	public function setRemnantUnf($remnant_unf_per , $sheet_weight)
+	{
+		$this->remnant_unf = $remnant_unf_per * floatval($sheet_weight) / 100;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getRemnantUnfPer()
+	{
+		return $this->remnant_unf_per;
+	}
+
+	/**
+	 * @param $details_real_unf_per
+	 * @param $ramka_per
+	 */
+	public function setRemnantUnfPer($details_real_unf_per, $ramka_per)
+	{
+		$this->remnant_unf_per = 100 - $details_real_unf_per + floatval($ramka_per);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDetailsRealUnfPer()
+	{
+		return $this->details_real_unf_per;
+	}
+
+	/**
+	 * @param $details_real_unf
+	 * @param $sheet_unfold
+	 */
+	public function setDetailsRealUnfPer($details_real_unf, $sheet_unfold)
+	{
+		$this->details_real_unf_per = $details_real_unf / floatval($sheet_unfold) * 100;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDetailsRealUnf()
+	{
+		return $this->details_real_unf;
+	}
+
+	/**
+	 * @param $AreaWithOutHoles
+	 * @param $partCount
+	 */
+	public function setDetailsRealUnf($AreaWithOutHoles, $partCount)
+	{
+		$this->details_real_unf = floatval($AreaWithOutHoles) * intval($partCount);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDetailsIntUnfPer()
+	{
+		return $this->details_int_unf_per;
+	}
+
+	/**
+	 * @param $details_int_unf
+	 * @param $sheet_unfold
+	 */
+	public function setDetailsIntUnfPer($details_int_unf, $sheet_unfold)
+	{
+		$this->details_int_unf_per = $details_int_unf / floatval($sheet_unfold) * 100;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDetailsIntUnf()
+	{
+		return $this->detals_int_unf;
+	}
+
+	/**
+	 * @param $AreaWithHoles
+	 * @param $AreaWithOutHoles
+	 * @param $PartCount
+	 */
+	public function setDetailsIntUnf($AreaWithHoles, $AreaWithOutHoles, $PartCount)
+	{
+		$this->details_int_unf = (floatval($AreaWithHoles) - floatval($AreaWithOutHoles)) * intval($PartCount);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDetailsExtUnfPer()
+	{
+		return $this->details_ext_unf_per;
+	}
+
+	/**
+	 * @param $details_ext_unf
+	 * @param $sheet_unfold
+	 */
+	public function setDetailsExtUnfPer($details_ext_unf, $sheet_unfold)
+	{
+		$this->details_ext_unf_per = $details_ext_unf / floatval($sheet_unfold) * 100;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDetailsExtUnf()
+	{
+		return $this->details_ext_unf;
+	}
+
+	/**
+	 * @param $dimensionSizeX
+	 * @param $dimensionSizeY
+	 * @param $areaWithHoles
+	 * @param $partCount
+	 */
+	public function setDetailsExtUnf($dimensionSizeX, $dimensionSizeY, $areaWithHoles, $partCount)
+	{
+		$this->details_ext_unf = (floatval($dimensionSizeX) * floatval($dimensionSizeY) - floatval($areaWithHoles)) * intval($partCount);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDetailsAllUnfPer()
+	{
+		return $this->details_all_unf_per;
+	}
+
+	/**
+	 * @param $allUnf
+	 * @param $sheetUnfold
+	 */
+	public function setDetailsAllUnfPer($allUnf, $sheetUnfold)
+	{
+		$this->details_all_unf_per = floatval($allUnf) / floatval($sheetUnfold) * 100;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDetailsAllUnf()
+	{
+		return $this->details_all_unf;
+	}
+
+	/**
+	 * @param $partCount
+	 * @param $dimensionSizeX
+	 * @param $dimensionSizeY
+	 */
+	public function setDetailsAllUnf($partCount, $dimensionSizeX, $dimensionSizeY)
+	{
+		$this->details_all_unf = intval($partCount) * floatval($dimensionSizeX) * floatval($dimensionSizeY);
 	}
 }
 
@@ -245,9 +838,43 @@ class plateSinglePartData
     private $used_ratio;
     private $cut_path_time;
     private $move_time;
+    private $SHCutTime;
     private $db_image;
+    private $pierce_time;
 
-    /**
+	/**
+	 * @return mixed
+	 */
+	public function getPierceTime()
+	{
+		return $this->pierce_time;
+	}
+
+	/**
+	 * @param mixed $pierce_time
+	 */
+	public function setPierceTime($pierce_time)
+	{
+		$this->pierce_time = $pierce_time;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getSHCutTime()
+	{
+		return $this->SHCutTime;
+	}
+
+	/**
+	 * @param mixed $SHCutTime
+	 */
+	public function setSHCutTime($SHCutTime)
+	{
+		$this->SHCutTime = $SHCutTime;
+	}
+
+	/**
      * @return mixed
      */
     public function getDbImage()

@@ -499,7 +499,7 @@ $pname = $fpq["name"];
 
         ajax = $.ajax({
             type: "POST",
-            url: "<?php echo $site_path; ?>/aengine/mpc_edit.php?mpc=" + mpc + "&reload_id=" + reload_id + add,
+            url: "<?php echo $site_path; ?>/aengine/modules/mpc_edit.php?mpc=" + mpc + "&reload_id=" + reload_id + add,
             data: $("#ceForm").serialize() + "&json_inputs=" + json_inputs + "&material=" + material,
             success: function (jResponse) {
                 var response = jQuery.parseJSON(jResponse);
@@ -682,7 +682,7 @@ foreach ($t_input_name as $key => $val) {
             var json_inputs = JSON.stringify(input_name);
             var material = $("#materialSelect").val();
             $.ajax({
-                url: "<?php echo $site_path; ?>/aengine/mpc_edit.php?mpc=" + mpc + "&action=1",
+                url: "<?php echo $site_path; ?>/aengine/modules/mpc_edit.php?mpc=" + mpc + "&action=1",
                 method: "POST",
                 data: $("#ceForm").serialize() + "&json_inputs=" + json_inputs + "&material=" + material,
                 success: function (msg) {

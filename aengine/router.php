@@ -23,6 +23,8 @@ class router
 			"plate_warehouse_sync_respond" => "SetSyncedAction",
 			"plate_warehouse_sync_new" => "SyncFromMDBAction",
 			"plate_warehouse_sync_error" => "SyncFromMDBError",
+			"material_sync_new" => "SyncFromMDBMaterialAction",
+			"material_sync_error" => "SyncFromMDBMaterialError"
         ];
     }
 }

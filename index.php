@@ -120,7 +120,8 @@ require_once dirname(__FILE__) . '/config.php';
         <script src="<?php echo $site_path; ?>/assets/global/scripts/app.min.js" type="text/javascript"></script>
         <!-- END THEME GLOBAL SCRIPTS -->
         <!-- BEGIN PAGE LEVEL SCRIPTS -->
-        <script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-contextmenu/bootstrap-contextmenu.js" type="text/javascript"></script>
+		<script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-growl/jquery.bootstrap-growl.min.js" type="text/javascript"></script>
+		<script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-contextmenu/bootstrap-contextmenu.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/pages/scripts/ui-toastr.min.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-editable/bootstrap-editable/js/bootstrap-editable.js" type="text/javascript"></script>
@@ -135,6 +136,7 @@ require_once dirname(__FILE__) . '/config.php';
         <script src="<?php echo $site_path; ?>/assets/global/plugins/fullcalendar/fullcalendar.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/fullcalendar/lang-all.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+		<script src="<?php echo $site_path; ?>/assets/pages/scripts/ui-bootstrap-growl.min.js" type="text/javascript"></script>
         <!-- END PAGE LEVEL SCRIPTS -->
         <!-- BEGIN THEME LAYOUT SCRIPTS -->
         <script src="<?php echo $site_path; ?>/assets/global/plugins/holder.js" type="text/javascript"></script>

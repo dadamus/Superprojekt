@@ -233,6 +233,9 @@
                 case 19: //Status
                     include dirname(__FILE__) . '/pstatus.php';
                     break;
+				case 20: //Plate costing frame
+					include dirname(__FILE__) . '/costing/plateFrame.php';
+					break;
                 case 200: //Calendar
                     calendar_body();
                     $active = 0;

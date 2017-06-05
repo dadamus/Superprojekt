@@ -5,18 +5,18 @@ require_once dirname(__FILE__) . '/mpc_count.php';
 
 $xml = simplexml_load_file($data_src . "temp/TubeReport.xml");
 
-$name = null;
-$wasteMode = null;
-$material = null;
-$width = null;
-$height = null;
-$diameter = null;
-$c_mb = null;
-$mtype = null;
-$thickness = null;
-$mname = null;
-$pname = null;
-$type = null;
+$GLOBALS["name"] = null;
+$GLOBALS["wasteMode"] = null;
+$GLOBALS["material"] = null;
+$GLOBALS["width"] = null;
+$GLOBALS["height"] = null;
+$GLOBALS["diameter"] = null;
+$GLOBALS["c_mb"] = null;
+$GLOBALS["mtype"] = null;
+$GLOBALS["thickness"] = null;
+$GLOBALS["mname"] = null;
+$GLOBALS["pname"] = null;
+$GLOBALS["type"] = null;
 
 $cut_all_time = null;
 

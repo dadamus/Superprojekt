@@ -22,11 +22,22 @@ class PlateWarehouse
 
 	/**
 	 * @param array $SheetCode
+	 * @param bool $insertCreateDate
+	 * @param bool $insertModifyDate
 	 */
-	public function setSynced(array $SheetCode)
+	public function setSynced(array $SheetCode, bool $insertCreateDate = false, bool $insertModifyDate = false)
 	{
 		$sqlBuilder = new sqlBuilder("UPDATE", "plate_warehouse");
 		$sqlBuilder->bindValue("synced", 1, PDO::PARAM_INT);
+
+		if ($insertCreateDate) {
+			$sqlBuilder->bindValue("createDate", date("Y-m-d H:i:s"), PDO::PARAM_STR);
+		}
+		if ($insertModifyDate)
+		{
+			$sqlBuilder->bindValue("modifyDate", date("Y-m-d H:i:s"), PDO::PARAM_STR);
+		}
+
 		$sqlBuilder->addCondition("`SheetCode` in (" . implode(", ", array_map("globalTools::add_quotes", $SheetCode)) . ")");
 		$sqlBuilder->flush();
 	}

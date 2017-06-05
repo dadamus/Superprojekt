@@ -154,8 +154,14 @@ class AutoEngineController
 		require_once dirname(__DIR__) . '/engine/costing/plateSinglePart.php';
 
 		$plateData = new plateSinglePart($data_src . "temp/plate.csv");
-		$plateData->saveImage();
-		$plateData->saveInputData();
+		try {
+			$plateData->checkMPW();
+			$costingId = $plateData->saveInputData();
+			$plateData->saveImage($costingId);
+			return "Dane zostały wysłane!";
+		} catch(\Exception $ex) {
+			return "Blad! $ex->getMessage()";
+		}
 	}
 
 	private function GetSyncDataAction()
@@ -213,8 +219,7 @@ class AutoEngineController
 
 		$response = new PlateSyncResponse();
 
-		foreach ($sqlData as $row)
-		{
+		foreach ($sqlData as $row) {
 			if (!isset($plates[$row["SheetCode"]]["SheetCode"])) {
 				continue;
 			}
@@ -224,28 +229,25 @@ class AutoEngineController
 			unset($row["pdate"]);
 
 			$data = $plates[$row["SheetCode"]];
-			if ($row["synced"] == 0)
-			{
+			if ($row["synced"] == 0) {
 				$data = $row;
 			}
 
 			unset($data["SkeletonData"]);
 			unset($data["synced"]);
-			if ($row["state"] == "default")
-			{
+			if ($row["state"] == "default") {
 				unset($data["state"]);
-				$response->addUpdate($data);
+				$response->addUpdate($data, "SheetCode");
 				unset($plates[$row["SheetCode"]]);
 			} else if ($row["state"] == "deleted") {
 				unset($data["state"]);
-				$response->addDelete($data);
+				$response->addDelete($data, "SheetCode");
 				unset($plates[$row["SheetCode"]]);
 			}
 		}
 
-		foreach ($plates as $values)
-		{
-			$response->addInsert($values);
+		foreach ($plates as $values) {
+			$response->addInsert($values, "SheetCode");
 		}
 
 		$dbConnector = new sqlBuilder();
@@ -254,21 +256,21 @@ class AutoEngineController
 		$updateQuery = $response->getUpdate($mysqlTableName);
 		if (strlen($updateQuery) > 0) {
 			$dbConnector->Query($updateQuery);
-			$plateTools->setSynced($response->getUpdateId());
+			$plateTools->setSynced($response->getUpdateId(), false, true);
 		}
 
 		$insertQuery = $response->getInsert($mysqlTableName);
 		if (strlen($insertQuery) > 0) {
 			$dbConnector->Query($insertQuery);
-			$plateTools->setSynced($response->getInsertId());
+			$plateTools->setSynced($response->getInsertId(), true, false);
 		}
 
 		$response = [
-			"insert" 	=> $response->getInsert("platewarehousesynced"),
+			"insert" => $response->getInsert("platewarehousesynced"),
 			"insert_id" => $response->getInsertId(),
-			"update" 	=> $response->getUpdate(),
-			"update_id"	=> $response->getUpdateId(),
-			"delete" 	=> $response->getDelete(),
+			"update" => $response->getUpdate(),
+			"update_id" => $response->getUpdateId(),
+			"delete" => $response->getDelete(),
 		];
 
 		return json_encode($response);
@@ -282,7 +284,100 @@ class AutoEngineController
 
 		$query = $db->prepare("UPDATE `plate_warehouse` SET `SheetCode` = concat(`SheetCode`, '_bkp'), `state` = 'other' WHERE `SheetCode` = :sheetCode");
 		foreach ($orders as $order) {
-			$query->bindParam(":sheetCode", $order["sheetCode"], PDO::PARAM_STR);
+			$query->bindParam(":sheetCode", $order, PDO::PARAM_STR);
+			$query->execute();
+		}
+
+		return json_encode([
+			"ok"
+		]);
+	}
+
+	private function SyncFromMDBMaterialAction()
+	{
+
+		$input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST["toSync"]));
+		$data = json_decode($input, true);
+		$materialToCheck = "";
+		$materials = [];
+		foreach ($data as $material) {
+			if (strlen($materialToCheck) > 0) {
+				$materialToCheck .= ", ";
+			}
+			$materialToCheck .= "'" . $material["MaterialName"] . "'";
+			$materials[$material["MaterialName"]] = $material;
+		}
+
+		$sql = new sqlBuilder("SELECT", "T_material");
+		$sql->addBind("*", "");
+		$sql->addCondition("`MaterialName` in (" . $materialToCheck . ")");
+		$sqlData = $sql->getData();
+
+		$response = [
+			"insert" => "",
+			"update" => "",
+			"delete" => "",
+		];
+
+		$plateTools = new T_Material();
+
+		$response = new PlateSyncResponse();
+
+		foreach ($sqlData as $row) {
+			if (!isset($materials[$row["MaterialName"]]["MaterialName"])) {
+				continue;
+			}
+
+			$data = $materials[$row["MaterialName"]];
+			if ($row["synced"] == 0) {
+				$data = $row;
+			}
+
+			unset($data["synced"]);
+			unset($data["state"]);
+			$response->addUpdate($data, "MaterialName");
+			unset($materials[$row["MaterialName"]]);
+		}
+
+		foreach ($materials as $values) {
+			$response->addInsert($values, "MaterialName");
+		}
+
+		$dbConnector = new sqlBuilder();
+
+		$mysqlTableName = "T_material";
+		$updateQuery = $response->getUpdate($mysqlTableName);
+		if (strlen($updateQuery) > 0) {
+			$dbConnector->Query($updateQuery);
+			$plateTools->setSynced($response->getUpdateId());
+		}
+
+		$insertQuery = $response->getInsert($mysqlTableName);
+		if (strlen($insertQuery) > 0) {
+			$dbConnector->Query($insertQuery);
+			$plateTools->setSynced($response->getInsertId());
+		}
+
+		$response = [
+			"insert" => $response->getInsert("tmaterialsynced"),
+			"insert_id" => $response->getInsertId(),
+			"update" => $response->getUpdate(),
+			"update_id" => $response->getUpdateId(),
+			"delete" => $response->getDelete(),
+		];
+
+		return json_encode($response);
+	}
+
+	private function SyncFromMDBMaterialError()
+	{
+		global $db;
+		$input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST["orders"]));
+		$orders = json_decode($input, true);
+
+		$query = $db->prepare("UPDATE `T_material` SET `MaterialName` = concat(`MaterialName`, '_bkp') WHERE `MaterialName` = :materialName");
+		foreach ($orders as $order) {
+			$query->bindParam(":materialName", $order, PDO::PARAM_STR);
 			$query->execute();
 		}
 

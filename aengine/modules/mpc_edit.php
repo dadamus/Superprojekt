@@ -1,7 +1,7 @@
 <?php
 
-require_once dirname(__FILE__) . '/../config.php';
-require_once dirname(__FILE__) . '/../engine/protect.php';
+require_once dirname(__FILE__) . '/../../config.php';
+require_once dirname(__FILE__) . '/../../engine/protect.php';
 require_once dirname(__FILE__) . '/mpc_inputs.php';
 require_once dirname(__FILE__) . '/mpc_count.php';
 

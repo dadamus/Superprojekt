@@ -45,12 +45,16 @@ if ($a == 1) {
     }
 
     //die("SELECT * FROM `plate_warehouse` WHERE `type` = '$type' ".$filtr);
-    $pselect = $db->query("SELECT * FROM `plate_warehouse` WHERE `state` = '$type' " . $filtr);
+    $pselect = $db->query("
+	SELECT * 
+	FROM `plate_warehouse` 
+	LEFT JOIN `T_material` ON `T_material`.MaterialName = `plate_warehouse`.MaterialName
+	WHERE `state` = '$type' " . $filtr);
 	$data = $pselect->fetchAll(PDO::FETCH_ASSOC);
 
     $table = "";
     foreach($data as $row) {
-        $table .= "<tr><td>" . $row['SheetCode'] . "</td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['pdate'] . "</td><td>" . $row['QtyAvailable'] . "</td></tr>";
+        $table .= "<tr><td>" . $row['SheetCode'] . "</td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td></tr>";
     }
     die($table);
 } else if ($a == 2) { //Insert new plate

@@ -149,6 +149,7 @@ class sqlBuilder
         global $db;
 
         $this->_query = $db->prepare($this->query);
+
         foreach ($this->values_data as $key => $value) {
             $this->_query->bindValue(":$key", $value["value"], $value["type"]);
         }
@@ -176,7 +177,7 @@ class sqlBuilder
             $this->values .= ", ";
         }
 
-        $this->values .= "':$name'";
+        $this->values .= ":$name";
     }
 
     /**
