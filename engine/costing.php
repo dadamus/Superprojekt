@@ -918,6 +918,12 @@ if (@$_GET["plist"] != null) {
             window.location.href = "<?php echo $site_path; ?>/view/601/" + nr + "/auto_costing";
         });
 
+		//Priced auto plate item click
+		$("#PTD_CONTENT").on("click", ".pspc", function () {
+			var nr = parseInt($(this).parent().attr("id"));
+			window.location.href = "<?php echo $site_path; ?>/view/602/" + nr + "/auto_costing";
+		});
+
         //To production button
         $(".bAddToProduction").on("click", function () {
             window.location.href = "<?php echo $site_path; ?>/engine/costing/order.php?id=8&oid=" + oid_view;

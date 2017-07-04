@@ -16,6 +16,8 @@ if (!is_null(@$_GET["a"])) {
 $action = @$_GET["a"];
 
 if ($action == "addFrame") {
+	require_once dirname(__FILE__) . '/plateSinglePart.php';
+
 	$frameId = $_POST["f"];
 	$dots = $_POST["dots"];
 	$areaValue = $_POST["areaValue"];
@@ -41,10 +43,12 @@ if ($action == "addFrame") {
 	$plateSinglePartCostingIdQuery->execute();
 
 	$plateSingePartData = $plateSinglePartCostingIdQuery->fetch();
-	$plateSinglePart = new plateSinglePart($plateSingePartData["costingId"], false);
+	$plateSinglePart = new plateSinglePart($plateSingePartData["costingId"],false);
 
+	$plateSinglePart->getInputData();
 	$plateSinglePart->setFrameData($areaValue);
 	$plateSinglePart->calculate();
+	$plateSinglePart->saveCostingData();
 
 	die("ok");
 }
@@ -142,7 +146,7 @@ if (strlen($frameData["points"]) > 0) {
 	var imageSize = {
 		width: <?=$imageSize["width"]?>,
 		height: <?=$imageSize["height"]?>,
-		dpi: <?=($frameData["sheet_size_x"] / $imageSize["width"]) ?>
+		dpi: <?=($frameData["sheet_size_x"] / $imageSize["width"] ) ?>
 	}
 </script>
 <script type="text/javascript" src="/js/plateFrame/jcanvas.min.js"></script>

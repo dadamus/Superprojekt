@@ -13,12 +13,12 @@ CREATE TABLE plate_singlePartCostingCalculate(
 	id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	plate_singlePartCosting INT(11) UNSIGNED,
 	details_all_unf float,
-    details_all_unf_per float,
-    details_ext_unf float,
-    details_ext_unf_per float,
-    details_int_unf float,
-    details_int_unf_per float,
-    details_real_unf float,
+  details_all_unf_per float,
+  details_ext_unf float,
+  details_ext_unf_per float,
+  details_int_unf float,
+  details_int_unf_per float,
+  details_real_unf float,
 	details_real_unf_per float,
 	remnant_unf_per float,
 	remnant_unf float,
@@ -33,3 +33,36 @@ CREATE TABLE plate_singlePartCostingCalculate(
 	price_det_n float,
 	price_det_b float
 );
+
+CREATE TABLE IF NOT EXISTS `plate_singlePartCostingMaterial` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `plate_singlePartCosting` int(11) NOT NULL,
+  `materialPrice` float NOT NULL,
+  `weightPrice` float NOT NULL,
+  `scrapFactor` float NOT NULL,
+  `scrapPrice` float NOT NULL,
+  `cutPrice` float NOT NULL,
+  `pFactor` float NOT NULL,
+  `oTime` float NOT NULL,
+  `oCost` float NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin2 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `plate_singlePartCostingAttribute` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `plate_singlePartCosting` int(11) NOT NULL,
+  `a1` tinyint(1) NOT NULL,
+  `a2` tinyint(1) NOT NULL,
+  `a3` tinyint(1) NOT NULL,
+  `a4` tinyint(1) NOT NULL,
+  `a5` tinyint(1) NOT NULL,
+  `a6` tinyint(1) NOT NULL,
+  `a7` tinyint(1) NOT NULL,
+  `a1_value` float NOT NULL,
+  `a2_value` float NOT NULL,
+  `a3_value` float NOT NULL,
+  `a4_value` float NOT NULL,
+  `a5_value` float NOT NULL,
+  `a6_value` float NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin2 AUTO_INCREMENT=1 ;

@@ -301,6 +301,11 @@
                     $nr = $_GET["add"];
                     include dirname(__FILE__) . '/costing/autoc.php';
                     break;
+				case 602: //Plate single
+					$mb = 2;
+					$costingId = $_GET["add"];
+					include dirname(__FILE__) . '/costing/plateSinglePartForm.php';
+					break;
                 default:
                     echo '<div class="alert alert-block alert-danger fade in"><strong>Błąd 404!</strong> Nie znalazłem podanej podstrony! ID: ' . $site . '</div>';
             }

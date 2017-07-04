@@ -2,6 +2,19 @@
 
 <a href="abl-sync:sync:plate">test sync</a>
 
+<?php
+
+$a = "1";
+$b = 1;
+
+if ($a === $b) {
+    echo "No ok";
+} else {
+    echo $a . " - " . $b . "Nie!!";
+}
+
+?>
+
 <!--
 Super polecenie sql
 

@@ -1,25 +1,5 @@
 <?php
 
-/*
- * ------------------------
- * O R D E R      T Y P E S
- * ------------------------
- * 0 - Auto wycena - brak wyceny
- * 1 - Auto wycena - wycenione
- * 2 - Auto wycena - dodane do zamowienia
- * 
- * 3 - Reczna wycena profilu - wycenione
- * 4 - Reczna wycena profilu - dodane do zamowienia
- * 
- * 5 - Reczna wycena blachy - wyecnione
- * 6 - Reczna wycena blachy - dodane do zamowienia
- * 
- * 7 - Auto wycena - zablokowana edycja
- * 8 - Reczna wycena profilu - zablokowana edycja
- * 9 - Reczna wycena blachy - zablokowana edycja
- * ------------------------
- */
-
 //AJAX CONTENT
 
 require_once dirname(__FILE__) . '/../../config.php';
@@ -285,6 +265,7 @@ if ($action == 1) {
 if ($action == 3) {
 	$pid = intval($_COOKIE["plProjectId"]);
 
+	$type = OT::$AUTO_WYCENA_BRAK_WYCENY;
 	$ql = $db->prepare("
 		SELECT 
 		mpw.*, 
@@ -294,7 +275,7 @@ if ($action == 3) {
 		FROM mpw
         LEFT JOIN material ON material.id = mpw.material
         LEFT JOIN details d ON d.id = mpw.did
-        WHERE mpw.pid = '$pid' AND mpw.`type` = 0
+        WHERE mpw.pid = '$pid' AND mpw.`type` = $type
     ");
 	$ql->execute();
 
@@ -392,6 +373,12 @@ if ($action == 6) {
 //PRICED LIST
 if ($action == 7) {
 	$pid = $_COOKIE["plProjectId"];
+
+	$types = 	OT::$AUTO_WYCENA_WYCENIONE . "," .
+				OT::$RECZNA_WYCENA_PROFILU_WYCENIONE . "," .
+				OT::$RECZNA_WYCENA_BLACH_WYCENIONE . "," .
+				OT::$AUTO_WYCENA_BLACH_SINGLE_WYCENIONE;
+
 	$ql = $db->prepare("
 		SELECT 
 		mpw.*,
@@ -400,14 +387,18 @@ if ($action == 7) {
 		d.type as detail_type,
 		mpc.last_price_all_netto, 
 		mpc.id as mpc_id,
-		pc.priceset
+		pc.priceset,
+		pspcc.price_kom_n as splate_all_cost_netto
  		FROM mpw 
 		LEFT JOIN material m ON m.id = mpw.material
 		LEFT JOIN details d ON d.id = mpw.did
 		LEFT JOIN mpc ON mpc.wid = mpw.id
 		LEFT JOIN profile_costing pc ON pc.id = mpw.mcp
-		WHERE mpw.pid = :pid AND mpw.type in (1,3,5)
+		LEFT JOIN plate_singlePartCosting pspc ON pspc.detal_code = mpw.code
+		LEFT JOIN plate_singlePartCostingCalculate pspcc ON pspcc.plate_singlePartCosting = pspc.id
+		WHERE mpw.pid = :pid AND mpw.type in ($types)
 	");
+
 	$ql->bindValue(":pid", $pid, PDO::PARAM_INT);
 	$ql->execute();
 
@@ -419,6 +410,19 @@ if ($action == 7) {
 		$material_id = $mpw["material"];
 		$material = $mpw["material_name"];
 		$pieces = $mpw["pieces"];
+
+		$addClass = "pitr";
+		if ($mpw["type"] == OT::$AUTO_WYCENA_WYCENIONE) {
+			$mpcid = $mpw["mpc_id"];
+			$cost = $mpw["last_price_all_netto"];
+		} else if ($mpw["type"] == OT::$RECZNA_WYCENA_PROFILU_WYCENIONE) {
+			$addClass = "";
+			$cost = $mpw["priceset"];
+		} else if ($mpw["type"] == OT::$AUTO_WYCENA_BLACH_SINGLE_WYCENIONE) {
+			$addClass = "pspc";
+			$cost = $mpw["splate_all_cost_netto"];
+		}
+
 
 		$atribute_s = "";
 		$atribute = json_decode($mpw["atribute"]);
@@ -434,15 +438,6 @@ if ($action == 7) {
 
 		if ($mpw["detail_type"] != $ctype) {
 			continue;
-		}
-
-		$addClass = "pitr";
-		if ($mpw["type"] == 1) { //Auto
-			$mpcid = $mpw["mpc_id"];
-			$cost = $mpw["last_price_all_netto"];
-		} else if ($mpw["type"] == 3) { //Profil manual
-			$addClass = "";
-			$cost = $mpw["priceset"];
 		}
 
 		$content .= "<tr class=\"gradeA\" style=\"cursor: pointer;\" id=\"" . $mpcid . "_tpnr\">"
@@ -463,6 +458,10 @@ if ($action == 7) {
 if ($action == 8) {
 	$pid = $_COOKIE["plProjectId"];
 
+	$types = 	OT::$AUTO_WYCENA_ZABLOKOWANA_EDYCJA . "," .
+				OT::$RECZNA_WYCENA_PROFILU_ZABLOKOWANA_EDYCJA . "," .
+				OT::$RECZNA_WYCENA_BLACHY_ZABLOKOWANA_EDYCJA;
+
 	$ql = $db->prepare("
 		SELECT 
 		mpw.*,
@@ -471,13 +470,16 @@ if ($action == 8) {
 		d.type as detail_type,
 		mpc.last_price_all_netto, 
 		mpc.id as mpc_id,
-		pc.pricedetailu
+		pc.pricedetailu,
+		pspcc.price_kom_n as splate_all_cost_netto
  		FROM mpw 
 		LEFT JOIN material m ON m.id = mpw.material
 		LEFT JOIN details d ON d.id = mpw.did
 		LEFT JOIN mpc ON mpc.wid = mpw.id
 		LEFT JOIN profile_costing pc ON pc.id = mpw.mcp
-		WHERE mpw.pid = :pid AND mpw.type in (7,8,9)
+		LEFT JOIN plate_singlePartCosting pspc ON pspc.detal_code = mpw.code
+		LEFT JOIN plate_singlePartCostingCalculate pspcc ON pspcc.plate_singlePartCosting = pspc.id
+		WHERE mpw.pid = :pid AND mpw.type in ($types)
 	");
 	$ql->bindValue(":pid", $pid, PDO::PARAM_INT);
 	$ql->execute();
@@ -504,12 +506,15 @@ if ($action == 8) {
 		if ($mpw["detail_type"] != $ctype) {
 			continue;
 		}
-
-		if ($mpw["type"] == 7) { //Auto
+		if ($mpw["type"] == OT::$AUTO_WYCENA_ZABLOKOWANA_EDYCJA) {
 			$mpcid = $mpw["mpc_id"];
 			$cost = $mpw["last_price_all_netto"];
-		} else if ($mpw["type"] == 8) { //Profil manual
+		} else if ($mpw["type"] == OT::$RECZNA_WYCENA_PROFILU_ZABLOKOWANA_EDYCJA) {
 			$cost = $mpw["pricedetailu"];
+		} else if ($mpw["type"] == OT::$AUTO_WYCENA_BLACH_SINGLE_WYCENIONE) {
+			$cost = $mpw["splate_all_cost_netto"];
+		} else {
+			var_dump($mpw);die;
 		}
 
 		$content .= "<tr class=\"gradeA\" id=\"" . $mpcid . "_tpnr\">"
