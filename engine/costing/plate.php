@@ -218,6 +218,54 @@ if (@$_GET["a"] == 6) { // Set default
             </div>
         </div>
     </div>
+    <div class="row" style="margin: 0 10% 0 10%;">
+        <div class="cold-md-12">
+            <div class="widget" style="margin: 0 auto; width: 80%;">
+                <div class="widget-header">
+                    <h3><i class="fa fa-wechat"></i> Komentarze:</h3>
+                </div>
+                <div class="widget-content">
+                    <div>
+                        <textarea id="comment" rows="3" class="form-control" id="comment"></textarea>
+                        <button type="button" class="btn blue btn-block" id="addcoment">Dodaj</button>
+                    </div>
+                    <div class="timeline">
+                        <?php
+                        $commentsq = $db->query("SELECT * FROM `comments` WHERE `type` = '1' AND `eid` = '$did' ORDER BY `id` DESC");
+                        foreach ($commentsq as $row) {
+                            $uid = $row["uid"];
+                            $uq = $db->query("SELECT `name` FROM `accounts` WHERE `id` = '$uid'");
+                            $uf = $uq->fetch();
+                            $user = $uf["name"];
+
+                            echo '<div class="timeline-item">
+                        <div class="timeline-badge">
+                            <div class="timeline-icon">
+                                <i class="icon-users font-green-haze"></i>
+                            </div>
+                        </div>
+                        <div class="timeline-body">
+                            <div class="timeline-body-arrow"></div>
+                            <div class="timeline-body-head">
+                                <div class="timeline-body-head-caption">
+                                    <span class="timeline-body-alerttitle font-blue-madison">' . $user . '</span>
+                                    <span class="timeline-body-time font-grey-cascade">' . $row["date"] . '</span>
+                                </div>
+                            </div>
+                            <div class="timeline-body-content">
+                                <span class="font-grey-cascade">
+                                    ' . $row["content"] . '
+                                </span>
+                            </div>
+                        </div>
+                    </div>';
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <form id="cForm">
     <div class="costingForm" style="display: none">
@@ -606,6 +654,18 @@ if (@$_GET["a"] == 6) { // Set default
     $(document).ready(function () {
         //STATUS CHANGE 
         $.getScript("/js/status.js");
+
+        //Comment add
+        $("#addcoment").on("click", function () {
+            var comment = $("#comment").val();
+            if (comment != "" || comment != null) {
+                $.ajax({
+                    url: '<?php echo $site_path; ?>/engine/addcomment.php?type=1&eid=<?php echo $did; ?>&content=' + comment
+                }).done(function () {
+                    location.reload();
+                });
+            }
+        });
 
         $(".bEdit").on("click", function () { // Edit buttion
             edit = true;

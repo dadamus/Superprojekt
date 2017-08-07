@@ -151,7 +151,7 @@ class AutoEngineController
 	{
 		global $db, $data_src;
 
-		require_once dirname(__DIR__) . '/engine/costing/plateSinglePart.php';
+		require_once dirname(__DIR__) . '/engine/costing/plateSinglePartFactor.php';
 
 		$plateData = new plateSinglePart($data_src . "temp/plate.csv");
 		try {
@@ -385,4 +385,56 @@ class AutoEngineController
 			"ok"
 		]);
 	}
+
+	private function UpdateMultipartPlateCostingDetails()
+    {
+        global $db;
+        $details = json_decode($_POST["details"], true);
+
+
+        foreach ($details as $detail)
+        {
+            $did = $detail["detail_id"];
+            $sheet = $detail["sheet"];
+            $pretime = $detail["pretime"];
+            $laser_mat_name = $detail["laser_mat_name"];
+
+            $detailsSearchQuery = $db->query("SELECT id FROM plate_multiPartCostingDetails WHERE did = $did AND LaserMatName = '$laser_mat_name'");
+            $detailsSearch = $detailsSearchQuery->fetch();
+
+            $mpwQuery = $db->query("SELECT mpw FROM plate_multiPartDetails WHERE src = '$sheet'");
+
+
+            $queryType = "INSERT";
+
+            if ($detailsSearch !== false) {
+                $queryType = "UPDATE";
+            }
+
+            $detailQuery = new sqlBuilder($queryType, "plate_multiPartCostingDetails");
+            $detailQuery->bindValue("did", $did, PDO::PARAM_INT);
+            $detailQuery->bindValue("LaserMatName", $laser_mat_name, PDO::PARAM_STR);
+            $detailQuery->bindValue("PreTime", $pretime, PDO::PARAM_STR);
+            $detailQuery->bindValue("upload_date", date("Y-m-d H:i:s"), PDO::PARAM_STR);
+
+            if ($queryType == "UPDATE")
+            {
+                $detailQuery->addCondition("id = " . $detailsSearch["id"]);
+            }
+
+            $detailQuery->flush();
+        }
+
+        return "ok";
+    }
+
+    private function MultipartPlateCosting()
+    {
+        global $db;
+
+        $data = json_decode($_POST["data"]);
+        $programs = $data["programs"];
+        $materials = $data["materials"];
+        $programsData = $data["programsData"];
+    }
 }

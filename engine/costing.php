@@ -100,6 +100,9 @@ $_SESSION["costingID"] = $costing->type;
                         <div class="portlet-body">
                             <p><a href="#" id="aProjectsList" data-toggle="modal" class="btn btn-info"><i class="fa fa-mail-reply"></i> Lista projektow</a></p>
                             <a href="#" id="addToCosting" data-backdrop="false" data-target="#addToCostingModal" data-toggle="modal" class="btn btn-info">Auto wycena</a>
+                            <?php if ($costing->type != 2): ?>
+                            <a href="#" style="margin-top: 10px;" id="addToMultiCosting" data-backdrop="false" data-target="#addToMultiCostingModal" data-toggle="modal" class="btn btn-success">MultiPart</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -230,6 +233,32 @@ $_SESSION["costingID"] = $costing->type;
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div style="display: none;" aria-hidden="true" aria-labelledby="myModalLabel2" role="dialog" tabindex="-1" class="modal fade modal-scroll modal-overflow" id="addToMultiCostingModal">
+                                <div class="modal-content">
+                                    <form action="?" id="multiGetNumberForm" method="POST">
+                                        <div class="modal-header">
+                                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">x</button>
+                                            <h4>Multipart</h4>
+                                        </div>
+                                        <div class="modal-body" id="multi-wrapper">
+                                            <div style="text-align: center"><p>Wybierz detale...</p></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div style="display: none;" aria-hidden="true" aria-labelledby="myModalLabel3" role="dialog" tabindex="-1" class="modal fade modal-scroll" id="createMWPMultipartModal">
+                                <div class="modal-content">
+                                    <form action="?" id="multiMPWCreate" method="POST">
+                                        <div class="modal-header">
+                                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">x</button>
+                                            <h4>Multipart</h4>
+                                        </div>
+                                        <div class="modal-body" id="multi-mpw-wrapper">
+
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                             <div style="display: none;" aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal fade modal-scroll modal-overflow" id="addToCostingModal">
@@ -903,7 +932,7 @@ if (@$_GET["plist"] != null) {
             var pval = $("#pnv").val();
 
             $.ajax({
-                url: "<?php echo $site_path; ?>/engine/costing/order.php?id=10&pval=" + pval + "&mpw=" + _pediti
+                url: "<?= $site_path ?>/engine/costing/order.php?id=10&pval=" + pval + "&mpw=" + _pediti
             }).done(function (msg) {
                 App.unblockUI();
                 orderView(oid_view);
@@ -927,6 +956,20 @@ if (@$_GET["plist"] != null) {
         //To production button
         $(".bAddToProduction").on("click", function () {
             window.location.href = "<?php echo $site_path; ?>/engine/costing/order.php?id=8&oid=" + oid_view;
+        });
+
+        //Multi part load modal button
+        $("#addToMultiCosting").on("click", function () {
+            if ($("input[name='selected[]']:checked").size() === 0) {
+                $("#multi-wrapper").html('<div style="text-align: center"><p>Wybierz detale...</p></div>');
+            } else {
+                $.ajax({
+                    method: "GET",
+                    url: "<?= $site_path ?>/engine/costing/plateMultiPart.php?action=getDirectoryForm"
+                }).done(function (response) {
+                    $("#multi-wrapper").html(response);
+                });
+            }
         });
     });
 </script> 

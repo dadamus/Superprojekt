@@ -7,7 +7,7 @@
  * Time: 21:28
  */
 
-require dirname(__FILE__) . '/plateSinglePart.php';
+require dirname(__FILE__) . '/plateSinglePartFactor.php';
 
 $action = @$_GET["a"];
 if (!is_null($action)) {

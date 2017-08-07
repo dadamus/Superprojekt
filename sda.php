@@ -4,14 +4,18 @@
 
 <?php
 
-$a = "1";
-$b = 1;
+$versionsScan = glob("/DATA/1-49/4/PROJEKTY/1/*", GLOB_ONLYDIR);
+$versions = [];
 
-if ($a === $b) {
-    echo "No ok";
-} else {
-    echo $a . " - " . $b . "Nie!!";
+foreach ($versionsScan as $v) {
+    if (basename($v)[0] == "V") {
+        echo "$v/dxf/1sztxbok-trojkaty.dxf";
+        if (file_exists("$v/dxf/1sztxbok-trojkaty.dxf" )) {
+            $versions[] = dirname($v);
+        }
+    }
 }
+var_dump($versions);
 
 ?>
 

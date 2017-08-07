@@ -265,7 +265,8 @@ if ($action == 1) {
 if ($action == 3) {
 	$pid = intval($_COOKIE["plProjectId"]);
 
-	$type = OT::$AUTO_WYCENA_BRAK_WYCENY;
+	$type =
+        OT::AUTO_WYCENA_BRAK_WYCENY;
 	$ql = $db->prepare("
 		SELECT 
 		mpw.*, 
@@ -275,7 +276,7 @@ if ($action == 3) {
 		FROM mpw
         LEFT JOIN material ON material.id = mpw.material
         LEFT JOIN details d ON d.id = mpw.did
-        WHERE mpw.pid = '$pid' AND mpw.`type` = $type
+        WHERE mpw.pid = '$pid' AND mpw.`type` in ($type)
     ");
 	$ql->execute();
 
@@ -374,10 +375,10 @@ if ($action == 6) {
 if ($action == 7) {
 	$pid = $_COOKIE["plProjectId"];
 
-	$types = 	OT::$AUTO_WYCENA_WYCENIONE . "," .
-				OT::$RECZNA_WYCENA_PROFILU_WYCENIONE . "," .
-				OT::$RECZNA_WYCENA_BLACH_WYCENIONE . "," .
-				OT::$AUTO_WYCENA_BLACH_SINGLE_WYCENIONE;
+	$types = 	OT::AUTO_WYCENA_WYCENIONE . "," .
+				OT::RECZNA_WYCENA_PROFILU_WYCENIONE . "," .
+				OT::RECZNA_WYCENA_BLACH_WYCENIONE . "," .
+				OT::AUTO_WYCENA_BLACH_SINGLE_WYCENIONE;
 
 	$ql = $db->prepare("
 		SELECT 
@@ -412,13 +413,13 @@ if ($action == 7) {
 		$pieces = $mpw["pieces"];
 
 		$addClass = "pitr";
-		if ($mpw["type"] == OT::$AUTO_WYCENA_WYCENIONE) {
+		if ($mpw["type"] == OT::AUTO_WYCENA_WYCENIONE) {
 			$mpcid = $mpw["mpc_id"];
 			$cost = $mpw["last_price_all_netto"];
-		} else if ($mpw["type"] == OT::$RECZNA_WYCENA_PROFILU_WYCENIONE) {
+		} else if ($mpw["type"] == OT::RECZNA_WYCENA_PROFILU_WYCENIONE) {
 			$addClass = "";
 			$cost = $mpw["priceset"];
-		} else if ($mpw["type"] == OT::$AUTO_WYCENA_BLACH_SINGLE_WYCENIONE) {
+		} else if ($mpw["type"] == OT::AUTO_WYCENA_BLACH_SINGLE_WYCENIONE) {
 			$addClass = "pspc";
 			$cost = $mpw["splate_all_cost_netto"];
 		}
@@ -458,9 +459,9 @@ if ($action == 7) {
 if ($action == 8) {
 	$pid = $_COOKIE["plProjectId"];
 
-	$types = 	OT::$AUTO_WYCENA_ZABLOKOWANA_EDYCJA . "," .
-				OT::$RECZNA_WYCENA_PROFILU_ZABLOKOWANA_EDYCJA . "," .
-				OT::$RECZNA_WYCENA_BLACHY_ZABLOKOWANA_EDYCJA;
+	$types = 	OT::AUTO_WYCENA_ZABLOKOWANA_EDYCJA . "," .
+				OT::RECZNA_WYCENA_PROFILU_ZABLOKOWANA_EDYCJA . "," .
+				OT::RECZNA_WYCENA_BLACHY_ZABLOKOWANA_EDYCJA;
 
 	$ql = $db->prepare("
 		SELECT 
@@ -506,12 +507,12 @@ if ($action == 8) {
 		if ($mpw["detail_type"] != $ctype) {
 			continue;
 		}
-		if ($mpw["type"] == OT::$AUTO_WYCENA_ZABLOKOWANA_EDYCJA) {
+		if ($mpw["type"] == OT::AUTO_WYCENA_ZABLOKOWANA_EDYCJA) {
 			$mpcid = $mpw["mpc_id"];
 			$cost = $mpw["last_price_all_netto"];
-		} else if ($mpw["type"] == OT::$RECZNA_WYCENA_PROFILU_ZABLOKOWANA_EDYCJA) {
+		} else if ($mpw["type"] == OT::RECZNA_WYCENA_PROFILU_ZABLOKOWANA_EDYCJA) {
 			$cost = $mpw["pricedetailu"];
-		} else if ($mpw["type"] == OT::$AUTO_WYCENA_BLACH_SINGLE_WYCENIONE) {
+		} else if ($mpw["type"] == OT::AUTO_WYCENA_BLACH_SINGLE_WYCENIONE) {
 			$cost = $mpw["splate_all_cost_netto"];
 		} else {
 			var_dump($mpw);die;
