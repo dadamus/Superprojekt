@@ -29,10 +29,11 @@ class AutoEngineController
 		$this->performAction($action);
 	}
 
-	/**
-	 * @param $actionName
-	 */
-	protected function performAction($actionName)
+    /**
+     * @param string $actionName
+     * @return bool
+     */
+	protected function performAction(string $actionName)
 	{
 		if (is_null($actionName)) {
 			echo "Brak akcji!";
@@ -432,9 +433,9 @@ class AutoEngineController
     {
         global $db;
 
-        $data = json_decode($_POST["data"]);
-        $programs = $data["programs"];
-        $materials = $data["materials"];
-        $programsData = $data["programsData"];
+        require_once dirname(__DIR__) . "/engine/costing/plateMultiPart/plateMultiPart.php";
+        $plateMultiPart = new PlateMultiPart();
+        $plateMultiPart->MakeFromData($_POST["data"]);
+        $plateMultiPart->calculate();
     }
 }

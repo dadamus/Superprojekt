@@ -8,7 +8,9 @@
  */
 class sqlBuilder
 {
-    public static $INSERT = "INSERT";
+    const INSERT = "INSERT";
+    const SELECT = "SELECT";
+    const UPDATE = "UPDATE";
 
     /**
      * @var PDOStatement $_query
@@ -26,8 +28,8 @@ class sqlBuilder
 
     /**
      * sqlBuilder constructor.
-     * @param $type
-     * @param $table
+     * @param string $type
+     * @param string $table
      */
     public function __construct($type = "SELECT", $table = null)
     {
@@ -204,9 +206,10 @@ class sqlBuilder
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed $value
      * @param $type
+     * @throws Exception
      */
     private function addValueData($name, $value, $type)
     {
