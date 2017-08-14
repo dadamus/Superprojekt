@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . "/../imap.php";
 
 $action = @$_GET["action"];
 if ($action == 1) { //Imap check messages
+    echo "{1}";
     $imap = new Imap($IMAP_IP, $IMAP_USER, $IMAP_PASS);
 
     $response = array();

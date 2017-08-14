@@ -104,9 +104,28 @@ class MaterialData
         return $this->prgSheetPrice;
     }
 
+    /**
+     * @return float
+     */
     public function getPrgSheetAllWeight(): float
     {
-        return $this->getPrgSheetSur();
+        return $this->getPrgSheetSur() * $this->getThickness() * $this->getDensity() / 1000;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrgSheetPriceKg(): float
+    {
+        return $this->getPrgSheetPrice() / $this->getPrgSheetAllWeight();
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrgSheetPriceMm(): float
+    {
+        return $this->getPrgSheetPrice()/ $this->getPrgSheetSur();
     }
 
     /**
