@@ -8,11 +8,20 @@
  */
 
 require_once dirname(__FILE__) . "/model/PhpData.php";
+require_once dirname(__DIR__) . "/../repository/MPWRepository.php";
 
 class PlateMultiPart
 {
     /** @var  ProgramData[] */
     private $programs;
+
+    /** @var  MPWRepository */
+    private $MPWRepository;
+
+    public function __construct()
+    {
+        $this->MPWRepository = new MPWRepository();
+    }
 
     /**
      * @param ProgramData $program
@@ -41,6 +50,22 @@ class PlateMultiPart
         $this->programs = $this->MatchPartsToPrograms($phpData->getPrograms(), $phpData->getProgramsData());
         $this->programs = $this->MatchProgramsToMaterial($this->programs, $phpData->getMaterials());
         $this->SaveData();
+        $this->MpwUpdate();
+    }
+
+    //MPW zeby ramka sie pokazywala
+    public function MpwUpdate()
+    {
+        /** @var ProgramData $program */
+        $program = reset($this->programs);
+
+        /** @var ProgramCardPartData $part */
+        $part = reset($program->getParts());
+
+        $detailId = $part->getDetailId();
+        $mpw = $this->MPWRepository->getMpwByDetailId($detailId);
+        $mpw->setType(OT::AUTO_WYCENA_BLACH_MULTI_KROK_2);
+        $mpw->save();
     }
 
     public function SaveData()

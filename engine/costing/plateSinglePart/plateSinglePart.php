@@ -81,8 +81,9 @@ class plateSinglePart
 
     /**
      * plateSinglePart constructor.
-     * @param string $fileUrl
+     * @param $fileUrl
      * @param bool $file
+     * @throws Exception
      */
     public function __construct($fileUrl, $file = true)
     {
@@ -318,7 +319,7 @@ class plateSinglePart
             mkdir($data_src . 'temp/plateData/', 0777, true);
         }
         rename($filePath, $newPath);
-        $query = $db->prepare("INSERT INTO `plate_singlePartCosting_image` (`path`, `plate_costingId`, `plate_costingType`, `costing_name`) VALUES (:newPath, :plateCostingId, :plate_costingType, :costingName)");
+        $query = $db->prepare("INSERT INTO `plate_CostingImage` (`path`, `plate_costingId`, `plate_costingType`, `costing_name`) VALUES (:newPath, :plateCostingId, :plate_costingType, :costingName)");
         $query->bindValue(":newPath", $newPath, PDO::PARAM_STR);
         $query->bindValue(":plateCostingId", $costingId, PDO::PARAM_INT);
         $query->bindValue(":plate_costingType", "singePartCosting", PDO::PARAM_STR);

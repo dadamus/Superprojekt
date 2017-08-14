@@ -15,6 +15,9 @@ class ProgramCardPartData
     private $PartName;
 
     /** @var  int */
+    private $DetailId;
+
+    /** @var  int */
     private $PartCount;
 
     /** @var  float */
@@ -50,14 +53,16 @@ class ProgramCardPartData
      */
     public function create($data)
     {
-        $vars = get_object_vars($this);
         try {
-            foreach ($vars as $name => $val) {
-                $this->$name = $data[$name];
+            foreach ($data as $name => $val)
+            {
+                $this->$name = $val;
             }
         } catch (\Exception $ex) {
             throw new \Exception("Brak parametru: " . $ex->getMessage());
         }
+
+        $this->setDetailIdByPartName();
     }
 
     /**
@@ -79,6 +84,7 @@ class ProgramCardPartData
             $saveQuery->addCondition("PartName = '" . $this->getPartName() . "' AND ProgramId = " . $programId);
         }
 
+        $saveQuery->bindValue("DetailId", $this->getDetailId(), PDO::PARAM_INT);
         $saveQuery->bindValue("PartNo", $this->getPartNo(), PDO::PARAM_INT);
         $saveQuery->bindValue("PartName", $this->getPartName(), PDO::PARAM_STR);
         $saveQuery->bindValue("PartCount", $this->getPartCount(), PDO::PARAM_INT);
@@ -114,14 +120,23 @@ class ProgramCardPartData
         $this->PrgDetAllTime = globalTools::seconds_to_time($singleTimeParsed * $this->getPartCount());
     }
 
+    public function setDetailIdByPartName()
+    {
+        $data = explode("-", $this->getPartName());
+        $this->DetailId = intval($data[4]);
+    }
+
+    public function setDetailId(int $detailId)
+    {
+        $this->DetailId = $detailId;
+    }
 
     /**
      * @return int
      */
     public function getDetailId(): int
     {
-        $data = explode("-", $this->getPartName());
-        return intval($data[4]);
+        return $this->DetailId;
     }
 
     /**

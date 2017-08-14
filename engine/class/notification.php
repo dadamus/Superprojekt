@@ -6,7 +6,8 @@ function getNotification() {
     $leng = 0;
     $content = "";
 
-    $emails = $db->query("SELECT `id`, `type`, `send_date`, `pid`, `done` FROM `email` ORDER BY `id` DESC");
+    $dateRange = date("Y-m-d 00:00:00", strtotime("-2 DAY"));
+    $emails = $db->query("SELECT `id`, `type`, `send_date`, `pid`, `done` FROM `email` WHERE send_date > '$dateRange' ORDER BY `id` DESC");
     foreach ($emails as $email) {
         if ($email["done"] == 1 && $email["type"] != 3) {
             continue;

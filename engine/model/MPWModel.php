@@ -20,6 +20,26 @@ class MPWModel
     /**
      * @var int
      */
+    private $pid;
+
+    /**
+     * @var string
+     */
+    private $src;
+
+    /**
+     * @var int
+     */
+    private $frame;
+
+    /**
+     * @var string
+     */
+    private $code;
+
+    /**
+     * @var int
+     */
     private $mpw_directory;
 
     /**
@@ -62,7 +82,17 @@ class MPWModel
      */
     private $des;
 
-    public function __construct(array $data)
+    /**
+     * @var string
+     */
+    private $date;
+
+    /**
+     * @var int
+     */
+    private $type;
+
+    public function __construct(array $data = [])
     {
         foreach ($data as $key => $value) {
             switch ($key) {
@@ -100,6 +130,173 @@ class MPWModel
     }
 
     /**
+     * @param int $mpwId
+     * @return bool
+     * @throws Exception
+     */
+    public function findById(int $mpwId): bool
+    {
+        global $db;
+        $mpwQuery = $db->prepare('SELECT * FROM mpw WHERE id = :id');
+        $mpwQuery->bindValue(':id', $mpwId, PDO::PARAM_INT);
+        $mpwQuery->execute();
+
+        $mpwData = $mpwQuery->fetch();
+        if ($mpwData === false) {
+            throw new Exception('Brak mpw o id: ' . $mpwId);
+        }
+
+        $this->setMpwId($mpwId);
+        foreach ($mpwData as $key => $value) {
+            switch ($key) {
+                case "pid":
+                    $this->setPid(intval($value));
+                    break;
+
+                case "src":
+                    $this->setSrc($value);
+                    break;
+
+                case "frame":
+                    $this->setFrame(intval($value));
+                    break;
+
+                case "code":
+                    $this->setCode($value);
+                    break;
+
+                case "version":
+                    $this->setVersion(intval($value));
+                    break;
+
+                case "material":
+                    $this->setMaterial(intval($value));
+                    break;
+
+                case "thickness":
+                    $this->setThickness(floatval($value));
+                    break;
+
+                case "pieces":
+                    $this->setPieces($value);
+                    break;
+
+                case "attribute":
+                    $this->setAttributes($value);
+                    break;
+
+                case "desc":
+                    $this->setDes($value);
+                    break;
+
+                case "date":
+                    $this->setDate($value);
+                    break;
+
+                case "type":
+                    $this->setType(intval($value));
+                    break;
+            }
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     */
+    public function setType(int $type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDate(): string
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param string $date
+     */
+    public function setDate(string $date)
+    {
+        $this->date = $date;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     */
+    public function setCode(string $code)
+    {
+        $this->code = $code;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFrame(): int
+    {
+        return $this->frame;
+    }
+
+    /**
+     * @param int $frame
+     */
+    public function setFrame(int $frame)
+    {
+        $this->frame = $frame;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSrc(): string
+    {
+        return $this->src;
+    }
+
+    /**
+     * @param string $src
+     */
+    public function setSrc(string $src)
+    {
+        $this->src = $src;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPid(): int
+    {
+        return $this->pid;
+    }
+
+    /**
+     * @param int $pid
+     */
+    public function setPid(int $pid)
+    {
+        $this->pid = $pid;
+    }
+
+    /**
      * @param array $attributes
      */
     public function makeAttributes(array $attributes)
@@ -110,6 +307,14 @@ class MPWModel
         }
 
         $this->attributes = json_encode($data);
+    }
+
+    /**
+     * @param string $data
+     */
+    public function setAttributes(string $data)
+    {
+        $this->attributes = $data;
     }
 
     /**
@@ -324,5 +529,36 @@ class MPWModel
         }
 
         $db->query("UPDATE mpw SET src = '$mpwPath' WHERE id = " . $this->getMpwId());
+    }
+
+    public function save()
+    {
+        global $db;
+        $insert = true;
+        $sqlBuilder = new sqlBuilder(sqlBuilder::INSERT, "mpw");
+
+        if ($this->getMpwId() > 0) {
+            $insert = false;
+            $sqlBuilder = new sqlBuilder(sqlBuilder::UPDATE, "mpw");
+            $sqlBuilder->addCondition('id = ' . $this->getMpwId());
+        }
+
+        $sqlBuilder->bindValue("pid", $this->getPid(), PDO::PARAM_INT);
+        $sqlBuilder->bindValue("src", $this->getSrc(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("frame", $this->getFrame(), PDO::PARAM_INT);
+        $sqlBuilder->bindValue("code", $this->getCode(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("version", $this->getVersion(), PDO::PARAM_INT);
+        $sqlBuilder->bindValue("material", $this->getMaterial(), PDO::PARAM_INT);
+        $sqlBuilder->bindValue("thickness", $this->getThickness(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("pieces", $this->getPieces(), PDO::PARAM_INT);
+        $sqlBuilder->bindValue("attribute", $this->getAttributes(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("desc", $this->getDes(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("date", $this->getDate(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("type", $this->getType(), PDO::PARAM_INT);
+        $sqlBuilder->flush();
+
+        if ($insert) {
+            $this->setMpwId($db->lastInsertId());
+        }
     }
 }

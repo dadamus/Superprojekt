@@ -25,6 +25,9 @@ class ProgramData
     /** @var  int */
     private $SheetCount;
 
+    /** @var  int */
+    private $ImageId;
+
     /**
      * @param array $data
      */
@@ -32,10 +35,6 @@ class ProgramData
     {
         $this->setSheetName($data["SheetName"]);
         $this->setUsedSheetNum($data["UsedSheetNum"]);
-    }
-
-    public function Calculate()
-    {
     }
 
     public function SaveData()
@@ -68,10 +67,41 @@ class ProgramData
             $programDbId = $db->lastInsertId();
         }
 
+        //Robimy ramke
+        $this->createFrame($programDbId);
+
         //Zapisujemy party
         foreach ($this->getParts() as $part) {
             $part->SaveData($programDbId);
         }
+    }
+
+    /**
+     * @param int $programDbId
+     */
+    public function createFrame(int $programDbId)
+    {
+        $insertQuery = new sqlBuilder(sqlBuilder::INSERT, "plate_costingFrame");
+        $insertQuery->bindValue("imgId", $this->getImageId(), PDO::PARAM_INT);
+        $insertQuery->bindValue("type", "multiPartCosting", PDO::PARAM_STR);
+        $insertQuery->bindValue("programId", $programDbId, PDO::PARAM_INT);
+        $insertQuery->flush();
+    }
+
+    /**
+     * @return int
+     */
+    public function getImageId(): int
+    {
+        return $this->ImageId;
+    }
+
+    /**
+     * @param int $ImageId
+     */
+    public function setImageId(int $ImageId)
+    {
+        $this->ImageId = $ImageId;
     }
 
     /**

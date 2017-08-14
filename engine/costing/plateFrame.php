@@ -9,14 +9,14 @@
 
 ob_start();
 if (!is_null(@$_GET["a"])) {
-	require_once dirname(__FILE__) . '/../../config.php';
+	require_once dirname(__DIR__) . '/../config.php';
 	require_once dirname(__FILE__) . '/../protect.php';
 }
 
 $action = @$_GET["a"];
 
 if ($action == "addFrame") {
-	require_once dirname(__FILE__) . '/plateSinglePart.php';
+	require_once dirname(__FILE__) . '/plateSinglePart/plateSinglePart.php';
 
 	$frameId = $_POST["f"];
 	$dots = $_POST["dots"];
@@ -33,7 +33,7 @@ if ($action == "addFrame") {
 		c.id as costingId
 		FROM
 		plate_costingFrame pcf
-		LEFT JOIN plate_singlePartCosting_image i ON i.id = pcf.imgId
+		LEFT JOIN plate_CostingImage i ON i.id = pcf.imgId
 		LEFT JOIN plate_singlePartCosting c ON c.id = i.plate_costingId
 		WHERE 
 		pcf.id = :frameId
@@ -65,7 +65,7 @@ $frameQuery = $db->query("
 	i.*
 	FROM
 	plate_costingFrame f
-	LEFT JOIN plate_singlePartCosting_image i ON i.id = f.imgId
+	LEFT JOIN plate_CostingImage i ON i.id = f.imgId
 	LEFT JOIN plate_singlePartCosting pspc ON pspc.id = i.plate_costingId
 	WHERE
 	f.id = $frameId

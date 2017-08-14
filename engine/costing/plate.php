@@ -161,30 +161,34 @@ if (@$_GET["a"] == 6) { // Set default
 
 <div class="row">
     <div class="col-lg-12">
-        <h2 class="page-title">Costing - BLACH <small><?php echo '<a href="index.php?site=3&plist=' . $pid . '">' . $cname . " / " . $pname . "</a> / " . $dname; ?></small></h2>
+        <h2 class="page-title">Costing - BLACH <small><?php echo '<a href="/project/3/' . $pid . '/">' . $cname . " / " . $pname . "</a> / " . $dname; ?></small></h2>
     </div>
 </div>
-<div class="row" id="costingList">
-    <div class="col-lg-3">
-        <div class="widget">
-            <div class="widget-content" style="text-align: center;">
-                <a href="#" id="bNew" data-toggle="modal" class="btn btn-success">Dodaj wycene</a>
+<div id ="costingList">
+    <div class="row">
+        <div class="col-lg-9"></div>
+        <div class="col-lg-3">
+            <div class="widget">
+                <div class="widget-content" style="text-align: center;">
+                    <a href="#" id="bNew" data-toggle="modal" class="btn btn-success">Dodaj wycene</a>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-9">
-        <div class="widget">
-            <div class="widget-header">
-                <div style="float: left;"><i class="icon-book"></i><h3>Istniejące wyceny detalu: </h3></div>
-                <div class="status_bar">
-                    <?php
-                    echo statusCosting($did);
-                    ?>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="widget">
+                <div class="widget-header">
+                    <div style="float: left;"><h3><i class="fa fa-book"></i> Istniejące wyceny detalu: </h3></div>
+                    <div class="status_bar">
+                        <?php
+                        echo statusCosting($did);
+                        ?>
+                    </div>
                 </div>
-            </div>
-            <div class="widget-content">
-                <table class="table table-striped">
-                    <thead>
+                <div class="widget-content">
+                    <table class="table table-striped">
+                        <thead>
                         <tr>
                             <td>ID</td>
                             <td>Sztuk</td>
@@ -193,28 +197,145 @@ if (@$_GET["a"] == 6) { // Set default
                             <td>Domyślny</td>
                             <td></td>
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody style="text-align: center;">
                         <?php
-                        $query = $db->prepare("SELECT `id`, `qta`, `dimension`, `dprice`, `default` FROM `$cplt` WHERE `did` = '$did'");
+                        $query = $db->prepare("SELECT `id`, `pieces`, `dimension`, `pricedetailu`, `default` FROM `$cpt` WHERE `did` = '$did'");
                         $query->execute();
 
                         foreach ($query as $row) {
                             $def = "";
                             if ($row["default"] == 1) {
-                                $def = '<i class="icon-large icon-ok"></i>';
+                                $def = '<i class="fa fa-plus"></i>';
                             }
 
-                            echo '<tr id="' . $row["id"] . '_did"><td>' . $row["id"] . '</td><td>' . $row["qta"] . '</td><td>' . $row["dimension"] . '</td><td>' . $row["dprice"] . '</td><td>' . $def . '</td><td><div class="btn-group"><button data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle">Opcje<span class="caret"></span></button><ul class="dropdown-menu"><li><a href="#" class="bEdit">Edytuj</a></li><li><a href="#" class="bDef">Domyślny</a></li></ul></div></td></tr>';
+                            echo '<tr id="' . $row["id"] . '_did"><td>' . $row["id"] . '</td><td>' . $row["pieces"] . '</td><td>' . $row["dimension"] . '</td><td>' . $row["pricedetailu"] . '</td><td style="text-align: center;">' . $def . '</td><td style="text-align: right;"><div class="btn-group"><a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">Opcje<span class="caret"></span></a><ul class="dropdown-menu"><li><a href="#" class="bEdit">Edytuj</a></li><li><a href="#" class="bDef">Domyślny</a></li></ul></div></td></tr>';
                             if ($query->rowCount() == 1) {
                                 $id = $row["id"];
-                                $query2 = $db->prepare("UPDATE `$cplt` SET `default` = '1' WHERE `id` = '$id'");
+                                $query2 = $db->prepare("UPDATE `$cpt` SET `default` = '1' WHERE `id` = '$id'");
                                 $query2->execute();
                             }
                         }
                         ?>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="widget">
+                <div class="widget-header">
+                    <h3><i class="fa fa-cloud"></i> Auto wycena:</h3>
+                </div>
+                <div class="widget-content">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <td>Id</td>
+                            <td>Sztuk</td>
+                            <td>Wymiary</td>
+                            <td>Cena sztuka</td>
+                            <td>Cena komplet</td>
+                            <td></td>
+                        </tr>
+                        </thead>
+                        <tbody id="autoch" style="text-align: center;">
+                        <?php
+                        $autoq = $db->query("SELECT `id` FROM `mpw` WHERE `did` = '$did' AND `src` != ''");
+                        foreach ($autoq as $row) {
+                            //SELECT MP
+                            $wid = $row["id"];
+                            $mpcq = $db->query("SELECT * FROM `mpc` WHERE `wid` = '$wid'");
+                            $mpc = $mpcq->fetch();
+
+                            echo '<tr id="' . $mpc["id"] . '_mpc">';
+                            echo '<td>' . $mpc["id"] . '</td>';
+                            echo '<td>' . $mpc["d_qty"] . '</td>';
+                            echo '<td>' . $mpc["wh"] . '</td>';
+                            echo '<td>' . $mpc["d_last_price_n"] . '</td>';
+                            echo '<td>' . $mpc["last_price_all_netto"] . '</td>';
+                            echo '<td style="text-align: right;"><a class="btn btn-info" href="' . $site_path . '/view/601/' . $mpc["id"] . '/auto_costing">Pokaż</a></td>';
+                            echo '</tr>';
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="widget">
+                <div class="widget-header">
+                    <h3><i class="fa fa-cubes"></i> Multipart:</h3>
+                </div>
+                <div class="widget-content">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <td>Id</td>
+                            <td>Materiał</td>
+                            <td>Sztuk</td>
+                            <td>Data utworzenia</td>
+                            <td>Cena sztuka netto</td>
+                            <td>Parametry</td>
+                            <td></td>
+                        </tr>
+                        </thead>
+                        <tbody id="autoch" style="text-align: center;">
+                        <?php
+                        $autoq = $db->query("
+                            SELECT 
+                            mpp.* 
+                            FROM plate_multiPartProgramsPart mppp
+                            LEFT JOIN plate_multiPartPrograms mpp ON mpp.id = mppp.ProgramId
+                            WHERE 
+                            mpp.DetailId = $did
+                        ");
+                        foreach ($autoq as $row) {
+
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="widget">
+                <div class="widget-header">
+                    <h3><i class="fa fa-compass"></i> Single Time:</h3>
+                </div>
+                <div class="widget-content">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <td>Id</td>
+                            <td>Tabela cięcia</td>
+                            <td>Czas cięcia</td>
+                            <td>Data</td>
+                            <td></td>
+                        </tr>
+                        </thead>
+                        <tbody id="autoch" style="text-align: center;">
+                        <?php
+                        $autoq = $db->query("SELECT * FROM plate_multiPartCostingDetails WHERE did = $did");
+                        foreach ($autoq as $row) {
+                            echo '<tr>'.
+                                '<td>' . $row["LaserMatName"] . '</td>' .
+                                '<td>' . $row["PreTime"] . '</td>' .
+                                '<td>' . $row["upload_date"] . '</td>' .
+                                '</tr>';
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

@@ -8,7 +8,7 @@
 
 require_once dirname(__DIR__) . "/../mainController.php";
 require_once dirname( __FILE__) . "/model/DetailModel.php";
-require_once dirname( __FILE__) . "/model/MPWModel.php";
+require_once dirname(__DIR__) . "../model/MPWModel.php";
 
 class createMPWController extends mainController
 {

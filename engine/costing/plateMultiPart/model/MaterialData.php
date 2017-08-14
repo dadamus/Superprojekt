@@ -37,16 +37,16 @@ class MaterialData
 
     /**
      * @param array $data
+     * @throws Exception
      */
     public function create($data)
     {
-        $vars = get_object_vars($this);
         try {
-            foreach ($vars as $name => $val) {
-                $this->$name = $data[$name];
+            foreach ($data as $name => $val) {
+                $this->$name = $val;
             }
         } catch (\Exception $ex) {
-            echo "Brak parametru: " . $ex->getMessage(); die;
+            throw new \Exception('Brak parametru: ' . $ex->getMessage());
         }
 
         $this->getDbData();
@@ -83,6 +83,9 @@ class MaterialData
         return $this->id;
     }
 
+    /**
+     * @return int
+     */
     public function getId(): int
     {
         return $this->id;
