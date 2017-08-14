@@ -106,7 +106,7 @@ class MaterialData
 
     public function getPrgSheetAllWeight(): float
     {
-        return $this->getPrgSheetSur() *
+        return $this->getPrgSheetSur();
     }
 
     /**

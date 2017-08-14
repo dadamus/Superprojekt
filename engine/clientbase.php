@@ -20,9 +20,11 @@ if (@$_GET["a"] == 1) { // AJAX New client
     $query = $db->prepare("INSERT INTO `clients` (`nip`, `type`, `name`, `address`, `phone`, `person`, `email`, `date`) VALUES ('$nip', '$type', '$name', '$address', '$phone', '$person', '$email', '$date')");
     $query->execute();
     $_id = $db->lastInsertId();
-    $directories = array();
+    $directories = [];
     foreach (glob($data_src . "*", GLOB_ONLYDIR) as $directory) {
-        array_push($directories, end(explode("/", $directory)));
+        $dirPath = explode("/", $directory);
+        $dirName = end($dirPath);
+        $directories[] = $dirName;
     }
 
     function pushClient() {
