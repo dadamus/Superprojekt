@@ -505,7 +505,7 @@ class MPWModel
         $projectData = $db->query("SELECT src FROM projects WHERE id = " . $this->getMpwProject());
         $projectPath = $projectData->fetch()["src"];
 
-        $insertQuery = $db->prepare("INSERT INTO plate_multiPartDetails (mpw, did, src) VALUES (:mpw, :did, :src)");
+        $insertQuery = $db->prepare("INSERT INTO plate_multiPartDetails (mpw, did, src, `name`) VALUES (:mpw, :did, :src, :name)");
 
         foreach ($details as $detail) {
             $detailQuery = $db->query("SELECT src FROM details WHERE id = $detail");
@@ -517,6 +517,7 @@ class MPWModel
             if ($attributes != "") {
                 $detailNewName .= "-" . $attributes;
             }
+            $detailNewNameWithoutExt = $detailNewName;
             $detailNewName .= "." . $detailExt;
 
             $detailOldPath = $projectPath . "/V" . $this->getVersion() . "/dxf/" . $detailName;
@@ -525,6 +526,7 @@ class MPWModel
             $insertQuery->bindValue(":mpw", $this->getMpwId(), PDO::PARAM_INT);
             $insertQuery->bindValue(":did", $detail, PDO::PARAM_INT);
             $insertQuery->bindValue(":src", $detailNewName, PDO::PARAM_STR);
+            $insertQuery->bindValue(":name", $detailNewNameWithoutExt, PDO::PARAM_STR);
             $insertQuery->execute();
         }
 

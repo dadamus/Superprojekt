@@ -4,18 +4,18 @@ $did = @$_GET["did"]; // Detail ID
 $version = 1; // Wersja skryptu
 
 if (@$_GET["a"] != null) {
-    require_once dirname(__FILE__).'/../../config.php';
-    require_once dirname(__FILE__).'/../protect.php';
-    require_once dirname(__FILE__).'/../class/material.php';
+    require_once dirname(__FILE__) . '/../../config.php';
+    require_once dirname(__FILE__) . '/../protect.php';
+    require_once dirname(__FILE__) . '/../class/material.php';
 } else {
     $_COOKIE["did"] = $did;
-    require_once dirname(__FILE__).'/../class/material.php';
+    require_once dirname(__FILE__) . '/../class/material.php';
 }
 
 $material = new Material(); // Material init
 
 //pobieranie nazwy firmy i projektu
-$q_detail= $db->prepare("SELECT `pid`, `src` FROM `details` WHERE `id` = '$did' LIMIT 1");
+$q_detail = $db->prepare("SELECT `pid`, `src` FROM `details` WHERE `id` = '$did' LIMIT 1");
 $q_detail->execute();
 $a_detail = $q_detail->fetch();
 
@@ -74,9 +74,9 @@ if (@$_GET["a"] == 3) { //Save
         }
     }
     $atribute_e = json_encode($atribute);
-    
+
     $query = $db->prepare("INSERT INTO `$cplt` (`version`, `did`, `type`, `material`, `thick`, `dimension`, `dimension2`, `handicap`, `qta`, `qtp`, `sheets`, `time`, `pierces`, `factor`, `mprice`, `ocprice`, `dprice`, `cprice`, `atribute`) "
-            . "VALUES ('$version', '$did', '2', '$material', '$thick', '$dimension', '$dimension2', '$handicap', '$qta', '$qtp', '$sheets', '$time', '$pierces', '$factor', '$mp', '$cn', '$dcn', '$ccn', '$atribute_e')");
+        . "VALUES ('$version', '$did', '2', '$material', '$thick', '$dimension', '$dimension2', '$handicap', '$qta', '$qtp', '$sheets', '$time', '$pierces', '$factor', '$mp', '$cn', '$dcn', '$ccn', '$atribute_e')");
     $query->execute();
 
     $query = $db->prepare("UPDATE `details` SET `type` = '1' WHERE `id` = '$did'");
@@ -161,24 +161,22 @@ if (@$_GET["a"] == 6) { // Set default
 
 <div class="row">
     <div class="col-lg-12">
-        <h2 class="page-title">Costing - BLACH <small><?php echo '<a href="/project/3/' . $pid . '/">' . $cname . " / " . $pname . "</a> / " . $dname; ?></small></h2>
+        <h2 class="page-title">Costing - BLACH
+            <small><?php echo '<a href="/project/3/' . $pid . '/">' . $cname . " / " . $pname . "</a> / " . $dname; ?></small>
+        </h2>
     </div>
 </div>
-<div id ="costingList">
+<div id="costingList">
     <div class="row">
         <div class="col-lg-9"></div>
         <div class="col-lg-3">
-            <div class="widget">
-                <div class="widget-content" style="text-align: center;">
-                    <a href="#" id="bNew" data-toggle="modal" class="btn btn-success">Dodaj wycene</a>
-                </div>
-            </div>
+            <a href="#" id="bNew" data-toggle="modal" class="btn btn-success">Dodaj wycene</a>
         </div>
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <div class="widget">
-                <div class="widget-header">
+            <div class="portlet box grey-silver">
+                <div class="portlet-title">
                     <div style="float: left;"><h3><i class="fa fa-book"></i> Istniejące wyceny detalu: </h3></div>
                     <div class="status_bar">
                         <?php
@@ -186,7 +184,7 @@ if (@$_GET["a"] == 6) { // Set default
                         ?>
                     </div>
                 </div>
-                <div class="widget-content">
+                <div class="portlet-body">
                     <table class="table table-striped">
                         <thead>
                         <tr>
@@ -225,11 +223,11 @@ if (@$_GET["a"] == 6) { // Set default
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="widget">
-                <div class="widget-header">
+            <div class="portlet box blue-hoki">
+                <div class="portlet-title">
                     <h3><i class="fa fa-cloud"></i> Auto wycena:</h3>
                 </div>
-                <div class="widget-content">
+                <div class="portlet-body">
                     <table class="table table-striped">
                         <thead>
                         <tr>
@@ -241,25 +239,33 @@ if (@$_GET["a"] == 6) { // Set default
                             <td></td>
                         </tr>
                         </thead>
-                        <tbody id="autoch" style="text-align: center;">
+                        <tbody id="autoch">
                         <?php
-                        $autoq = $db->query("SELECT `id` FROM `mpw` WHERE `did` = '$did' AND `src` != ''");
-                        foreach ($autoq as $row) {
-                            //SELECT MP
-                            $wid = $row["id"];
-                            $mpcq = $db->query("SELECT * FROM `mpc` WHERE `wid` = '$wid'");
-                            $mpc = $mpcq->fetch();
-
-                            echo '<tr id="' . $mpc["id"] . '_mpc">';
-                            echo '<td>' . $mpc["id"] . '</td>';
-                            echo '<td>' . $mpc["d_qty"] . '</td>';
-                            echo '<td>' . $mpc["wh"] . '</td>';
-                            echo '<td>' . $mpc["d_last_price_n"] . '</td>';
-                            echo '<td>' . $mpc["last_price_all_netto"] . '</td>';
-                            echo '<td style="text-align: right;"><a class="btn btn-info" href="' . $site_path . '/view/601/' . $mpc["id"] . '/auto_costing">Pokaż</a></td>';
-                            echo '</tr>';
-                        }
+                        $autoq = $db->query("
+                          SELECT 
+                          mpc.* 
+                          FROM mpw
+                          LEFT JOIN mpc ON mpc.wid = mpw.id
+                          WHERE 
+                          `did` = '$did' 
+                          AND `src` != ''
+                          ");
                         ?>
+                        <?php foreach ($autoq as $mpc): ?>
+                            <tr id="<?= $mpc["id"] ?>_mpc">
+                                <td><?= $mpc["id"] ?></td>
+                                <td><?= $mpc["d_qty"] ?></td>
+                                <td><?= $mpc["wh"] ?></td>
+                                <td><?= $mpc["d_last_price_n"] ?></td>
+                                <td><?= $mpc["last_price_all_netto"] ?></td>
+                                <td style="text-align: right;">
+                                    <a class="btn btn-info"
+                                       href="<?= $site_path ?>/view/601/<?= $mpc["id"] ?>/auto_costing">
+                                        Pokaż
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
@@ -268,11 +274,11 @@ if (@$_GET["a"] == 6) { // Set default
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="widget">
-                <div class="widget-header">
+            <div class="portlet box blue-dark">
+                <div class="portlet-title">
                     <h3><i class="fa fa-cubes"></i> Multipart:</h3>
                 </div>
-                <div class="widget-content">
+                <div class="portlet-body">
                     <table class="table table-striped">
                         <thead>
                         <tr>
@@ -282,23 +288,67 @@ if (@$_GET["a"] == 6) { // Set default
                             <td>Data utworzenia</td>
                             <td>Cena sztuka netto</td>
                             <td>Parametry</td>
+                            <td>Status</td>
                             <td></td>
                         </tr>
                         </thead>
-                        <tbody id="autoch" style="text-align: center;">
+                        <tbody id="autoch">
                         <?php
                         $autoq = $db->query("
                             SELECT 
-                            mpp.* 
-                            FROM plate_multiPartProgramsPart mppp
-                            LEFT JOIN plate_multiPartPrograms mpp ON mpp.id = mppp.ProgramId
+                            parts.ProgramId,
+                            m.name as MaterialName,
+                            mpw.pieces,
+                            programs.CreateDate,
+                            mpw.atribute,
+                            mpw.type
+                            FROM plate_multiPartProgramsPart parts
+                            LEFT JOIN plate_multiPartDetails partDetails ON parts.PartName = partDetails.name
+                            LEFT JOIN mpw ON mpw.id = partDetails.mpw
+                            LEFT JOIN material m ON mpw.material = m.id
+                            LEFT JOIN plate_multiPartPrograms programs ON programs.id = parts.ProgramId
                             WHERE 
-                            mpp.DetailId = $did
+                            parts.DetailId = $did
                         ");
-                        foreach ($autoq as $row) {
-
-                        }
                         ?>
+                        <?php foreach ($autoq as $row): ?>
+                            <tr>
+                                <td><?= $row["ProgramId"] ?></td>
+                                <td><?= $row["MaterialName"] ?></td>
+                                <td><?= $row["pieces"] ?></td>
+                                <td><?= $row["CreateDate"] ?></td>
+                                <td></td>
+                                <td>
+                                    <?php foreach (json_decode($row["atribute"]) as $param): ?>
+                                        <?= _getChecboxText($param) ?>
+                                    <?php endforeach; ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    $status = "";
+                                    $text = "";
+                                    switch ($row["type"]) {
+                                        case OT::AUTO_WYCENA_BLACH_MULTI_KROK_1:
+                                            $text = 'Brak wyceny';
+                                            $status = 'default';
+                                            break;
+
+                                        case OT::AUTO_WYCENA_BLACH_MULTI_KROK_2:
+                                            $text = 'Brak ramki';
+                                            $status = 'warning';
+                                            break;
+                                    }
+
+                                    echo '<span class="label label-' . $status . '">' . $text . '</span>';
+                                    ?>
+                                </td>
+                                <td>
+                                    <a href="javascript:;">
+                                        <i class="fa fa-sign-in fa-2x"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
@@ -307,11 +357,11 @@ if (@$_GET["a"] == 6) { // Set default
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="widget">
-                <div class="widget-header">
+            <div class="portlet box blue-chambray">
+                <div class="portlet-title">
                     <h3><i class="fa fa-compass"></i> Single Time:</h3>
                 </div>
-                <div class="widget-content">
+                <div class="portlet-body">
                     <table class="table table-striped">
                         <thead>
                         <tr>
@@ -322,11 +372,11 @@ if (@$_GET["a"] == 6) { // Set default
                             <td></td>
                         </tr>
                         </thead>
-                        <tbody id="autoch" style="text-align: center;">
+                        <tbody id="autoch">
                         <?php
                         $autoq = $db->query("SELECT * FROM plate_multiPartCostingDetails WHERE did = $did");
                         foreach ($autoq as $row) {
-                            echo '<tr>'.
+                            echo '<tr>' .
                                 '<td>' . $row["LaserMatName"] . '</td>' .
                                 '<td>' . $row["PreTime"] . '</td>' .
                                 '<td>' . $row["upload_date"] . '</td>' .
@@ -341,11 +391,11 @@ if (@$_GET["a"] == 6) { // Set default
     </div>
     <div class="row" style="margin: 0 10% 0 10%;">
         <div class="cold-md-12">
-            <div class="widget" style="margin: 0 auto; width: 80%;">
-                <div class="widget-header">
+            <div class="portlet" style="margin: 0 auto; width: 80%;">
+                <div class="portlet-title">
                     <h3><i class="fa fa-wechat"></i> Komentarze:</h3>
                 </div>
-                <div class="widget-content">
+                <div class="portlet-body">
                     <div>
                         <textarea id="comment" rows="3" class="form-control" id="comment"></textarea>
                         <button type="button" class="btn blue btn-block" id="addcoment">Dodaj</button>
@@ -400,26 +450,31 @@ if (@$_GET["a"] == 6) { // Set default
                     <div class="widget-content">
                         <table class="table">
                             <tbody>
-                                <tr>
-                                    <td style="text-align: right;">Materiał</td>
-                                    <td>
-                                        <select class="form-control required" name="material" id="materialSelect">
-                                            <?php
-                                            for ($i = 1; $i <= count($material->name); $i++) {
-                                                echo '<option value="' . $i . '">' . $material->name[$i] . '</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Grubość</td>
-                                    <td><input type="text" name="thick" id="thick" style="width: 100%;"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Wymiary</td>
-                                    <td><div style="float: left"><input type="text" name="dimension11" id="dimension11" style="width: 100%;" class="form-control"/></div><div style="float: left"><input type="text" name="dimension12" id="dimension12" style="width: 100%;" class="form-control"/></div></td>
-                                </tr>
+                            <tr>
+                                <td style="text-align: right;">Materiał</td>
+                                <td>
+                                    <select class="form-control required" name="material" id="materialSelect">
+                                        <?php
+                                        for ($i = 1; $i <= count($material->name); $i++) {
+                                            echo '<option value="' . $i . '">' . $material->name[$i] . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Grubość</td>
+                                <td><input type="text" name="thick" id="thick" style="width: 100%;"/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Wymiary</td>
+                                <td>
+                                    <div style="float: left"><input type="text" name="dimension11" id="dimension11"
+                                                                    style="width: 100%;" class="form-control"/></div>
+                                    <div style="float: left"><input type="text" name="dimension12" id="dimension12"
+                                                                    style="width: 100%;" class="form-control"/></div>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -431,14 +486,15 @@ if (@$_GET["a"] == 6) { // Set default
                     <div class="widget-content">
                         <table class="table table-striped">
                             <tbody>
-                                <tr>
-                                    <td style="text-align: right;">Wymiar</td>
-                                    <td><input type="text" name="resoult1" id="resoult1" class="form-control" readonly/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Waga</td>
-                                    <td><input type="text" name="weight1" id="weight1" class="form-control" readonly/></td>
-                                </tr>
+                            <tr>
+                                <td style="text-align: right;">Wymiar</td>
+                                <td><input type="text" name="resoult1" id="resoult1" class="form-control" readonly/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Waga</td>
+                                <td><input type="text" name="weight1" id="weight1" class="form-control" readonly/></td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -457,18 +513,19 @@ if (@$_GET["a"] == 6) { // Set default
                                 <div class="panel-body">
                                     <table class="table">
                                         <tbody>
-                                            <tr>
-                                                <td>[g/mm^3]</td>
-                                                <td><input type="text" name="cubic" id="cubic" class="form-control"/></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Price</td>
-                                                <td><input type="text" name="cmp" id="cmp" class="form-control"/></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Remnant</td>
-                                                <td><input type="text" name="remnant" id="remnant" class="form-control"/></td>
-                                            </tr>
+                                        <tr>
+                                            <td>[g/mm^3]</td>
+                                            <td><input type="text" name="cubic" id="cubic" class="form-control"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Price</td>
+                                            <td><input type="text" name="cmp" id="cmp" class="form-control"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Remnant</td>
+                                            <td><input type="text" name="remnant" id="remnant" class="form-control"/>
+                                            </td>
+                                        </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -488,10 +545,11 @@ if (@$_GET["a"] == 6) { // Set default
                     <div class="widget-content">
                         <table class="table">
                             <tbody>
-                                <tr>
-                                    <td style="text-align: right;">Wymiary</td>
-                                    <td><input type="text" name="dimension2" id="dimension2" style="width: 100%;" class="form-control"/></td>
-                                </tr>
+                            <tr>
+                                <td style="text-align: right;">Wymiary</td>
+                                <td><input type="text" name="dimension2" id="dimension2" style="width: 100%;"
+                                           class="form-control"/></td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -503,10 +561,10 @@ if (@$_GET["a"] == 6) { // Set default
                     <div class="widget-content">
                         <table class="table table-striped">
                             <tbody>
-                                <tr>
-                                    <td style="text-align: right;">Waga</td>
-                                    <td><input type="text" name="weight2" id="weight2" class="form-control" readonly/></td>
-                                </tr>
+                            <tr>
+                                <td style="text-align: right;">Waga</td>
+                                <td><input type="text" name="weight2" id="weight2" class="form-control" readonly/></td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -523,10 +581,12 @@ if (@$_GET["a"] == 6) { // Set default
                     <div class="widget-content">
                         <table class="table">
                             <tbody>
-                                <tr>
-                                    <td style="text-align: right;">Handicap</td>
-                                    <td><input type="text" name="handicap" id="handicap" style="width: 100%;" value="100" class="form-control mask" data-inputmask="'mask':'999%', 'greedy': 'false'"/></td>
-                                </tr>
+                            <tr>
+                                <td style="text-align: right;">Handicap</td>
+                                <td><input type="text" name="handicap" id="handicap" style="width: 100%;" value="100"
+                                           class="form-control mask" data-inputmask="'mask':'999%', 'greedy': 'false'"/>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -535,30 +595,32 @@ if (@$_GET["a"] == 6) { // Set default
                     <div class="widget-content">
                         <table class="table">
                             <tbody>
-                                <tr>
-                                    <td style="text-align: right;">qt all</td>
-                                    <td><input type="number" name="qta" id="qta" style="width: 100%;"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">qt program</td>
-                                    <td><input type="number" name="qtp" id="qtp" style="width: 100%;"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Sheets pc</td>
-                                    <td><input type="number" name="sheets" id="sheets" style="width: 100%;" value="1"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">ABE Time</td>
-                                    <td><input type="text" name="time" id="time" style="width: 100%;" class="form-control mask" data-inputmask=" 'mask': '99:99:99'"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Pierces</td>
-                                    <td><input type="text" name="pierces" id="pierces" style="width: 100%;" value="0"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Factor</td>
-                                    <td><input type="text" name="factor" id="factor" style="width: 100%;" value="1.00"/></td>
-                                </tr>
+                            <tr>
+                                <td style="text-align: right;">qt all</td>
+                                <td><input type="number" name="qta" id="qta" style="width: 100%;"/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">qt program</td>
+                                <td><input type="number" name="qtp" id="qtp" style="width: 100%;"/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Sheets pc</td>
+                                <td><input type="number" name="sheets" id="sheets" style="width: 100%;" value="1"/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">ABE Time</td>
+                                <td><input type="text" name="time" id="time" style="width: 100%;"
+                                           class="form-control mask" data-inputmask=" 'mask': '99:99:99'"/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Pierces</td>
+                                <td><input type="text" name="pierces" id="pierces" style="width: 100%;" value="0"/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Factor</td>
+                                <td><input type="text" name="factor" id="factor" style="width: 100%;" value="1.00"/>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -571,22 +633,22 @@ if (@$_GET["a"] == 6) { // Set default
                     <div class="widget-content">
                         <table class="table table-striped">
                             <tbody>
-                                <tr>
-                                    <td style="text-align: right;">Material [PSU]</td>
-                                    <td><input type="text" name="mpsu" id="mpsu" class="form-control" readonly/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Material [PU]</td>
-                                    <td><input type="text" name="mpu" id="mpu" class="form-control" readonly/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Remnant value</td>
-                                    <td><input type="text" name="rv" id="rv" class="form-control" readonly/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Material price</td>
-                                    <td><input type="text" name="mp" id="mp" class="form-control" readonly/></td>
-                                </tr>
+                            <tr>
+                                <td style="text-align: right;">Material [PSU]</td>
+                                <td><input type="text" name="mpsu" id="mpsu" class="form-control" readonly/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Material [PU]</td>
+                                <td><input type="text" name="mpu" id="mpu" class="form-control" readonly/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Remnant value</td>
+                                <td><input type="text" name="rv" id="rv" class="form-control" readonly/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Material price</td>
+                                <td><input type="text" name="mp" id="mp" class="form-control" readonly/></td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -599,56 +661,63 @@ if (@$_GET["a"] == 6) { // Set default
                     <div class="widget-content">
                         <table class="table">
                             <thead>
-                                <tr>
-                                    <td></td>
-                                    <td>Nazwa</td>
-                                    <td>zł/szt</td>
-                                    <td>zł/komplet</td>
-                                </tr>
+                            <tr>
+                                <td></td>
+                                <td>Nazwa</td>
+                                <td>zł/szt</td>
+                                <td>zł/komplet</td>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><input type="checkbox" name="atribute[]" value="1" class="form-control" style="width: 20px; height: 20px;"/></td>
-                                    <td>Gięcie</td>
-                                    <td><input type="text" name="a1i1" id="a1i1" class="form-control ai"/></td>
-                                    <td><input type="text" name="a1i2" id="a1i2" class="form-control aik"/></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" name="atribute[]" value="2" class="form-control" style="width: 20px; height: 20px;"/></td>
-                                    <td>Projekt</td>
-                                    <td><input type="text" name="a2i1" id="a2i1" class="form-control ai"/></td>
-                                    <td><input type="text" name="a2i2" id="a2i2" class="form-control aik"/></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" name="atribute[]" value="3" class="form-control" style="width: 20px; height: 20px;"/></td>
-                                    <td>Spawanie</td>
-                                    <td><input type="text" name="a3i1" id="a3i1" class="form-control ai"/></td>
-                                    <td><input type="text" name="a3i2" id="a3i2" class="form-control aik"/></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" name="atribute[]" value="4" class="form-control" style="width: 20px; height: 20px;"/></td>
-                                    <td>Malowanie</td>
-                                    <td><input type="text" name="a4i1" id="a4i1" class="form-control ai"/></td>
-                                    <td><input type="text" name="a4i2" id="a4i2" class="form-control aik"/></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" name="atribute[]" value="5" class="form-control" style="width: 20px; height: 20px;"/></td>
-                                    <td>Ocynkowanie</td>
-                                    <td><input type="text" name="a5i1" id="a5i1" class="form-control ai"/></td>
-                                    <td><input type="text" name="a5i2" id="a5i2" class="form-control aik"/></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" name="atribute[]" value="6" class="form-control" style="width: 20px; height: 20px;"/></td>
-                                    <td>Gwintowanie</td>
-                                    <td><input type="text" name="a6i1" id="a6i1" class="form-control ai"/></td>
-                                    <td><input type="text" name="a6i2" id="a6i2" class="form-control aik"/></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="checkbox" name="atribute[]" value="7" class="form-control" style="width: 20px; height: 20px;"/></td>
-                                    <td>Common Cut</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
+                            <tr>
+                                <td><input type="checkbox" name="atribute[]" value="1" class="form-control"
+                                           style="width: 20px; height: 20px;"/></td>
+                                <td>Gięcie</td>
+                                <td><input type="text" name="a1i1" id="a1i1" class="form-control ai"/></td>
+                                <td><input type="text" name="a1i2" id="a1i2" class="form-control aik"/></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="atribute[]" value="2" class="form-control"
+                                           style="width: 20px; height: 20px;"/></td>
+                                <td>Projekt</td>
+                                <td><input type="text" name="a2i1" id="a2i1" class="form-control ai"/></td>
+                                <td><input type="text" name="a2i2" id="a2i2" class="form-control aik"/></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="atribute[]" value="3" class="form-control"
+                                           style="width: 20px; height: 20px;"/></td>
+                                <td>Spawanie</td>
+                                <td><input type="text" name="a3i1" id="a3i1" class="form-control ai"/></td>
+                                <td><input type="text" name="a3i2" id="a3i2" class="form-control aik"/></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="atribute[]" value="4" class="form-control"
+                                           style="width: 20px; height: 20px;"/></td>
+                                <td>Malowanie</td>
+                                <td><input type="text" name="a4i1" id="a4i1" class="form-control ai"/></td>
+                                <td><input type="text" name="a4i2" id="a4i2" class="form-control aik"/></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="atribute[]" value="5" class="form-control"
+                                           style="width: 20px; height: 20px;"/></td>
+                                <td>Ocynkowanie</td>
+                                <td><input type="text" name="a5i1" id="a5i1" class="form-control ai"/></td>
+                                <td><input type="text" name="a5i2" id="a5i2" class="form-control aik"/></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="atribute[]" value="6" class="form-control"
+                                           style="width: 20px; height: 20px;"/></td>
+                                <td>Gwintowanie</td>
+                                <td><input type="text" name="a6i1" id="a6i1" class="form-control ai"/></td>
+                                <td><input type="text" name="a6i2" id="a6i2" class="form-control aik"/></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="atribute[]" value="7" class="form-control"
+                                           style="width: 20px; height: 20px;"/></td>
+                                <td>Common Cut</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -659,28 +728,28 @@ if (@$_GET["a"] == 6) { // Set default
                     <div class="widget-content">
                         <table class="table table-striped">
                             <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Netto</td>
-                                    <td>Brutto</td>
-                                </tr>
+                            <tr>
+                                <td>Name</td>
+                                <td>Netto</td>
+                                <td>Brutto</td>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td style="text-align: right;">Only CUT</td>
-                                    <td><input type="text" name="cn" id="cn" class="form-control" readonly/></td>
-                                    <td><input type="text" name="cb" id="cb" class="form-control" readonly/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Detail Cost</td>
-                                    <td><input type="text" name="dcn" id="dcn" class="form-control"/></td>
-                                    <td><input type="text" name="dcb" id="dcb" class="form-control"/></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;">Complet Cost</td>
-                                    <td><input type="text" name="ccn" id="ccn" class="form-control"/></td>
-                                    <td><input type="text" name="ccb" id="ccb" class="form-control"/></td>
-                                </tr>
+                            <tr>
+                                <td style="text-align: right;">Only CUT</td>
+                                <td><input type="text" name="cn" id="cn" class="form-control" readonly/></td>
+                                <td><input type="text" name="cb" id="cb" class="form-control" readonly/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Detail Cost</td>
+                                <td><input type="text" name="dcn" id="dcn" class="form-control"/></td>
+                                <td><input type="text" name="dcb" id="dcb" class="form-control"/></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;">Complet Cost</td>
+                                <td><input type="text" name="ccn" id="ccn" class="form-control"/></td>
+                                <td><input type="text" name="ccb" id="ccb" class="form-control"/></td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -713,14 +782,17 @@ if (@$_GET["a"] == 6) { // Set default
         n = Math.round(Math.round(n * factor) / 10);
         return n / (factor / 10);
     }
+
     function countCCN(dcn) { //Calculate complite cost
         $("#ccn").val(Round(parseFloat(dcn) * parseInt($("#qta").val()), 2) + " zł");
         $("#ccb").val(Round(parseFloat($("#ccn").val()) * 1.23, 2));
     }
+
     function countDCN(ccn) { //Calculate detail cost
         $("#dcn").val(Round(parseFloat(ccn) / parseInt($("#qta").val()), 2) + " zł");
         $("#dcb").val(Round(parseFloat($("#dcn").val()) * 1.23, 2) + " zł");
     }
+
     function countData() { // Główna funckja liczaca!
         var iTime = $("#time").val().split(":");
         var _time = (parseInt(iTime[0]) * 3600) + (parseInt(iTime[1]) * 60) + (parseInt(iTime[2]) * 1); //s
@@ -802,7 +874,7 @@ if (@$_GET["a"] == 6) { // Set default
                 //SELECT ITEM
                 $('#materialSelect option').removeAttr('selected').filter('[value=' + data.material + ']').attr('selected', true);
                 getMaterial(data.material);
-                
+
                 //INPUT
                 $("#thick").val(data.thick);
 
@@ -818,7 +890,7 @@ if (@$_GET["a"] == 6) { // Set default
                 $("#time").val(data.time);
                 $("#pierces").val(data.pierces);
                 $("#factor").val(data.factor);
-                
+
                 countData();
                 $("#cn").val(data.cn + " zł");
                 $("#cb").val(Round(parseFloat(data.cn) * 1.23, 2) + " zł");
@@ -867,6 +939,7 @@ if (@$_GET["a"] == 6) { // Set default
                 $(".costingForm").fadeIn();
             });
         });
+
         //Form VALIATION
         function getMaterial(_id) {
             $.ajax({
@@ -879,6 +952,7 @@ if (@$_GET["a"] == 6) { // Set default
                 countData();
             });
         }
+
         getMaterial(1); // Getin def value of material
         $("#materialSelect").change(function () {
             var _id = $(this).val();
@@ -950,8 +1024,7 @@ if (@$_GET["a"] == 6) { // Set default
 
             var complite = true;
             $("#cForm").find("input").each(function () {
-                if (!$(this).hasClass("ai") && !$(this).hasClass("aik"))
-                {
+                if (!$(this).hasClass("ai") && !$(this).hasClass("aik")) {
                     if ($(this).val() == "") {
                         complite = false;
                     } else if ($(this).val() == null) {

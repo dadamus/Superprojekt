@@ -9,6 +9,7 @@
 
 include dirname(__FILE__) . "/plateMultiPart/directoryViewController.php";
 include dirname(__FILE__) . "/plateMultiPart/createMPWController.php";
+include dirname(__FILE__) . "/plateMultiPart/plateMultiPartController.php";
 
 $action = @$_GET["action"];
 if (!is_null($action)) {
@@ -17,6 +18,7 @@ if (!is_null($action)) {
 
 $directoryViewController = new directoryViewController();
 $createMPWController = new createMPWController();
+$plateMultiPartController = new plateMultiPartController();
 
 switch ($action) {
     case "getDirectoryForm": //Get multipart directory form
@@ -37,5 +39,9 @@ switch ($action) {
 
     case "addMPW": //Create MPW
         echo $createMPWController->addMpw($_POST);
+        break;
+
+    case "viewProgramCard": //Karta programu
+        echo $plateMultiPartController->viewProgramCard($_GET["program_id"]);
         break;
 }

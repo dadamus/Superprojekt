@@ -12,7 +12,7 @@ class Imap {
         $this->pass = $pass;
 
 
-        $st = array();
+        $st = [];
         $st[1] = "A program was finished.";
         $st[2] = "A program was unusually finished.";
         $st[3] = "Power supply off management was started.";

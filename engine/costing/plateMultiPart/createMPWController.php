@@ -8,7 +8,7 @@
 
 require_once dirname(__DIR__) . "/../mainController.php";
 require_once dirname( __FILE__) . "/model/DetailModel.php";
-require_once dirname(__DIR__) . "../model/MPWModel.php";
+require_once dirname(__DIR__) . "/../model/MPWModel.php";
 
 class createMPWController extends mainController
 {
@@ -24,6 +24,12 @@ class createMPWController extends mainController
         $this->setViewPath(dirname(__FILE__) . "/view/mpw/");
     }
 
+    /**
+     * @param int $directoryId
+     * @param int $projectId
+     * @param array $details
+     * @return string
+     */
     public function addMPWForm(int $directoryId, int $projectId, array $details)
     {
         global $db;
@@ -40,6 +46,10 @@ class createMPWController extends mainController
         ]);
     }
 
+    /**
+     * @param array $data
+     * @return string
+     */
     public function addMpw(array $data)
     {
         global $db;

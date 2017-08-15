@@ -88,7 +88,6 @@ function make_dir($src) {
 
 function _getChecboxText($id) {
     $id = intval($id);
-    var_dump($id);
     $t = null;
     switch ($id) {
         case 1:

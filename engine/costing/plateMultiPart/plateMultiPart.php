@@ -62,8 +62,8 @@ class PlateMultiPart
         /** @var ProgramCardPartData $part */
         $part = reset($program->getParts());
 
-        $detailId = $part->getDetailId();
-        $mpw = $this->MPWRepository->getMpwByDetailId($detailId);
+        $detailName = $part->getPartName();
+        $mpw = $this->MPWRepository->getMpwByDetailName($detailName);
         $mpw->setType(OT::AUTO_WYCENA_BLACH_MULTI_KROK_2);
         $mpw->save();
     }

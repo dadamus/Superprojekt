@@ -460,6 +460,7 @@ $_SESSION["costingID"] = $costing->type;
             $("#PTD_TABLE").DataTable().destroy();
             $("#OTD_TABLE").DataTable().destroy();
             $("#PT_TABLE").DataTable().destroy();
+            $("#HT_TABLE").DataTable().destroy();
         }
 
         $("#cProjects").stop().fadeOut("fast", function () {

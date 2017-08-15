@@ -14,25 +14,25 @@ require_once dirname(__DIR__) . '/model/MPWModel.php';
 class MPWRepository
 {
     /**
-     * @param int $detailId
+     * @param string $detailName
      * @return MPWModel
      * @throws Exception
      */
-    public function getMpwByDetailId(int $detailId): MPWModel
+    public function getMpwByDetailName(string $detailName): MPWModel
     {
         global $db;
 
         $searchQuery = $db->prepare("
           SELECT mpw 
           FROM plate_multiPartDetails
-          WHERE did = :did
+          WHERE name = :name
           ");
-        $searchQuery->bindValue(':did', $detailId, PDO::PARAM_INT);
+        $searchQuery->bindValue(':name', $detailName, PDO::PARAM_STR);
         $searchQuery->execute();
         $searchQueryData = $searchQuery->fetch();
 
         if ($searchQueryData === false) {
-            throw new Exception('Nie znalazłem MPW dla detalu o id: ' . $detailId);
+            throw new Exception('Nie znalazłem MPW dla detalu o nazwie: ' . $detailName);
         }
 
         $mpwId = intval($searchQueryData["mpw"]);

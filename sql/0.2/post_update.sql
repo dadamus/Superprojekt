@@ -67,4 +67,5 @@ ALTER TABLE `plate_costingFrame` ADD `programId` INT(11) NOT NULL,
 ALTER TABLE `plate_singlePartCosting_image` RENAME `plate_CostingImage`,
 ALTER TABLE `plate_CostingImage` CHANGE `plate_costingType` `plate_costingType` ENUM('singePartCosting', 'multiPartCosting'),
 
-ALTER TABLE  `plate_multiPartProgramsPart` ADD  `DetailId` INT NOT NULL AFTER  `id`;
+ALTER TABLE `plate_multiPartProgramsPart` ADD  `DetailId` INT NOT NULL AFTER  `id`;
+ALTER TABLE `plate_multiPartDetails` ADD `name` VARCHAR(32);
