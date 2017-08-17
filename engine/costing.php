@@ -973,4 +973,6 @@ if (@$_GET["plist"] != null) {
             }
         });
     });
-</script> 
+</script>
+<script type="text/javascript" src="/js/plateMultiPartForm/directoryView.js"></script>
+<script type="text/javascript" src="/js/plateMultiPartForm/mpwView.js"></script>

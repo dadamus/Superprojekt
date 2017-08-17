@@ -4,6 +4,7 @@
 
 var $addNewMultiDirectory;
 var plateMultiPartUrl = "/engine/costing/plateMultiPart.php";
+var $multiWrapper = $("#multi-wrapper");
 
 /**
  * @param filter
@@ -11,7 +12,7 @@ var plateMultiPartUrl = "/engine/costing/plateMultiPart.php";
 function loadDirs(filter) {
     var filterLoad = "";
 
-    if (typeof filter !== undefined) {
+    if (typeof filter !== 'undefined') {
         filterLoad = "&filter=" + filter;
     }
 
@@ -22,14 +23,15 @@ function loadDirs(filter) {
         $multiDirectoryViewContainer.html(response);
         $addNewMultiDirectory = $("#addNewMultiDirectory");
 
-        if (response.replace(/\n| /gi, "").length == 1) {
+        var data = response.replace(/\n| /gi, "");
+        if (data.length <= 1) {
             $addNewMultiDirectory.prop("disabled", false);
         } else {
             $addNewMultiDirectory.prop("disabled", true);
         }
         $multiDirectoryViewContainer.off();
 
-        $multiDirectoryViewContainer.on("click", "tr.multiDirChoose", function () {
+        $multiWrapper.on("click", "tr.multiDirChoose", function () {
             chooseDirectory($(this).data("id"));
         });
     });

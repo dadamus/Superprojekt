@@ -25,5 +25,3 @@
         </table>
     </div>
 </div>
-
-<script type="text/javascript" src="/js/plateMultiPartForm/directoryView.js"></script>

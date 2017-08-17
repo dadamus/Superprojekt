@@ -3,6 +3,11 @@
  */
 
 var plateMultiPartUrl = "/engine/costing/plateMultiPart.php";
+var versions;
+
+function mpwMultiLoad() {
+    versions = JSON.parse($("input[name='mpw_versions']").val());
+}
 
 /**
  * @returns {boolean}
@@ -10,8 +15,8 @@ var plateMultiPartUrl = "/engine/costing/plateMultiPart.php";
 function checkMpwReady() {
     var done = true;
     $("#multi-mpw-wrapper table input").each(function () {
-        if ($(this).val() == null || $(this).val() == "") {
-            if ($(this).attr("required") == "required") {
+        if ($(this).val() === null || $(this).val() === "") {
+            if ($(this).attr("required") === "required") {
                 done = false;
             }
         }

@@ -21,6 +21,7 @@
             </div>
 
             <p></p>
+            <input type="text" hidden="hidden" id="mpw_versions" name="mpw_versions" value='<?= json_encode($data["versions"])?>'/>
             <input type="text" hidden="hidden" id="mpw_directory" name="mpw_directory"
                    value="<?= $data["directory"] ?>"/>
             <input type="text" hidden="hidden" id="mpw_project" name="mpw_project" value="<?= $data["project_id"] ?>"/>
@@ -82,6 +83,5 @@
 </div>
 
 <script type="text/javascript">
-    var versions = JSON.parse('<?= json_encode($data["versions"])?>');
+    mpwMultiLoad();
 </script>
-<script type="text/javascript" src="/js/plateMultiPartForm/mpwView.js"></script>
