@@ -93,7 +93,7 @@ class PhpData
         global $data_src, $db;
 
         $newImageName = substr(md5(date("Y-m-d H:i:s")), 0, 6) . "_" . $SheetName . ".bmp";
-        $filePath = $data_src . 'temp/' . $programId . '.bpm';
+        $filePath = $data_src . 'temp/' . $programId . '.bmp';
 
         if (!file_exists($filePath)) {
             throw new Exception("Plik: $filePath nie istnieje!");
@@ -107,8 +107,8 @@ class PhpData
 
         $sqlBuilder = new sqlBuilder(sqlBuilder::INSERT, "plate_CostingImage");
         $sqlBuilder->bindValue("path", $newPath, PDO::PARAM_STR);
-        $sqlBuilder->bindValue(":plate_costingType", "multiPartCosting", PDO::PARAM_STR);
-        $sqlBuilder->bindValue(":costingName", "Plate Multi", PDO::PARAM_STR);
+        $sqlBuilder->bindValue("plate_costingType", "multiPartCosting", PDO::PARAM_STR);
+        $sqlBuilder->bindValue("costing_name", "Plate Multi", PDO::PARAM_STR);
         $sqlBuilder->flush();
 
         $imgId = $db->lastInsertId();

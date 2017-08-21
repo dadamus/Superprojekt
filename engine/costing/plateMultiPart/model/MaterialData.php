@@ -88,7 +88,7 @@ class MaterialData
      */
     public function getId(): int
     {
-        return $this->id;
+        return intval($this->id);
     }
 
     /**
@@ -154,7 +154,12 @@ class MaterialData
     private function getDbData()
     {
         global $db;
-        $dataQuery = $db->prepare("SELECT cubic, price FROM material WHERE `name` = ':name'");
+        $dataQuery = $db->prepare("
+          SELECT m.cubic, m.price 
+          FROM T_material tm
+          LEFT JOIN material m ON m.name = tm.MaterialTypeName
+          WHERE tm.MaterialName = :name
+        ");
         $dataQuery->bindValue(':name', $this->getMatName(), PDO::PARAM_STR);
         $dataQuery->execute();
 
@@ -166,6 +171,28 @@ class MaterialData
         $this->setDensity(floatval($materialData["cubic"]));
         $this->setPrice(floatval($materialData["price"]));
         $this->calculatePrgSheetPrice();
+    }
+
+    /**
+     * @param int $materialId
+     * @throws Exception
+     */
+    public function getByMaterialId(int $materialId) {
+        global $db;
+
+        $searchQuery = $db->prepare("
+            SELECT *
+            FROM plate_multiPartCostingMaterial
+            WHERE id = :id
+        ");
+        $searchQuery->bindValue(":id", $materialId, PDO::PARAM_INT);
+        $searchQuery->execute();
+
+        $data = $searchQuery->fetch(PDO::FETCH_ASSOC);
+        if ($data === false) {
+            throw  new Exception("Brak materialu o id: " . $materialId);
+        }
+        $this->create($data);
     }
 
     /**

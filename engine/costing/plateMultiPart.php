@@ -41,7 +41,7 @@ switch ($action) {
         echo $createMPWController->addMpw($_POST);
         break;
 
-    case "viewProgramCard": //Karta programu
-        echo $plateMultiPartController->viewProgramCard($_GET["program_id"]);
+    case "viewMainCard": //Karta glowna wyceny
+        echo $plateMultiPartController->viewMainCard($_GET["mpw_id"]);
         break;
 }

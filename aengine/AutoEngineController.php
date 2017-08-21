@@ -436,5 +436,6 @@ class AutoEngineController
         require_once dirname(__DIR__) . "/engine/costing/plateMultiPart/plateMultiPart.php";
         $plateMultiPart = new PlateMultiPart();
         $plateMultiPart->MakeFromData($_POST["data"]);
+        return "ok";
     }
 }

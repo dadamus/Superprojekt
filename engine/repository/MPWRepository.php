@@ -42,4 +42,15 @@ class MPWRepository
 
         return $mpw;
     }
+
+    /**
+     * @param int $mpwId
+     * @return MPWModel
+     */
+    public function getMpwById(int $mpwId): MPWModel
+    {
+        $mpw = new MPWModel();
+        $mpw->findById($mpwId);
+        return $mpw;
+    }
 }

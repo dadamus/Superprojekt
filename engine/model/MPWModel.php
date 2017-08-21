@@ -181,7 +181,7 @@ class MPWModel
                     $this->setPieces($value);
                     break;
 
-                case "attribute":
+                case "atribute":
                     $this->setAttributes($value);
                     break;
 
@@ -198,6 +198,8 @@ class MPWModel
                     break;
             }
         }
+
+        return true;
     }
 
     /**
@@ -553,8 +555,8 @@ class MPWModel
         $sqlBuilder->bindValue("material", $this->getMaterial(), PDO::PARAM_INT);
         $sqlBuilder->bindValue("thickness", $this->getThickness(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("pieces", $this->getPieces(), PDO::PARAM_INT);
-        $sqlBuilder->bindValue("attribute", $this->getAttributes(), PDO::PARAM_STR);
-        $sqlBuilder->bindValue("desc", $this->getDes(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("atribute", $this->getAttributes(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("des", $this->getDes(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("date", $this->getDate(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("type", $this->getType(), PDO::PARAM_INT);
         $sqlBuilder->flush();

@@ -201,7 +201,7 @@
                     include dirname(__FILE__) . '/details.php';
                     break;
                 case 11:
-                    include dirname(__FILE__) . '/filemenager.php';
+                    include dirname(__FILE__) . '/filemanager.php';
                     break;
                 case 12:
                     $mb = 3;
@@ -236,6 +236,10 @@
 				case 20: //Plate costing frame
 					include dirname(__FILE__) . '/costing/plateFrame.php';
 					break;
+                case 30: //Program card
+                    $mb = 2;
+                    include dirname(__FILE__) . '/costing/plateMultiPart.php';
+                    break;
                 case 200: //Calendar
                     calendar_body();
                     $active = 0;

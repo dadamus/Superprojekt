@@ -28,6 +28,8 @@ class ProgramData
     /** @var  int */
     private $ImageId;
 
+    private $frame;
+
     /**
      * @param array $data
      */
@@ -37,13 +39,51 @@ class ProgramData
         $this->setUsedSheetNum($data["UsedSheetNum"]);
     }
 
+    /**
+     * @param int $programId
+     * @throws Exception
+     */
+    public function getById(int $programId)
+    {
+        global $db;
+
+        $searchQuery = $db->prepare("
+            SELECT *
+            FROM plate_multiPartPrograms
+            WHERE id = :id
+        ");
+        $searchQuery->bindValue(":id", $programId, PDO::PARAM_INT);
+        $searchQuery->execute();
+        $data = $searchQuery->fetch();
+
+        if ($data === false) {
+            throw new Exception("Brak programu o id: " . $programId);
+        }
+
+        $this->create($data);
+
+        $material = new MaterialData();
+        $material->getByMaterialId($data["materialId"]);
+        $this->setMaterial($material);
+        $this->getImageByProgramId($programId);
+    }
+
+    private function getImageByProgramId(int $programId) {
+        global $db;
+        $searchQuery = $db->prepare("
+            SELECT * 
+            FROM plate_costingFrame
+        ");
+    }
+
     public function SaveData()
     {
         global $db;
         $materialId = $this->getMaterial()->getId();
+        $sheetName = $this->getSheetName();
 
-        $checkQuery = $db->prepare("SELECT id FROM plate_multiPartPrograms WHERE SheetName = ':sheetName'");
-        $checkQuery->bindParam(":sheetName", $this->getSheetName(), PDO::PARAM_STR);
+        $checkQuery = $db->prepare("SELECT id FROM plate_multiPartPrograms WHERE SheetName = :sheetName");
+        $checkQuery->bindParam(":sheetName", $sheetName, PDO::PARAM_STR);
         $checkQuery->execute();
         $checkResponse = $checkQuery->fetch();
 
@@ -52,14 +92,15 @@ class ProgramData
         if ($checkResponse !== false)
         {
             $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartPrograms");
-            $saveQuery->addCondition("SheetName = '" . $this->getSheetName() . "'");
-        } else {
+            $saveQuery->addCondition("SheetName = '" . $sheetName . "'");
             $programDbId = $checkResponse["id"];
+        } else {
             $saveQuery->bindValue("CreateDate", date("Y-m-d H:i:s"), PDO::PARAM_STR);
         }
 
-        $saveQuery->bindValue("SheetName", $this->getSheetName(), PDO::PARAM_STR);
-        $saveQuery->bindValue("UsedSheetNum", $this->getUsedSheetNum(), PDO::PARAM_STR);
+        $usedSheetNum = $this->getUsedSheetNum();
+        $saveQuery->bindValue("SheetName", $sheetName, PDO::PARAM_STR);
+        $saveQuery->bindValue("UsedSheetNum", $usedSheetNum, PDO::PARAM_STR);
         $saveQuery->bindValue("materialId", $materialId, PDO::PARAM_INT);
         $saveQuery->flush();
 
@@ -150,6 +191,14 @@ class ProgramData
     public function addPart(ProgramCardPartData $part)
     {
         $this->Parts[] = $part;
+    }
+
+    /**
+     * @param ProgramCardPartData[] $parts
+     */
+    public function setParts(array $parts)
+    {
+        $this->Parts = $parts;
     }
 
     /**

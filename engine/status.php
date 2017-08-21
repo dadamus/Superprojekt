@@ -89,7 +89,7 @@ function statusCosting($did) {
                 $class = "btn-success";
             }
         }
-        $output .= '<div class="status_icon" id="' . $i . '_status"><a class="' . $class . ' sb btn btn-small" href="#"><i class="' . $STATUS_ICONS[$i] . '"></i></a></div>';
+        $output .= '<div class="status_icon" id="' . $i . '_status"><a class="' . $class . ' sb btn btn-small" href="javascript:;"><i class="' . $STATUS_ICONS[$i] . '"></i></a></div>';
     }
     return $output;
 }

@@ -23,11 +23,16 @@ class plateMultiPartController extends mainController
     }
 
     /**
-     * @param int $programId
+     * @param int $mpwId
      * @return string
      */
-    public function viewProgramCard(int $programId): string
+    public function viewMainCard(int $mpwId): string
     {
-        return "test";
+        $alerts = [];
+        $plateMultiPart = new PlateMultiPart();
+        $plateMultiPart->MakeFromMpwId($mpwId);
+        var_dump($plateMultiPart->getPrograms());
+
+        return $this->render("mainView.php");
     }
 }

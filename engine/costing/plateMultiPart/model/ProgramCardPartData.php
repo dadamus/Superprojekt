@@ -9,6 +9,9 @@
 class ProgramCardPartData
 {
     /** @var  int */
+    private $id;
+
+    /** @var  int */
     private $PartNo;
 
     /** @var  string */
@@ -47,6 +50,9 @@ class ProgramCardPartData
     /** @var  string */
     private $PrgDetAllTime;
 
+    /** @var  int */
+    private $ProgramId;
+
     /**
      * @param array $data
      * @throws Exception
@@ -67,12 +73,20 @@ class ProgramCardPartData
 
     /**
      * @param int $programId
+     * @throws Exception
      */
-    public function SaveData(int $programId)
+    public function SaveData(int $programId = 0)
     {
         global $db;
 
-        $checkQuery = $db->prepare("SELECT id FROM plate_multiPartProgramsPart WHERE PartName = ':partName' AND ProgramId = :programId");
+        if ($programId == 0) {
+            $programId = $this->getProgramId();
+            if ($programId == 0) {
+                throw new \Exception("Brak Id programu!");
+            }
+        }
+
+        $checkQuery = $db->prepare("SELECT id FROM plate_multiPartProgramsPart WHERE PartName = :partName AND ProgramId = :programId");
         $checkQuery->bindValue(":partName", $this->getPartName(), PDO::PARAM_STR);
         $checkQuery->bindValue(":programId", $programId, PDO::PARAM_INT);
         $checkQuery->execute();
@@ -82,6 +96,12 @@ class ProgramCardPartData
         if ($checkQueryResult !== false) {
             $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartProgramsPart");
             $saveQuery->addCondition("PartName = '" . $this->getPartName() . "' AND ProgramId = " . $programId);
+        }
+
+        $partId = $this->getId();
+        if ($partId > 0) {
+            $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartProgramsPart");
+            $saveQuery->addCondition("id = " . $partId);
         }
 
         $saveQuery->bindValue("DetailId", $this->getDetailId(), PDO::PARAM_INT);
@@ -97,6 +117,38 @@ class ProgramCardPartData
         $saveQuery->bindValue("LaserMatName", $this->getLaserMatName(), PDO::PARAM_STR);
         $saveQuery->bindValue("ProgramId", $programId, PDO::PARAM_INT);
         $saveQuery->flush();
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return intval($this->id);
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProgramId(): int
+    {
+        return $this->ProgramId;
+    }
+
+    /**
+     * @param int $ProgramId
+     */
+    public function setProgramId(int $ProgramId)
+    {
+        $this->ProgramId = $ProgramId;
     }
 
     /**

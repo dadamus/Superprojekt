@@ -162,14 +162,13 @@ if (@$_GET["a"] == 6) { // Set default
 <div class="row">
     <div class="col-lg-12">
         <h2 class="page-title">Costing - BLACH
-            <small><?php echo '<a href="/project/3/' . $pid . '/">' . $cname . " / " . $pname . "</a> / " . $dname; ?></small>
+            <small><a href="/project/3/<?= $pid ?>/"><?= $cname ?> / <?= $pname ?></a> / <?= $dname ?></small>
         </h2>
     </div>
 </div>
 <div id="costingList">
     <div class="row">
-        <div class="col-lg-9"></div>
-        <div class="col-lg-3">
+        <div class="col-lg-12" style="text-align: right; margin-bottom: 10px;">
             <a href="#" id="bNew" data-toggle="modal" class="btn btn-success">Dodaj wycene</a>
         </div>
     </div>
@@ -179,9 +178,7 @@ if (@$_GET["a"] == 6) { // Set default
                 <div class="portlet-title">
                     <div style="float: left;"><h3><i class="fa fa-book"></i> Istniejące wyceny detalu: </h3></div>
                     <div class="status_bar">
-                        <?php
-                        echo statusCosting($did);
-                        ?>
+                        <?= statusCosting($did) ?>
                     </div>
                 </div>
                 <div class="portlet-body">
@@ -200,21 +197,47 @@ if (@$_GET["a"] == 6) { // Set default
                         <?php
                         $query = $db->prepare("SELECT `id`, `pieces`, `dimension`, `pricedetailu`, `default` FROM `$cpt` WHERE `did` = '$did'");
                         $query->execute();
-
-                        foreach ($query as $row) {
+                        ?>
+                        <?php foreach ($query as $row): ?>
+                            <?php
                             $def = "";
                             if ($row["default"] == 1) {
                                 $def = '<i class="fa fa-plus"></i>';
                             }
+                            ?>
 
-                            echo '<tr id="' . $row["id"] . '_did"><td>' . $row["id"] . '</td><td>' . $row["pieces"] . '</td><td>' . $row["dimension"] . '</td><td>' . $row["pricedetailu"] . '</td><td style="text-align: center;">' . $def . '</td><td style="text-align: right;"><div class="btn-group"><a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">Opcje<span class="caret"></span></a><ul class="dropdown-menu"><li><a href="#" class="bEdit">Edytuj</a></li><li><a href="#" class="bDef">Domyślny</a></li></ul></div></td></tr>';
+                            <tr id="<?= $row["id"] ?>_did">
+                                <td><?= $row["id"] ?></td>
+                                <td><?= $row["pieces"] ?></td>
+                                <td><?= $row["dimension"] ?></td>
+                                <td><?= $row["pricedetailu"] ?></td>
+                                <td style="text-align: center;"><?= $def ?></td>
+                                <td style="text-align: right;">
+                                    <div class="btn-group">
+                                        <a class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+                                           href="javascript:;" aria-expanded="false">
+                                            Opcje
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="#" class="bEdit">Edytuj</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="bDef">Domyślny</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php
                             if ($query->rowCount() == 1) {
                                 $id = $row["id"];
                                 $query2 = $db->prepare("UPDATE `$cpt` SET `default` = '1' WHERE `id` = '$id'");
                                 $query2->execute();
                             }
-                        }
-                        ?>
+                            ?>
+                        <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
@@ -298,6 +321,7 @@ if (@$_GET["a"] == 6) { // Set default
                             SELECT 
                             parts.ProgramId,
                             m.name as MaterialName,
+                            mpw.id as MpwId,
                             mpw.pieces,
                             programs.CreateDate,
                             mpw.atribute,
@@ -319,9 +343,11 @@ if (@$_GET["a"] == 6) { // Set default
                                 <td><?= $row["CreateDate"] ?></td>
                                 <td></td>
                                 <td>
-                                    <?php foreach (json_decode($row["atribute"]) as $param): ?>
-                                        <?= _getChecboxText($param) ?>
-                                    <?php endforeach; ?>
+                                    <?php if (strlen($row["atribute"]) > 0): ?>
+                                        <?php foreach (json_decode($row["atribute"]) as $param): ?>
+                                            <?= _getChecboxText($param) ?>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php
@@ -338,12 +364,11 @@ if (@$_GET["a"] == 6) { // Set default
                                             $status = 'warning';
                                             break;
                                     }
-
-                                    echo '<span class="label label-' . $status . '">' . $text . '</span>';
                                     ?>
+                                    <span class="label label-<?= $status ?>"><?= $text ?></span>
                                 </td>
                                 <td>
-                                    <a href="javascript:;">
+                                    <a href="/plateMulti/<?= $row["MpwId"] ?>/">
                                         <i class="fa fa-sign-in fa-2x"></i>
                                     </a>
                                 </td>
@@ -374,15 +399,24 @@ if (@$_GET["a"] == 6) { // Set default
                         </thead>
                         <tbody id="autoch">
                         <?php
-                        $autoq = $db->query("SELECT * FROM plate_multiPartCostingDetails WHERE did = $did");
-                        foreach ($autoq as $row) {
-                            echo '<tr>' .
-                                '<td>' . $row["LaserMatName"] . '</td>' .
-                                '<td>' . $row["PreTime"] . '</td>' .
-                                '<td>' . $row["upload_date"] . '</td>' .
-                                '</tr>';
-                        }
+                        $autoq = $db->query("
+                          SELECT
+                          id,
+                          LaserMatName,
+                          PreTime,
+                          upload_date
+                          FROM plate_multiPartCostingDetails 
+                          WHERE did = $did
+                        ");
                         ?>
+                        <?php foreach ($autoq as $row): ?>
+                            <tr>
+                                <td><?= $row["id"] ?></td>
+                                <td><?= $row["LaserMatName"] ?></td>
+                                <td><?= $row["PreTime"] ?></td>
+                                <td><?= $row["upload_date"] ?></td>
+                            </tr>
+                        <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
@@ -397,41 +431,45 @@ if (@$_GET["a"] == 6) { // Set default
                 </div>
                 <div class="portlet-body">
                     <div>
-                        <textarea id="comment" rows="3" class="form-control" id="comment"></textarea>
+                        <textarea id="comment" rows="3" class="form-control"></textarea>
                         <button type="button" class="btn blue btn-block" id="addcoment">Dodaj</button>
                     </div>
                     <div class="timeline">
                         <?php
-                        $commentsq = $db->query("SELECT * FROM `comments` WHERE `type` = '1' AND `eid` = '$did' ORDER BY `id` DESC");
-                        foreach ($commentsq as $row) {
-                            $uid = $row["uid"];
-                            $uq = $db->query("SELECT `name` FROM `accounts` WHERE `id` = '$uid'");
-                            $uf = $uq->fetch();
-                            $user = $uf["name"];
-
-                            echo '<div class="timeline-item">
-                        <div class="timeline-badge">
-                            <div class="timeline-icon">
-                                <i class="icon-users font-green-haze"></i>
-                            </div>
-                        </div>
-                        <div class="timeline-body">
-                            <div class="timeline-body-arrow"></div>
-                            <div class="timeline-body-head">
-                                <div class="timeline-body-head-caption">
-                                    <span class="timeline-body-alerttitle font-blue-madison">' . $user . '</span>
-                                    <span class="timeline-body-time font-grey-cascade">' . $row["date"] . '</span>
+                        $commentsq = $db->query("
+                          SELECT 
+                          c.*,
+                          a.name as user_name
+                          FROM `comments` c
+                          LEFT JOIN accounts a ON a.id = c.uid
+                          WHERE c.`type` = '1' 
+                          AND c.`eid` = '$did' 
+                          ORDER BY c.`id` DESC
+                        ");
+                        ?>
+                        <?php foreach ($commentsq as $row): ?>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="timeline-icon">
+                                        <i class="icon-users font-green-haze"></i>
+                                    </div>
+                                </div>
+                                <div class="timeline-body">
+                                    <div class="timeline-body-arrow"></div>
+                                    <div class="timeline-body-head">
+                                        <div class="timeline-body-head-caption">
+                                            <span class="timeline-body-alerttitle font-blue-madison"><?= $row["user_name"] ?></span>
+                                            <span class="timeline-body-time font-grey-cascade"><?= $row["date"] ?></span>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-body-content">
+                                <span class="font-grey-cascade">
+                                    <?= $row["content"] ?>
+                                </span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="timeline-body-content">
-                                <span class="font-grey-cascade">
-                                    ' . $row["content"] . '
-                                </span>
-                            </div>
-                        </div>
-                    </div>';
-                        }
-                        ?>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -454,11 +492,9 @@ if (@$_GET["a"] == 6) { // Set default
                                 <td style="text-align: right;">Materiał</td>
                                 <td>
                                     <select class="form-control required" name="material" id="materialSelect">
-                                        <?php
-                                        for ($i = 1; $i <= count($material->name); $i++) {
-                                            echo '<option value="' . $i . '">' . $material->name[$i] . '</option>';
-                                        }
-                                        ?>
+                                        <?php for ($i = 1; $i <= count($material->name); $i++): ?>
+                                            <option value="<?= $i ?>"><?= $material->name[$i] ?></option>
+                                        <?php endfor; ?>
                                     </select>
                                 </td>
                             </tr>

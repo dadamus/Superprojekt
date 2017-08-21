@@ -53,14 +53,24 @@ class PlateMultiPart
         $this->MpwUpdate();
     }
 
+    /**
+     * @param int $mpwId
+     */
+    public function MakeFromMpwId(int $mpwId)
+    {
+        $mpw = $this->MPWRepository->getMpwById($mpwId);
+        $this->programs = $this->GetProgramsByMpw($mpw);
+    }
+
     //MPW zeby ramka sie pokazywala
     public function MpwUpdate()
     {
         /** @var ProgramData $program */
         $program = reset($this->programs);
+        $parts = $program->getParts();
 
         /** @var ProgramCardPartData $part */
-        $part = reset($program->getParts());
+        $part = reset($parts);
 
         $detailName = $part->getPartName();
         $mpw = $this->MPWRepository->getMpwByDetailName($detailName);
@@ -74,6 +84,60 @@ class PlateMultiPart
         {
             $program->SaveData();
         }
+    }
+
+    private function GetProgramsByMpw(MPWModel $mpw): array
+    {
+        $parts = $this->GetPartsByMpw($mpw);
+
+        $programsParts = [];
+
+        foreach ($parts as $part) {
+            $programsParts[$part->getProgramId()][] = $part;
+        }
+
+        /** @var ProgramData[] $programs */
+        $programs = [];
+        foreach ($programsParts as $programId => $parts) {
+            $programData = new ProgramData();
+            $programData->getById($programId);
+            $programData->setParts($parts);
+            $programs[] = $programData;
+        }
+
+        return $programs;
+    }
+
+    /**
+     * @param MPWModel $mpw
+     * @return ProgramCardPartData[]
+     */
+    private function GetPartsByMpw(MPWModel $mpw): array
+    {
+        global $db;
+        $mpwId = $mpw->getMpwId();
+
+        $searchQuery = $db->prepare("
+            SELECT 
+            part.*
+            FROM
+            plate_multiPartDetails d
+            LEFT JOIN plate_multiPartProgramsPart part ON part.PartName = d.name
+            WHERE
+            d.mpw = :mpw
+        ");
+        $searchQuery->bindValue(":mpw", $mpwId, PDO::PARAM_INT);
+        $searchQuery->execute();
+
+        $parts = [];
+        while($partData = $searchQuery->fetch(PDO::FETCH_ASSOC)) {
+            $part = new ProgramCardPartData();
+            $part->create($partData);
+            $part->Calculate();
+            $parts[] = $part;
+        }
+
+        return $parts;
     }
 
     /**
@@ -109,22 +173,22 @@ class PlateMultiPart
     private function MatchProgramsToMaterial($programs, $materials): array
     {
         $material = reset($materials);
-        $materialSheetNumber = $material->getUsed§SheetNum();
+        $materialSheetNumber = $material->getUsedSheetNum();
         //Zapisujemy do bazy zeby sie id to samo zapisalo
         $material->save();
 
         foreach ($programs as $program) {
             $program->setMaterial($material);
             $materialSheetNumber -= $program->getSheetCount();
-
             if ($materialSheetNumber <= 0) {
                 if (next($materials) === false)
                 {
                     break;
                 }
+                $material = current($materials);
+                $material->save();
             }
 
-            $material = current($materials);
             $materialSheetNumber = $material->getUsedSheetNum();
         }
 
