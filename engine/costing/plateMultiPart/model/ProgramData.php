@@ -507,7 +507,7 @@ class ProgramData
                 $part->getRectangleAreaRectW() * $material->getThickness() * $material->getDensity() / 1000
             );
             $part->setRectangleAreaTrashWeight(
-                $part->getRectangleAreaRectWWeight() - $part->getRectangleAreaRectWeight()
+                    $part->getRectangleAreaRectWeight() - $part->getRectangleAreaRectWWeight()
             );
             $part->setRemnantValue(
                 $part->getRectangleAreaTrashWeight() * $material->getWaste() * $remnant_factor
