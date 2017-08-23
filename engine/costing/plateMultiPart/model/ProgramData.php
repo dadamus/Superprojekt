@@ -82,7 +82,7 @@ class ProgramData
         while($row = $searchQuery->fetch()) {
             switch($row["name"]) {
                 case "otime":
-                    $this->setPrgOTime(globalTools::calculate_second($row["value"]));
+                    $this->setPrgOTime($row["value"]);
                     break;
                 case "ocost":
                     $this->setPrgOPrice($row["value"]);
