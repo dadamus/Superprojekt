@@ -69,7 +69,7 @@ class ImgFrame
         $this->setId($data["id"]);
         $this->setType($data["type"]);
         $this->setPoints($data["points"]);
-        $this->setValue($data["value"]);
+        $this->setValue(floatval($data["value"]));
         $this->setProgramId($data["programId"]);
 
         $img = new ImgData();
