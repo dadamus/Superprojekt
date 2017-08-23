@@ -528,6 +528,9 @@ class ProgramData
             $part->setRectAllVal(
                 $part->getSurfPer() * $frame->getValue()
             );
+            $part->setRectangleAreaTrashVal(
+                $part->getRectangleAreaTrashWeight() * $material->getWaste() * $remnant_factor
+            );
             $part->setMatValAll(
                 $part->getRectangleAreaRectVal() - $part->getRectangleAreaTrashVal() + $part->getRectAllVal()
             );
