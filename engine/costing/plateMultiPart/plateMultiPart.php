@@ -10,6 +10,9 @@
 require_once dirname(__FILE__) . "/model/PhpData.php";
 require_once dirname(__DIR__) . "/../repository/MPWRepository.php";
 
+/**
+ * Class PlateMultiPart
+ */
 class PlateMultiPart
 {
     /** @var  ProgramData[] */
@@ -18,6 +21,12 @@ class PlateMultiPart
     /** @var  MPWRepository */
     private $MPWRepository;
 
+    /** @var  MPWModel */
+    private $mpw;
+
+    /**
+     * PlateMultiPart constructor.
+     */
     public function __construct()
     {
         $this->MPWRepository = new MPWRepository();
@@ -40,6 +49,14 @@ class PlateMultiPart
     }
 
     /**
+     * @return MPWModel
+     */
+    public function getMPW()
+    {
+        return $this->mpw;
+    }
+
+    /**
      * @param string $data
      */
     public function MakeFromData($data)
@@ -59,6 +76,7 @@ class PlateMultiPart
     public function MakeFromMpwId(int $mpwId)
     {
         $mpw = $this->MPWRepository->getMpwById($mpwId);
+        $this->mpw = $mpw;
         $this->programs = $this->GetProgramsByMpw($mpw);
     }
 
@@ -86,6 +104,10 @@ class PlateMultiPart
         }
     }
 
+    /**
+     * @param MPWModel $mpw
+     * @return array
+     */
     private function GetProgramsByMpw(MPWModel $mpw): array
     {
         $parts = $this->GetPartsByMpw($mpw);

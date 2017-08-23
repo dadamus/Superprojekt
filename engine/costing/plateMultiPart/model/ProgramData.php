@@ -7,9 +7,13 @@
  */
 
 require_once dirname(__FILE__) . "/ProgramCardPartData.php";
+require_once dirname(__FILE__) . "/ImgFrame.php";
 
 class ProgramData
 {
+    /** @var  int */
+    private $id;
+
     /** @var  string */
     private $SheetName;
 
@@ -28,6 +32,7 @@ class ProgramData
     /** @var  int */
     private $ImageId;
 
+    /** @var  ImgFrame */
     private $frame;
 
     /**
@@ -61,6 +66,7 @@ class ProgramData
         }
 
         $this->create($data);
+        $this->setId($programId);
 
         $material = new MaterialData();
         $material->getByMaterialId($data["materialId"]);
@@ -68,12 +74,13 @@ class ProgramData
         $this->getImageByProgramId($programId);
     }
 
+    /**
+     * @param int $programId
+     */
     private function getImageByProgramId(int $programId) {
-        global $db;
-        $searchQuery = $db->prepare("
-            SELECT * 
-            FROM plate_costingFrame
-        ");
+        $frame = new ImgFrame();
+        $frame->getDataByProgramId($programId);
+        $this->setFrame($frame);
     }
 
     public function SaveData()
@@ -127,6 +134,38 @@ class ProgramData
         $insertQuery->bindValue("type", "multiPartCosting", PDO::PARAM_STR);
         $insertQuery->bindValue("programId", $programDbId, PDO::PARAM_INT);
         $insertQuery->flush();
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return ImgFrame
+     */
+    public function getFrame(): ImgFrame
+    {
+        return $this->frame;
+    }
+
+    /**
+     * @param ImgFrame $frame
+     */
+    public function setFrame(ImgFrame $frame)
+    {
+        $this->frame = $frame;
     }
 
     /**

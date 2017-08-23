@@ -1,18 +1,20 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: dawid
  * Date: 20.08.2017
  * Time: 22:58
  */
+
+require_once dirname(__FILE__) . "/ImgData.php";
+
 class ImgFrame
 {
     /** @var  int */
     private $id;
 
-    /** @var  int */
-    private $imgId;
+    /** @var ImgData */
+    private $img;
 
     /** @var  string */
     private $type;
@@ -25,6 +27,55 @@ class ImgFrame
 
     /** @var  int */
     private $programId;
+
+    /**
+     * @param int $programId
+     * @throws Exception
+     */
+    public function getDataByProgramId(int $programId)
+    {
+        global $db;
+
+        $searchQuery = $db->prepare("
+            SELECT 
+            id,
+            imgId,
+            `type`,
+            points,
+            `value`,
+            programId
+            FROM 
+            plate_costingFrame
+            WHERE 
+            programId = :programId
+        ");
+        $searchQuery->bindValue(":programId", $programId, PDO::PARAM_INT);
+        $searchQuery->execute();
+
+        $data = $searchQuery->fetch();
+
+        if ($data === false) {
+            throw new \Exception("Brak ramki dal programu: " . $programId);
+        }
+
+        $this->setData($data);
+    }
+
+    /**
+     * @param array $data
+     */
+    private function setData(array $data)
+    {
+        $this->setId($data["id"]);
+        $this->setType($data["type"]);
+        $this->setPoints($data["points"]);
+        $this->setValue($data["value"]);
+        $this->setProgramId($data["programId"]);
+
+        $img = new ImgData();
+        $img->getDataByImgId($data["imgId"]);
+        $this->setImg($img);
+    }
 
     /**
      * @return int
@@ -43,19 +94,19 @@ class ImgFrame
     }
 
     /**
-     * @return int
+     * @return ImgData
      */
-    public function getImgId(): int
+    public function getImg(): ImgData
     {
-        return $this->imgId;
+        return $this->img;
     }
 
     /**
-     * @param int $imgId
+     * @param ImgData $img
      */
-    public function setImgId(int $imgId)
+    public function setImg(ImgData $img)
     {
-        $this->imgId = $imgId;
+        $this->img = $img;
     }
 
     /**

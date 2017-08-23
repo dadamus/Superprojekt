@@ -431,11 +431,13 @@ class AutoEngineController
 
     private function MultipartPlateCosting()
     {
-        global $db;
-
-        require_once dirname(__DIR__) . "/engine/costing/plateMultiPart/plateMultiPart.php";
-        $plateMultiPart = new PlateMultiPart();
-        $plateMultiPart->MakeFromData($_POST["data"]);
-        return "ok";
+        try {
+            require_once dirname(__DIR__) . "/engine/costing/plateMultiPart/plateMultiPart.php";
+            $plateMultiPart = new PlateMultiPart();
+            $plateMultiPart->MakeFromData($_POST["data"]);
+            return "ok";
+        } catch (\Exception $ex) {
+            return "Wystąpił błąd: " . $ex->getMessage();
+        }
     }
 }

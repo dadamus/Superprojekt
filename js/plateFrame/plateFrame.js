@@ -142,7 +142,7 @@ function calculate()
 	}
 
 	area = Math.abs(area) / 2;
-	return (area * imageSize.dpi * imageSize.dpi);
+	return (area * imageSize.dpi);
 }
 
 function drawConnections() {
@@ -266,9 +266,14 @@ $(document).ready(function () {
 				return true;
 			}
 
+			var frameUrl = site_path + "/engine/costing/plateFrame.php?a=addFrame";
+			if (typeof dest !== "undefined") {
+				frameUrl = dest;
+			}
+
 			$.ajax({
 				data: "dots=" + JSON.stringify(dots_position) + "&areaValue=" + areaValue + "&f=" + frameId,
-				url: site_path + "/engine/costing/plateFrame.php?a=addFrame",
+				url: frameUrl,
 				method: 'POST'
 			}).done(function (msg) {
 				if (msg === "ok") {

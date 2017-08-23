@@ -28,11 +28,37 @@ class plateMultiPartController extends mainController
      */
     public function viewMainCard(int $mpwId): string
     {
+        $frameSetup = false;
         $alerts = [];
+
         $plateMultiPart = new PlateMultiPart();
         $plateMultiPart->MakeFromMpwId($mpwId);
-        var_dump($plateMultiPart->getPrograms());
 
-        return $this->render("mainView.php");
+        $programs = $plateMultiPart->getPrograms();
+        foreach ($programs as $program) {
+            $frame = $program->getFrame();
+
+            if ($frame->getValue() <= 0) {
+                $alerts[] = [
+                    "type" => "warning",
+                    "message" => "Program " . $program->getSheetName() . " nie posiada określonej ramki!"
+                ];
+                $frameSetup = true;
+            }
+        }
+
+        $frameDiv = null;
+        if ($frameSetup) {
+            $frameDiv = $this->render("ImgFrameView.php", [
+                "multiPart" => $plateMultiPart,
+            ]);
+        }
+
+        return $this->render("mainView.php", [
+            "multiPart" => $plateMultiPart,
+            "alerts" => $alerts,
+            "frameSetup" => $frameSetup,
+            "frameView" => $frameDiv
+        ]);
     }
 }
