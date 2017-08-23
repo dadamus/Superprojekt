@@ -90,6 +90,9 @@ class ProgramData
                 case "p_factor":
                     $this->setPriceFactor(floatval($row["value"]));
                     break;
+                case "cut":
+                    $this->setPrgMinPrice(floatval($row["value"]));
+                    break;
             }
         }
 
