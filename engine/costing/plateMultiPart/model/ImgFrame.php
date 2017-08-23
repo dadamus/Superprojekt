@@ -125,18 +125,15 @@ class ImgFrame
         $this->type = $type;
     }
 
-    /**
-     * @return string
-     */
-    public function getPoints(): string
+    public function getPoints()
     {
         return $this->points;
     }
 
     /**
-     * @param string $points
+     * @param string|null $points
      */
-    public function setPoints(string $points)
+    public function setPoints($points)
     {
         $this->points = $points;
     }
