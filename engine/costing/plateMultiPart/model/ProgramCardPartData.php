@@ -93,15 +93,6 @@ class ProgramCardPartData
     private $MatVal;
 
     /** @var  float */
-    private $CleanCut;
-
-    /** @var  float */
-    private $CutAll;
-
-    /** @var  float */
-    private $CompleteCut;
-
-    /** @var  float */
     private $DetailCut;
 
     /** @var  float */
@@ -180,38 +171,6 @@ class ProgramCardPartData
         $saveQuery->bindValue("LaserMatName", $this->getLaserMatName(), PDO::PARAM_STR);
         $saveQuery->bindValue("ProgramId", $programId, PDO::PARAM_INT);
         $saveQuery->flush();
-    }
-
-    /**
-     * @return float
-     */
-    public function getCutAll(): float
-    {
-        return $this->CutAll;
-    }
-
-    /**
-     * @param float $CutAll
-     */
-    public function setCutAll(float $CutAll)
-    {
-        $this->CutAll = $CutAll;
-    }
-
-    /**
-     * @return float
-     */
-    public function getCompleteCut(): float
-    {
-        return $this->CompleteCut;
-    }
-
-    /**
-     * @param float $CompleteCut
-     */
-    public function setCompleteCut(float $CompleteCut)
-    {
-        $this->CompleteCut = $CompleteCut;
     }
 
     /**
@@ -372,22 +331,6 @@ class ProgramCardPartData
     public function setDetailId(int $detailId)
     {
         $this->DetailId = $detailId;
-    }
-
-    /**
-     * @return float
-     */
-    public function getCleanCut(): float
-    {
-        return $this->CleanCut;
-    }
-
-    /**
-     * @param float $CleanCut
-     */
-    public function setCleanCut(float $CleanCut)
-    {
-        $this->CleanCut = $CleanCut;
     }
 
     /**

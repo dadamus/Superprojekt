@@ -20,6 +20,9 @@ class ProgramData
     /** @var  int */
     private $UsedSheetNum;
 
+    /** @var  string */
+    private $PreTime;
+
     /** @var  ProgramCardPartData[] */
     private $Parts;
 
@@ -58,6 +61,12 @@ class ProgramData
 
     /** @var int[] */
     private $DetailAllCount = [];
+
+    /** @var  float */
+    private $CleanCutAll;
+
+    /** @var  float */
+    private $CutAll;
 
     /**
      * ProgramData constructor.
@@ -103,6 +112,54 @@ class ProgramData
         } else {
             $this->DetailAllCount[$detailId] = $count;
         }
+    }
+
+    /**
+     * @return float
+     */
+    public function getCleanCutAll(): float
+    {
+        return $this->CleanCutAll;
+    }
+
+    /**
+     * @param float $CleanCutAll
+     */
+    public function setCleanCutAll(float $CleanCutAll)
+    {
+        $this->CleanCutAll = $CleanCutAll;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPreTime(): string
+    {
+        return $this->PreTime;
+    }
+
+    /**
+     * @param string $PreTime
+     */
+    public function setPreTime(string $PreTime)
+    {
+        $this->PreTime = $PreTime;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCutAll(): float
+    {
+        return $this->CutAll;
+    }
+
+    /**
+     * @param float $CutAll
+     */
+    public function setCutAll(float $CutAll)
+    {
+        $this->CutAll = $CutAll;
     }
 
     /**
@@ -208,6 +265,7 @@ class ProgramData
     {
         $this->setSheetName($data["SheetName"]);
         $this->setUsedSheetNum($data["UsedSheetNum"]);
+        $this->setPreTime($data["PreTime"]);
     }
 
     /**
@@ -274,11 +332,13 @@ class ProgramData
 
         $usedSheetNum = $this->getUsedSheetNum();
         $sheetCount = $this->getSheetCount();
+        $preTime = $this->getPreTime();
 
         $saveQuery->bindValue("SheetName", $sheetName, PDO::PARAM_STR);
         $saveQuery->bindValue("UsedSheetNum", $usedSheetNum, PDO::PARAM_STR);
         $saveQuery->bindValue("materialId", $materialId, PDO::PARAM_INT);
         $saveQuery->bindValue("SheetCount", $sheetCount, PDO::PARAM_INT);
+        $saveQuery->bindValue("PreTime", $preTime, PDO::PARAM_STR);
         $saveQuery->flush();
 
         if ($programDbId === false) {
@@ -521,6 +581,14 @@ class ProgramData
             $this->addDetailAllTCount($part->getDetailId(), $part->getPartCount());
         }
 
+        //Dla calego programu
+        $this->setCleanCutAll(
+            globalTools::calculate_second($this->getPreTime()) * $this->PrgMinPrice
+        );
+        $this->setCutAll(
+            $this->getCleanCutAll() + $this->getPrgOValue()
+        );
+
         /*
          * Petla detali jeszcze raz zeby obliczyc procenty
          */
@@ -540,12 +608,6 @@ class ProgramData
             );
             $part->setMatVal(
                 $part->getMatValAll() / $part->getPartCount()
-            );
-            $part->setCleanCut(
-                globalTools::calculate_second($part->getPrgDetSingleTime()) * $this->PrgMinPrice
-            );
-            $part->setCutAll(
-                $part->getCleanCut() + $this->getPrgOValue()
             );
             $part->setCompleteCut(
                 globalTools::calculate_second($part->getPrgDetAllTime()) / $this->getDetAllTimeC() * $part->getCutAll()
