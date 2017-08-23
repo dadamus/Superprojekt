@@ -586,7 +586,7 @@ class ProgramData
 
         //Dla calego programu
         $this->setCleanCutAll(
-            globalTools::calculate_second($this->getPreTime()) * $this->PrgMinPrice
+            globalTools::calculate_second($this->getPreTime()) / 60 * $this->PrgMinPrice
         );
         $this->setCutAll(
             $this->getCleanCutAll() + $this->getPrgOValue()
