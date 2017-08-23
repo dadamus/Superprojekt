@@ -93,6 +93,9 @@ class ProgramCardPartData
     private $MatVal;
 
     /** @var  float */
+    private $CompleteCut;
+
+    /** @var  float */
     private $DetailCut;
 
     /** @var  float */
@@ -171,6 +174,22 @@ class ProgramCardPartData
         $saveQuery->bindValue("LaserMatName", $this->getLaserMatName(), PDO::PARAM_STR);
         $saveQuery->bindValue("ProgramId", $programId, PDO::PARAM_INT);
         $saveQuery->flush();
+    }
+
+    /**
+     * @return float
+     */
+    public function getCompleteCut(): float
+    {
+        return $this->CompleteCut;
+    }
+
+    /**
+     * @param float $CompleteCut
+     */
+    public function setCompleteCut(float $CompleteCut)
+    {
+        $this->CompleteCut = $CompleteCut;
     }
 
     /**
