@@ -610,7 +610,7 @@ class ProgramData
                 $part->getMatValAll() / $part->getPartCount()
             );
             $part->setCompleteCut(
-                globalTools::calculate_second($part->getPrgDetAllTime()) / $this->getDetAllTimeC() * $part->getCutAll()
+                globalTools::calculate_second($part->getPrgDetAllTime()) / $this->getDetAllTimeC() * $this->getCutAll()
             );
             $part->setDetailCut(
                 $part->getCompleteCut() / $part->getPartCount()
