@@ -276,6 +276,9 @@ $(document).ready(function () {
 				url: frameUrl,
 				method: 'POST'
 			}).done(function (msg) {
+				if (typeof back !== "undefined") {
+					back();
+				}
 				if (msg === "ok") {
 					showSuccess("Zapisalem!");
 				}

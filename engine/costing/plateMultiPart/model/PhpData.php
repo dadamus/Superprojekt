@@ -92,7 +92,18 @@ class PhpData
     {
         global $data_src, $db;
 
-        $newImageName = substr(md5(date("Y-m-d H:i:s")), 0, 6) . "_" . $SheetName . ".bmp";
+        $newImageName = substr(
+            md5(
+                date("Y-m-d H:i:s")
+            ),
+            0,
+            6
+            ) . "_" . str_replace(
+                [" ", "+"],
+                ['-', '-'],
+                $SheetName
+            ) . ".bmp"
+        ;
         $filePath = $data_src . 'temp/' . $programId . '.bmp';
 
         if (!file_exists($filePath)) {

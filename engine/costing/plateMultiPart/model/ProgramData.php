@@ -271,4 +271,18 @@ class ProgramData
     {
         $this->UsedSheetNum = $UsedSheetNum;
     }
+
+    /**
+     * Najwazniejszy event liczmy wszystkie dane
+     */
+    public function Calculate()
+    {
+        $frame = $this->getFrame();
+        $material = $this->getMaterial();
+
+        $frame->setWeight(
+            $frame->getValue() * $material->getThickness() * $material->getDensity() / 1000
+        );
+
+    }
 }

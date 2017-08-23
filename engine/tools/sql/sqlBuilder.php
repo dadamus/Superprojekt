@@ -47,6 +47,14 @@ class sqlBuilder
         $this->type = $type;
     }
 
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
 	/**
 	 * @param $query
 	 * @return PDOStatement

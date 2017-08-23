@@ -28,6 +28,18 @@ class ImgFrame
     /** @var  int */
     private $programId;
 
+    /** @var  float */
+    private $weight;
+
+    /** @var  float */
+    private $areaPrice;
+
+    /** @var  float */
+    private $rmntVal;
+
+    /** @var  float */
+    private $price;
+
     /**
      * @param int $programId
      * @throws Exception
@@ -75,6 +87,28 @@ class ImgFrame
         $img = new ImgData();
         $img->getDataByImgId($data["imgId"]);
         $this->setImg($img);
+    }
+
+    public function save()
+    {
+        global $db;
+        $sqlBuilder = new sqlBuilder(sqlBuilder::INSERT, "plate_costingFrame");
+
+        if ($this->getId() > 0) {
+            $sqlBuilder = new sqlBuilder(sqlBuilder::UPDATE, "plate_costingFrame");
+            $sqlBuilder->addCondition("id = " . $this->getId());
+        }
+
+        $sqlBuilder->bindValue("imgId", $this->getImg()->getId(), PDO::PARAM_INT);
+        $sqlBuilder->bindValue("type", $this->getType(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("points", $this->getPoints(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("value", $this->getValue(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("programId", $this->getProgramId(), PDO::PARAM_INT);
+        $sqlBuilder->flush();
+
+        if ($sqlBuilder->getType() == sqlBuilder::INSERT) {
+            $this->setId($db->lastInsertId());
+        }
     }
 
     /**
@@ -168,5 +202,69 @@ class ImgFrame
     public function setProgramId(int $programId)
     {
         $this->programId = $programId;
+    }
+
+    /**
+     * @return float
+     */
+    public function getWeight(): float
+    {
+        return $this->weight;
+    }
+
+    /**
+     * @param float $weight
+     */
+    public function setWeight(float $weight)
+    {
+        $this->weight = $weight;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAreaPrice(): float
+    {
+        return $this->areaPrice;
+    }
+
+    /**
+     * @param float $areaPrice
+     */
+    public function setAreaPrice(float $areaPrice)
+    {
+        $this->areaPrice = $areaPrice;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRmntVal(): float
+    {
+        return $this->rmntVal;
+    }
+
+    /**
+     * @param float $rmntVal
+     */
+    public function setRmntVal(float $rmntVal)
+    {
+        $this->rmntVal = $rmntVal;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param float $price
+     */
+    public function setPrice(float $price)
+    {
+        $this->price = $price;
     }
 }

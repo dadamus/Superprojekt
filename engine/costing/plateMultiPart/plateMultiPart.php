@@ -57,6 +57,24 @@ class PlateMultiPart
     }
 
     /**
+     * @param int $programId
+     * @return bool|ProgramData
+     */
+    public function getProgramById(int $programId): ProgramData
+    {
+        $programs = $this->getPrograms();
+        for ($i = count($programs) - 1; $i >= 0; $i--) {
+            /** @var ProgramData $program */
+            $program = $programs[$i];
+            if ($program->getId() === $programId) {
+                return $program;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param string $data
      */
     public function MakeFromData($data)
@@ -218,12 +236,12 @@ class PlateMultiPart
     }
 
     /**
-     * Jak juz sobie wszystko dopasujemy to odpalmy ta akcje
+     * Jak juz sobie wszystko dopasujemy zrobimy ramki to odapla sie ten event
      */
     public function Calculate()
     {
-
+        foreach ($this->getPrograms() as $program) {
+            $program->Calculate();
+        }
     }
-
-
 }
