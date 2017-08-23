@@ -43,10 +43,15 @@ switch ($action) {
 
     case "viewMainCard": //Karta glowna wyceny
         $programId = 0;
+        $directoryId = 0;
+
+        if (isset($_GET["directory_id"])) {
+            $directoryId = intval($_GET["directory_id"]);
+        }
         if (isset($_GET["program"])) {
             $programId = intval($_GET["program"]);
         }
 
-        echo $plateMultiPartController->viewMainCard($_GET["mpw_id"], $programId);
+        echo $plateMultiPartController->viewMainCard($directoryId, $programId);
         break;
 }

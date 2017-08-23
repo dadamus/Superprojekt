@@ -32,6 +32,9 @@ class MaterialData
     /** @var  float */
     private $prgSheetPrice;
 
+    /** @var  float */
+    private $waste;
+
     /** @var  int */
     private $id;
 
@@ -155,7 +158,7 @@ class MaterialData
     {
         global $db;
         $dataQuery = $db->prepare("
-          SELECT m.cubic, m.price 
+          SELECT m.cubic, m.price, m.waste
           FROM T_material tm
           LEFT JOIN material m ON m.name = tm.MaterialTypeName
           WHERE tm.MaterialName = :name
@@ -170,6 +173,7 @@ class MaterialData
 
         $this->setDensity(floatval($materialData["cubic"]));
         $this->setPrice(floatval($materialData["price"]));
+        $this->setWaste(floatval($materialData["waste"]));
         $this->calculatePrgSheetPrice();
     }
 
@@ -193,6 +197,22 @@ class MaterialData
             throw  new Exception("Brak materialu o id: " . $materialId);
         }
         $this->create($data);
+    }
+
+    /**
+     * @return float
+     */
+    public function getWaste(): float
+    {
+        return $this->waste;
+    }
+
+    /**
+     * @param float $waste
+     */
+    public function setWaste(float $waste)
+    {
+        $this->waste = $waste;
     }
 
     /**

@@ -23,18 +23,19 @@ class plateMultiPartController extends mainController
     }
 
     /**
-     * @param int $mpwId
+     * @param int $directoryId
      * @param int $programId
      * @return string
      */
-    public function viewMainCard(int $mpwId, int $programId = 0): string
+    public function viewMainCard(int $directoryId, int $programId = 0): string
     {
+        global $db;
         $frameSetup = false;
         $alerts = [];
         $missingFrames = 0;
 
         $plateMultiPart = new PlateMultiPart();
-        $plateMultiPart->MakeFromMpwId($mpwId);
+        $plateMultiPart->MakeFromDirId($directoryId);
 
         $programs = $plateMultiPart->getPrograms();
         foreach ($programs as $program) {
@@ -46,25 +47,26 @@ class plateMultiPartController extends mainController
                     "message" => "Program " . $program->getSheetName() . " nie posiada określonej ramki!"
                 ];
                 $missingFrames++;
-                $frameSetup = true;
+                $frameSetup = $plateMultiPart;
             }
         }
+
 
         if (isset($_POST["dots"])) { //Zapis gotowej ramki
             $this->SaveFrameData($plateMultiPart, $programId);
-
-            if ($missingFrames == 1) { //To byla ostatnia brakujaca ramka
-                $plateMultiPart->Calculate();
-            }
-
             return true;
         }
 
+
         $frameDiv = null;
-        if ($frameSetup) {
+        if ($frameSetup !== false) {
             $frameDiv = $this->render("ImgFrameView.php", [
-                "multiPart" => $plateMultiPart,
+                "multiPart" => $frameSetup,
             ]);
+        }
+
+        if ($frameDiv == null) {
+            $plateMultiPart->Calculate();
         }
 
         return $this->render("mainView.php", [

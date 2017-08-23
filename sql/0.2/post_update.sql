@@ -14,60 +14,60 @@ CREATE TABLE IF NOT EXISTS `plate_multiPartDirectories` (
 
 CREATE TABLE IF NOT EXISTS `plate_multiPartDetails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(32),
-  `mpw` int(11),
-  `did` int(11),
-  `src` varchar(32),
+  `name` VARCHAR(32) DEFAULT null,
+  `mpw` int(11) DEFAULT null,
+  `did` int(11) DEFAULT null,
+  `src` varchar(32) DEFAULT null,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `plate_multiPartCostingDetails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `did` int(11),
-  `LaserMatName` varchar(64),
-  `PreTime` varchar(16),
-  `upload_date` datetime,
+  `did` int(11) DEFAULT null,
+  `LaserMatName` varchar(64) DEFAULT null,
+  `PreTime` varchar(16) DEFAULT null,
+  `upload_date` datetime DEFAULT null,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `plate_multiPartPrograms` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `SheetName` varchar(64),
-  `materialId` int(11),
-  `UsedSheetNum` int(11)  ,
-  `CreateDate` datetime  ,
+  `SheetName` varchar(64) DEFAULT null,
+  `materialId` int(11) DEFAULT null,
+  `UsedSheetNum` int(11) DEFAULT null,
+  `CreateDate` datetime DEFAULT null,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `plate_multiPartProgramsPart` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `DetailId` INT(11) ,
-  `PartNo` int(11)  ,
-  `PartName` varchar(64)  ,
-  `PartCount` float  ,
-  `UnfoldXSize` float  ,
-  `UnfoldYSize` float  ,
-  `RectangleArea` float  ,
-  `RectangleAreaW` float  ,
-  `RectangleAreaWO` float  ,
-  `Weight` float  ,
-  `LaserMatName` varchar(64)  ,
-  `ProgramId` int(11)  ,
-  `CreateDate` datetime  ,
+  `DetailId` INT(11) DEFAULT null,
+  `PartNo` int(11) DEFAULT null,
+  `PartName` varchar(64) DEFAULT null,
+  `PartCount` float DEFAULT null,
+  `UnfoldXSize` float DEFAULT null,
+  `UnfoldYSize` float DEFAULT null,
+  `RectangleArea` float DEFAULT null,
+  `RectangleAreaW` float DEFAULT null,
+  `RectangleAreaWO` float DEFAULT null,
+  `Weight` float DEFAULT null,
+  `LaserMatName` varchar(64) DEFAULT null,
+  `ProgramId` int(11) DEFAULT null,
+  `CreateDate` datetime DEFAULT null,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `plate_multiPartCostingMaterial` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `SheetCode` varchar(65)  ,
-  `UsedSheetNum` int(11)  ,
-  `MatName` varchar(32)  ,
-  `thickness` float  ,
-  `SheetSize` varchar(32)  ,
-  `density` float  ,
-  `price` float  ,
-  `prgSheetPrice` float  ,
-  `created_ad` datetime  ,
+  `SheetCode` varchar(65) DEFAULT null,
+  `UsedSheetNum` int(11)  DEFAULT null,
+  `MatName` varchar(32) DEFAULT null,
+  `thickness` float DEFAULT null,
+  `SheetSize` varchar(32) DEFAULT null,
+  `density` float DEFAULT null,
+  `price` float DEFAULT null,
+  `prgSheetPrice` float DEFAULT null,
+  `created_ad` datetime DEFAULT null,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 

@@ -66,6 +66,7 @@ class createMPWController extends mainController
         $mpwQuery->bindValue("date", date("Y-m-d H:i:s"), PDO::PARAM_STR);
         $mpwQuery->bindValue("type", OT::AUTO_WYCENA_BLACH_MULTI_KROK_1, PDO::PARAM_INT);
         $mpwQuery->bindValue("atribute", $mpw->getAttributes(), PDO::PARAM_STR);
+        $mpwQuery->bindValue("plate_multiDirectory", $mpw->getMpwDirectory(), PDO::PARAM_INT);
         $mpwQuery->flush();
 
         $mpw->setMpwId($db->lastInsertId());

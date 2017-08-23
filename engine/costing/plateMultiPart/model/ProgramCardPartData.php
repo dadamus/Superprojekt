@@ -53,6 +53,69 @@ class ProgramCardPartData
     /** @var  int */
     private $ProgramId;
 
+    /** @var  float */
+    private $RectangleAreaRectAll;
+
+    /** @var  float */
+    private $RectangleAreaRectW;
+
+    /** @var  float */
+    private $RectangleAreaRectTrash;
+
+    /** @var  float */
+    private $RectangleAreaRectVal;
+
+    /** @var  float */
+    private $RectangleAreaRectWeight;
+
+    /** @var  float */
+    private $RectangleAreaRectWWeight;
+
+    /** @var  float */
+    private $RectangleAreaTrashWeight;
+
+    /** @var  float */
+    private $RectangleAreaTrashVal;
+
+    /** @var  float */
+    private $RemnantValue;
+
+    /** @var  float */
+    private $SurfPer;
+
+    /** @var  float */
+    private $RectAllVal;
+
+    /** @var  float */
+    private $MatValAll;
+
+    /** @var  float */
+    private $MatVal;
+
+    /** @var  float */
+    private $CleanCut;
+
+    /** @var  float */
+    private $CutAll;
+
+    /** @var  float */
+    private $CompleteCut;
+
+    /** @var  float */
+    private $DetailCut;
+
+    /** @var  float */
+    private $AllSheetQty;
+
+    /** @var  float */
+    private $ComplAllPrice;
+
+    /** @var  float */
+    private $PriceKg;
+
+    /** @var  float */
+    private $LastPrice;
+
     /**
      * @param array $data
      * @throws Exception
@@ -120,6 +183,134 @@ class ProgramCardPartData
     }
 
     /**
+     * @return float
+     */
+    public function getCutAll(): float
+    {
+        return $this->CutAll;
+    }
+
+    /**
+     * @param float $CutAll
+     */
+    public function setCutAll(float $CutAll)
+    {
+        $this->CutAll = $CutAll;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCompleteCut(): float
+    {
+        return $this->CompleteCut;
+    }
+
+    /**
+     * @param float $CompleteCut
+     */
+    public function setCompleteCut(float $CompleteCut)
+    {
+        $this->CompleteCut = $CompleteCut;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDetailCut(): float
+    {
+        return $this->DetailCut;
+    }
+
+    /**
+     * @param float $DetailCut
+     */
+    public function setDetailCut(float $DetailCut)
+    {
+        $this->DetailCut = $DetailCut;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAllSheetQty(): float
+    {
+        return $this->AllSheetQty;
+    }
+
+    /**
+     * @param float $AllSheetQty
+     */
+    public function setAllSheetQty(float $AllSheetQty)
+    {
+        $this->AllSheetQty = $AllSheetQty;
+    }
+
+    /**
+     * @return float
+     */
+    public function getComplAllPrice(): float
+    {
+        return $this->ComplAllPrice;
+    }
+
+    /**
+     * @param float $ComplAllPrice
+     */
+    public function setComplAllPrice(float $ComplAllPrice)
+    {
+        $this->ComplAllPrice = $ComplAllPrice;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPriceKg(): float
+    {
+        return $this->PriceKg;
+    }
+
+    /**
+     * @param float $PriceKg
+     */
+    public function setPriceKg(float $PriceKg)
+    {
+        $this->PriceKg = $PriceKg;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLastPrice(): float
+    {
+        return $this->LastPrice;
+    }
+
+    /**
+     * @param float $LastPrice
+     */
+    public function setLastPrice(float $LastPrice)
+    {
+        $this->LastPrice = $LastPrice;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRemnantValue(): float
+    {
+        return $this->RemnantValue;
+    }
+
+    /**
+     * @param float $RemnantValue
+     */
+    public function setRemnantValue(float $RemnantValue)
+    {
+        $this->RemnantValue = $RemnantValue;
+    }
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -181,6 +372,214 @@ class ProgramCardPartData
     public function setDetailId(int $detailId)
     {
         $this->DetailId = $detailId;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCleanCut(): float
+    {
+        return $this->CleanCut;
+    }
+
+    /**
+     * @param float $CleanCut
+     */
+    public function setCleanCut(float $CleanCut)
+    {
+        $this->CleanCut = $CleanCut;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSurfPer(): float
+    {
+        return $this->SurfPer;
+    }
+
+    /**
+     * @param float $SurfPer
+     */
+    public function setSurfPer(float $SurfPer)
+    {
+        $this->SurfPer = $SurfPer;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectAllVal(): float
+    {
+        return $this->RectAllVal;
+    }
+
+    /**
+     * @param float $RectAllVal
+     */
+    public function setRectAllVal(float $RectAllVal)
+    {
+        $this->RectAllVal = $RectAllVal;
+    }
+
+    /**
+     * @return float
+     */
+    public function getMatValAll(): float
+    {
+        return $this->MatValAll;
+    }
+
+    /**
+     * @param float $MatValAll
+     */
+    public function setMatValAll(float $MatValAll)
+    {
+        $this->MatValAll = $MatValAll;
+    }
+
+    /**
+     * @return float
+     */
+    public function getMatVal(): float
+    {
+        return $this->MatVal;
+    }
+
+    /**
+     * @param float $MatVal
+     */
+    public function setMatVal(float $MatVal)
+    {
+        $this->MatVal = $MatVal;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaRectAll(): float
+    {
+        return $this->RectangleAreaRectAll;
+    }
+
+    /**
+     * @param float $RectangleAreaRectAll
+     */
+    public function setRectangleAreaRectAll(float $RectangleAreaRectAll)
+    {
+        $this->RectangleAreaRectAll = $RectangleAreaRectAll;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaRectW(): float
+    {
+        return $this->RectangleAreaRectW;
+    }
+
+    /**
+     * @param float $RectangleAreaRectW
+     */
+    public function setRectangleAreaRectW(float $RectangleAreaRectW)
+    {
+        $this->RectangleAreaRectW = $RectangleAreaRectW;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaRectTrash(): float
+    {
+        return $this->RectangleAreaRectTrash;
+    }
+
+    /**
+     * @param float $RectangleAreaRectTrash
+     */
+    public function setRectangleAreaRectTrash(float $RectangleAreaRectTrash)
+    {
+        $this->RectangleAreaRectTrash = $RectangleAreaRectTrash;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaRectVal(): float
+    {
+        return $this->RectangleAreaRectVal;
+    }
+
+    /**
+     * @param float $RectangleAreaRectVal
+     */
+    public function setRectangleAreaRectVal(float $RectangleAreaRectVal)
+    {
+        $this->RectangleAreaRectVal = $RectangleAreaRectVal;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaRectWeight(): float
+    {
+        return $this->RectangleAreaRectWeight;
+    }
+
+    /**
+     * @param float $RectangleAreaRectWeight
+     */
+    public function setRectangleAreaRectWeight(float $RectangleAreaRectWeight)
+    {
+        $this->RectangleAreaRectWeight = $RectangleAreaRectWeight;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaRectWWeight(): float
+    {
+        return $this->RectangleAreaRectWWeight;
+    }
+
+    /**
+     * @param float $RectangleAreaRectWWeight
+     */
+    public function setRectangleAreaRectWWeight(float $RectangleAreaRectWWeight)
+    {
+        $this->RectangleAreaRectWWeight = $RectangleAreaRectWWeight;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaTrashWeight(): float
+    {
+        return $this->RectangleAreaTrashWeight;
+    }
+
+    /**
+     * @param float $RectangleAreaTrashWeight
+     */
+    public function setRectangleAreaTrashWeight(float $RectangleAreaTrashWeight)
+    {
+        $this->RectangleAreaTrashWeight = $RectangleAreaTrashWeight;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaTrashVal(): float
+    {
+        return $this->RectangleAreaTrashVal;
+    }
+
+    /**
+     * @param float $RectangleAreaTrashVal
+     */
+    public function setRectangleAreaTrashVal(float $RectangleAreaTrashVal)
+    {
+        $this->RectangleAreaTrashVal = $RectangleAreaTrashVal;
     }
 
     /**

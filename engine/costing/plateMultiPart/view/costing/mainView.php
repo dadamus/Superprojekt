@@ -3,6 +3,11 @@
         <h2 class="page-title">Costing - multipart </h2>
     </div>
 </div>
+
+<pre>
+    <?= var_dump($data["multiPart"]) ?>
+</pre>
+
 <div class="row">
     <div class="col-lg-12">
         <?php foreach ($data["alerts"] as $alert): ?>
@@ -13,7 +18,7 @@
     </div>
 </div>
 <div class="row">
-    <?php if ($data["frameSetup"]): ?>
+    <?php if ($data["frameSetup"] !== false): ?>
         <?= $data["frameView"] ?>
     <?php else: ?>
         ramka jest ok

@@ -26,5 +26,6 @@ class OT
 
     const AUTO_WYCENA_BLACH_MULTI_KROK_1 = 12;
     const AUTO_WYCENA_BLACH_MULTI_KROK_2 = 13;
+    const AUTO_WYCENA_BLACH_MULTI_KROK_3 = 14;
 
 }

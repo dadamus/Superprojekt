@@ -21,8 +21,11 @@ class PlateMultiPart
     /** @var  MPWRepository */
     private $MPWRepository;
 
-    /** @var  MPWModel */
-    private $mpw;
+    /** @var  float */
+    private $remnantFactor;
+
+    /** @var  int */
+    private $dirId;
 
     /**
      * PlateMultiPart constructor.
@@ -30,6 +33,41 @@ class PlateMultiPart
     public function __construct()
     {
         $this->MPWRepository = new MPWRepository();
+        $this->getDbSettings();
+    }
+
+    public function getDbSettings()
+    {
+        global $db;
+
+        $dataQuery = $db->query("
+            SELECT *
+            FROM settings
+        ");
+
+        while ($row = $dataQuery->fetch()) {
+            switch($row["name"]) {
+                case "remnant_factor":
+                    $this->setRemnantFactor(floatval($row["value"]));
+                    break;
+            }
+        }
+    }
+
+    /**
+     * @return float
+     */
+    public function getRemnantFactor(): float
+    {
+        return $this->remnantFactor;
+    }
+
+    /**
+     * @param float $remnantFactor
+     */
+    public function setRemnantFactor(float $remnantFactor)
+    {
+        $this->remnantFactor = $remnantFactor;
     }
 
     /**
@@ -46,14 +84,6 @@ class PlateMultiPart
     public function getPrograms()
     {
         return $this->programs;
-    }
-
-    /**
-     * @return MPWModel
-     */
-    public function getMPW()
-    {
-        return $this->mpw;
     }
 
     /**
@@ -89,29 +119,48 @@ class PlateMultiPart
     }
 
     /**
-     * @param int $mpwId
+     * @return int
      */
-    public function MakeFromMpwId(int $mpwId)
+    public function getDirId(): int
     {
-        $mpw = $this->MPWRepository->getMpwById($mpwId);
-        $this->mpw = $mpw;
-        $this->programs = $this->GetProgramsByMpw($mpw);
+        return $this->dirId;
+    }
+
+    /**
+     * @param int $dirId
+     */
+    public function setDirId(int $dirId)
+    {
+        $this->dirId = $dirId;
+    }
+
+    /**
+     * @param int $dirId
+     */
+    public function MakeFromDirId(int $dirId)
+    {
+        $this->setDirId($dirId);
+        $this->programs = $this->GetProgramsByDirId($dirId);
     }
 
     //MPW zeby ramka sie pokazywala
     public function MpwUpdate()
     {
-        /** @var ProgramData $program */
-        $program = reset($this->programs);
-        $parts = $program->getParts();
+        $mpws = [];
+        foreach ($this->programs as $program) {
+            foreach ($program->getParts() as $part) {
+                $detailName = $part->getPartName();
+                $mpw = $this->MPWRepository->getMpwByDetailName($detailName);
 
-        /** @var ProgramCardPartData $part */
-        $part = reset($parts);
+                if (isset($mpws[$mpw->getMpwId()])) {
+                    continue;
+                }
 
-        $detailName = $part->getPartName();
-        $mpw = $this->MPWRepository->getMpwByDetailName($detailName);
-        $mpw->setType(OT::AUTO_WYCENA_BLACH_MULTI_KROK_2);
-        $mpw->save();
+                $mpws[$mpw->getMpwId()] = true;
+                $mpw->setType(OT::AUTO_WYCENA_BLACH_MULTI_KROK_2);
+                $mpw->save();
+            }
+        }
     }
 
     public function SaveData()
@@ -123,12 +172,12 @@ class PlateMultiPart
     }
 
     /**
-     * @param MPWModel $mpw
+     * @param int $dirId
      * @return array
      */
-    private function GetProgramsByMpw(MPWModel $mpw): array
+    private function GetProgramsByDirId(int $dirId): array
     {
-        $parts = $this->GetPartsByMpw($mpw);
+        $parts = $this->GetPartsByDirId($dirId);
 
         $programsParts = [];
 
@@ -149,13 +198,12 @@ class PlateMultiPart
     }
 
     /**
-     * @param MPWModel $mpw
-     * @return ProgramCardPartData[]
+     * @param int $dirId
+     * @return array
      */
-    private function GetPartsByMpw(MPWModel $mpw): array
+    private function GetPartsByDirId(int $dirId): array
     {
         global $db;
-        $mpwId = $mpw->getMpwId();
 
         $searchQuery = $db->prepare("
             SELECT 
@@ -164,9 +212,9 @@ class PlateMultiPart
             plate_multiPartDetails d
             LEFT JOIN plate_multiPartProgramsPart part ON part.PartName = d.name
             WHERE
-            d.mpw = :mpw
+            d.dirId = :dirId
         ");
-        $searchQuery->bindValue(":mpw", $mpwId, PDO::PARAM_INT);
+        $searchQuery->bindValue(":dirId", $dirId, PDO::PARAM_INT);
         $searchQuery->execute();
 
         $parts = [];
@@ -241,7 +289,7 @@ class PlateMultiPart
     public function Calculate()
     {
         foreach ($this->getPrograms() as $program) {
-            $program->Calculate();
+            $program->Calculate($this->getRemnantFactor());
         }
     }
 }

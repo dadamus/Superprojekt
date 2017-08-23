@@ -95,7 +95,7 @@ $breakLoop = false;
                             dpi: <?= ($materialData->getSheetSizeX() / $imageSize["width"] * $bmpCutter->getScale()) ?>
                         };
 
-                        var dest = "/plateMulti/<?= $multiPart->getMPW()->getMpwId() ?>/<?= $program->getId() ?>/";
+                        var dest = "/plateMulti/<?= $multiPart->getDirId() ?>/<?= $program->getId() ?>/";
                         var back = function () {
                             location.reload();
                         };
