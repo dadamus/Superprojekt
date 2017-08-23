@@ -232,6 +232,7 @@ class ProgramData
         }
 
         $this->create($data);
+        $this->setSheetCount($data["SheetCount"]);
         $this->setId($programId);
 
         $material = new MaterialData();
@@ -272,9 +273,12 @@ class ProgramData
         }
 
         $usedSheetNum = $this->getUsedSheetNum();
+        $sheetCount = $this->getSheetCount();
+
         $saveQuery->bindValue("SheetName", $sheetName, PDO::PARAM_STR);
         $saveQuery->bindValue("UsedSheetNum", $usedSheetNum, PDO::PARAM_STR);
         $saveQuery->bindValue("materialId", $materialId, PDO::PARAM_INT);
+        $saveQuery->bindValue("SheetCount", $sheetCount, PDO::PARAM_INT);
         $saveQuery->flush();
 
         if ($programDbId === false) {
