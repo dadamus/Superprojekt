@@ -98,7 +98,11 @@ class ProgramData
 
     public function addDetailAllTCount(int $detailId, int $count)
     {
-        $this->DetailAllCount[$detailId] += $count;
+        if (isset($this->DetailAllCount[$detailId])) {
+            $this->DetailAllCount[$detailId] += $count;
+        } else {
+            $this->DetailAllCount[$detailId] = $count;
+        }
     }
 
     /**
