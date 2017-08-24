@@ -48,17 +48,17 @@
                             ?>
                             <button type="button" class="btn btn-sm md-skip dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                                 <i class="icon-bell"></i>
-                                <span class="badge" id="nnl_1"><?php echo $notifi["size"]; ?></span>
+                                <span class="badge" id="nnl_1"><?= $notifi["size"] ?></span>
                             </button>
                             <ul class="dropdown-menu-v2">
                                 <li class="external">
                                     <h3>
-                                        <span class="bold"><span id="nnl_2"><?php echo $notifi["size"]; ?></span> nowych</span> powiadomień</h3>
+                                        <span class="bold"><span id="nnl_2"><?= $notifi["size"] ?></span> nowych</span> powiadomień</h3>
                                     <a href="#">pokaż więcej</a>
                                 </li>
                                 <li>
                                     <ul id="nnlist" class="dropdown-menu-list scroller" style="height: 250px; padding: 0;" data-handle-color="#637283">
-                                        <?php echo $notifi["content"]; ?>
+                                        <?= $notifi["content"] ?>
                                     </ul>
                                 </li>
                             </ul>
@@ -79,11 +79,11 @@
                         <!-- BEGIN USER PROFILE -->
                         <div class="btn-group-img btn-group">
                             <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                                <span>Witaj, <?php echo $_SESSION["nick"]; ?></span>
-                                <img src="<?php echo $site_path; ?>/assets/layouts/layout/img/avatar.png" alt=""> </button>
+                                <span>Witaj, <?= $_SESSION["nick"]; ?></span>
+                                <img src="<?= $site_path ?>/assets/layouts/layout/img/avatar.png" alt=""> </button>
                             <ul class="dropdown-menu-v2" role="menu">
                                 <li>
-                                    <a href="<?php echo $site_path ?>/site/200/kalendarz">
+                                    <a href="<?= $site_path ?>/site/200/kalendarz">
                                         <i class="icon-calendar"></i>Kalendarz</a>
                                 </li>
                                 <li class="divider"> </li>
@@ -92,7 +92,7 @@
                                         <i class="icon-lock"></i>Zablokuj</a>
                                 </li>
                                 <li>
-                                    <a href="<?php echo $site_path; ?>/engine/logout.php">
+                                    <a href="<?= $site_path ?>/engine/logout.php">
                                         <i class="icon-key"></i>Wyloguj</a>
                                 </li>
                             </ul>
@@ -114,36 +114,36 @@
                             <a href="javascript:;" class="text-uppercase">
                                 <i class="icon-home"></i> Dashboard </a>
                             <ul class="dropdown-menu dropdown-menu-fw">
-                                <li><a href="<?php echo $site_path ?>/"><i class="icon-bar-chart"></i> Default </a></li>
-                                <li><a href="<?php echo $site_path ?>/site/200/kalendarz"><i class="fa fa-calendar"></i> Kalendarz</a></li>
-                                <li><a href="<?php echo $site_path ?>/site/18/zadania"><i class="fa fa-clock-o"></i> Zadania</a></li>
-                                <li><a href="<?php echo $site_path ?>/site/19/statusy"><i class="fa fa-info-circle"></i> Statusy</a></li>
+                                <li><a href="<?= $site_path ?>/"><i class="icon-bar-chart"></i> Default </a></li>
+                                <li><a href="<?= $site_path ?>/site/200/kalendarz"><i class="fa fa-calendar"></i> Kalendarz</a></li>
+                                <li><a href="<?= $site_path ?>/site/18/zadania"><i class="fa fa-clock-o"></i> Zadania</a></li>
+                                <li><a href="<?= $site_path ?>/site/19/statusy"><i class="fa fa-info-circle"></i> Statusy</a></li>
                             </ul>
                         </li>
                         <li class="dropdown dropdown-fw active" id="mb2">
                             <a href="javascript:;" class="text-uppercase">
                                 <i class="icon-calculator"></i> Costing </a>
                             <ul class="dropdown-menu dropdown-menu-fw">
-                                <li><a href="<?php echo $site_path; ?>/site/3/blachy"><i class="fa fa-map-o"></i> Blachy</a></li> 
-                                <li><a href="<?php echo $site_path; ?>/site/4/profile"><i class="fa fa-bars"></i> Profile</a></li> 
-                                <li><a href="#"><i class="fa fa-eur"></i> Menager cen</a></li>
+                                <li><a href="<?= $site_path ?>/site/3/blachy"><i class="fa fa-map-o"></i> Blachy</a></li>
+                                <li><a href="<?= $site_path ?>/site/4/profile"><i class="fa fa-bars"></i> Profile</a></li>
+                                <li><a href="<?= $site_path ?>/site/29/multipart"><i class="fa fa-eur"></i> Multipart</a></li>
                             </ul>
                         </li>
                         <li class="dropdown dropdown-fw active" id="mb3">
                             <a href="javascript:;" class="text-uppercase">
                                 <i class="icon-users"></i> CRM </a>
                             <ul class="dropdown-menu dropdown-menu-fw">
-                                <li><a href="<?php echo $site_path; ?>/site/6/klienci"><i class="fa fa-male"></i> Baza klientów </a></li>
-                                <li><a href="<?php echo $site_path; ?>/site/7/projekty"><i class="fa fa-folder-open"></i> Projekty </a></li>
-                                <li><a href="<?php echo $site_path; ?>/site/8/detale"><i class="fa fa-th-large"></i> Spis detali</a></li>
-                                <li><a href="<?php echo $site_path; ?>/site/17/blachy"><i class="fa fa-clone"></i> Magazyn blach</a></li>
+                                <li><a href="<?= $site_path ?>/site/6/klienci"><i class="fa fa-male"></i> Baza klientów </a></li>
+                                <li><a href="<?= $site_path ?>/site/7/projekty"><i class="fa fa-folder-open"></i> Projekty </a></li>
+                                <li><a href="<?= $site_path ?>/site/8/detale"><i class="fa fa-th-large"></i> Spis detali</a></li>
+                                <li><a href="<?= $site_path ?>/site/17/blachy"><i class="fa fa-clone"></i> Magazyn blach</a></li>
                             </ul>
                         </li>
                         <li class="dropdown dropdown-fw active" id="mb4">
                             <a href="javascript:;" class="text-uppercase">
                                 <i class="icon-screen-desktop"></i> Panel Operatora</a>
                             <ul class="dropdown-menu dropdown-menu-fw">
-                                <li><a href="<?php echo $site_path; ?>/site/15/operator"><i class="fa fa-play"></i> Programy pod cięcie</a></li>
+                                <li><a href="<?= $site_path ?>/site/15/operator"><i class="fa fa-play"></i> Programy pod cięcie</a></li>
                                 <li><a href="#"><i class="fa fa-pause"></i> Programy pocięte</a></li>
                             </ul>
                         </li>
@@ -236,6 +236,10 @@
 				case 20: //Plate costing frame
 					include dirname(__FILE__) . '/costing/plateFrame.php';
 					break;
+                case 29:
+                    $mb = 2;
+                    include dirname(__FILE__) . '/costing/multiPart.php';
+                    break;
                 case 30: //Program card
                     $mb = 2;
                     include dirname(__FILE__) . '/costing/plateMultiPart.php';
@@ -325,6 +329,6 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".selected").removeClass("open selected");
-        $("#mb<?php echo $mb; ?>").addClass("open selected");
+        $("#mb<?= $mb; ?>").addClass("open selected");
     });
 </script>
