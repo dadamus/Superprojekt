@@ -546,7 +546,6 @@ class MPWModel
             $detailNewName .= "." . $detailExt;
 
             $detailOldPath = $projectPath . "/V" . $this->getVersion() . "/dxf/" . $detailName;
-            echo $detailOldPath ." new: " . $mpwPath . "/" . $detailNewName;
             copy($detailOldPath, $mpwPath . "/" . $detailNewName);
 
             $insertQuery->bindValue(":mpw", $this->getMpwId(), PDO::PARAM_INT);
