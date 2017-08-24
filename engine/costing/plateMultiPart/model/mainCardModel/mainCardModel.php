@@ -51,8 +51,9 @@ class mainCardModel
                     $this->clientModels[$client->getClientId()] = $client;
                 }
 
-                $checkDetail = $client->getDetail($project->getDetailName());
+                $checkDetail = $client->getDetail($detailId);
                 $addDetail = false;
+
                 if (
                     $checkDetail != false
                     &&
@@ -70,7 +71,7 @@ class mainCardModel
                 $client->addMaterial($program->getMaterial(), $program);
 
                 if ($addDetail) {
-                    $client->addDetail($detailData);
+                    $client->addDetail($detailId, $detailData);
                 }
             }
 

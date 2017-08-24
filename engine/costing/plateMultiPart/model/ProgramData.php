@@ -607,7 +607,7 @@ class ProgramData
                 $part->getRectangleAreaTrashWeight() * $material->getWaste() * $remnant_factor
             );
             $part->setMatValAll(
-                $part->getRectangleAreaRectVal() - $part->getRectangleAreaTrashVal() + $part->getRectAllVal()
+                $part->getRectangleAreaRectVal() - $part->getRectangleAreaTrashVal() + $frame->getPrice()
             );
             $part->setMatVal(
                 $part->getMatValAll() / $part->getPartCount()

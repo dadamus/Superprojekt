@@ -64,21 +64,22 @@ class mainCardClientModel
     }
 
     /**
+     * @param int $detailId
      * @param mainCardDetailModel $detail
      */
-    public function addDetail(mainCardDetailModel $detail)
+    public function addDetail(int $detailId, mainCardDetailModel $detail)
     {
-        $this->details[$detail->getProject()->getDetailName()] = $detail;
+        $this->details[$detailId] = $detail;
     }
 
     /**
-     * @param string $detailName
+     * @param int $detailId
      * @return bool|mainCardDetailModel
      */
-    public function getDetail(string $detailName)
+    public function getDetail(int $detailId)
     {
-        if (isset($this->details[$detailName])) {
-            return $this->details[$detailName];
+        if (isset($this->details[$detailId])) {
+            return $this->details[$detailId];
         }
         return false;
     }
