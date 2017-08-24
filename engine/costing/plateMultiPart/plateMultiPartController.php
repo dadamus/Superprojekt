@@ -36,6 +36,7 @@ class plateMultiPartController extends mainController
         $missingFrames = 0;
 
         $plateMultiPart = new PlateMultiPart();
+        $mainCardModel = new mainCardModel($plateMultiPart);
         $plateMultiPart->MakeFromDirId($directoryId);
 
         $programs = $plateMultiPart->getPrograms();
@@ -68,9 +69,8 @@ class plateMultiPartController extends mainController
 
         if ($frameDiv == null) {
             $plateMultiPart->Calculate();
+            $mainCardModel->make($plateMultiPart->getRemnantFactor());
         }
-        $mainCardModel = new mainCardModel($plateMultiPart);
-        $mainCardModel->make($plateMultiPart->getRemnantFactor());
 
         return $this->render("mainView.php", [
             "multiPart" => $plateMultiPart,
