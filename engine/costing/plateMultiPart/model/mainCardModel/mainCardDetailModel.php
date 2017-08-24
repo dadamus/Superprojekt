@@ -74,7 +74,7 @@ class mainCardDetailModel
             $this->getCutAll() + ($data->getComplAllPrice() * $sheetCount * $this->getPriceFactor())
         );
         $this->setMatAll(
-            $this->getMatAll() + ($data->getMatValAll() * $data->getPartCount())
+            $this->getMatAll() + ($data->getMatValAll() * $sheetCount)
         );
         $this->setCountAll(
             $this->getCountAll() + $data->getAllSheetQty()
