@@ -48,6 +48,17 @@ class mainCardDetailModel
     /** @var  float */
     private $SztB;
 
+    private $AllWeight;
+
+    /** @var  float */
+    private $PrcKgN;
+
+    /** @var  float */
+    private $PrcKgB;
+
+    /** @var  float */
+    private $Weight;
+
     /**
      * @return mainCardProjectModel
      */
@@ -79,6 +90,9 @@ class mainCardDetailModel
         $this->setCountAll(
             $this->getCountAll() + $data->getAllSheetQty()
         );
+        $this->setAllWeight(
+            $data->getWeight() * $data->getAllSheetQty()
+        );
     }
 
     /**
@@ -104,6 +118,76 @@ class mainCardDetailModel
         $this->setSztB(
             round($this->getSztN() * 1.23, 2)
         );
+        $this->setPrcKgN(
+            round($this->getKomN() / $this->getAllWeight(), 2)
+        );
+        $this->setPrcKgB(
+            round($this->getPrcKgN() * 1.23, 2)
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllWeight()
+    {
+        return $this->AllWeight;
+    }
+
+    /**
+     * @param mixed $AllWeight
+     */
+    public function setAllWeight($AllWeight)
+    {
+        $this->AllWeight = $AllWeight;
+    }
+
+    /**
+     * @return float
+     */
+    public function getWeight(): float
+    {
+        return $this->Weight;
+    }
+
+    /**
+     * @param float $Weight
+     */
+    public function setWeight(float $Weight)
+    {
+        $this->Weight = $Weight;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrcKgN(): float
+    {
+        return $this->PrcKgN;
+    }
+
+    /**
+     * @param float $PrcKgN
+     */
+    public function setPrcKgN(float $PrcKgN)
+    {
+        $this->PrcKgN = $PrcKgN;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrcKgB(): float
+    {
+        return $this->PrcKgB;
+    }
+
+    /**
+     * @param float $PrcKgB
+     */
+    public function setPrcKgB(float $PrcKgB)
+    {
+        $this->PrcKgB = $PrcKgB;
     }
 
     /**

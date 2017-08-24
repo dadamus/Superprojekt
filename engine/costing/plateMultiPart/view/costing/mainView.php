@@ -53,7 +53,7 @@ $main = $data["main"];
                                                     <th>zł/szt B</th>
                                                     <th>zł/kom B</th>
                                                     <th>zł/kg N</th>
-                                                    <th>zł/kg B</th>
+                                                    <th>Waga</th>
                                                     <th>Sztuk</th>
                                                     <th>Materiał</th>
                                                     <th>Parametry</th>
@@ -75,8 +75,8 @@ $main = $data["main"];
                                                         <td><?= $detail->getKomN() ?></td>
                                                         <td><?= $detail->getSztB() ?></td>
                                                         <td><?= $detail->getKomB() ?></td>
-                                                        <td><?= $detail->getMatAll() ?></td>
-                                                        <td><?= $detail->getMat() ?></td>
+                                                        <td><?= $detail->getKomN() ?></td>
+                                                        <td><?= round($detail->getAllWeight(), 2) ?></td>
                                                         <td><?= $detail->getCountAll() ?></td>
                                                         <td><?= $materialData->getName() ?>
                                                             - <?= $materialData->getThickness() ?></td>
