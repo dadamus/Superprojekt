@@ -72,8 +72,9 @@ class directoryViewController extends mainController
     public function addDirectory($name)
     {
         global $db;
-        $newDirQuery = $db->prepare("INSERT INTO plate_multiPartDirectories (dir_name) VALUES (:name)");
+        $newDirQuery = $db->prepare("INSERT INTO plate_multiPartDirectories (dir_name, created_at) VALUES (:name, :created_at)");
         $newDirQuery->bindValue(":name", $name, PDO::PARAM_STR);
+        $newDirQuery->bindValue(":created_at", date("Y-m-d H:i:s"), PDO::PARAM_STR);
         $newDirQuery->execute();
 
         return $db->lastInsertId();

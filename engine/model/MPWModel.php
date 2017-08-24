@@ -494,9 +494,25 @@ class MPWModel
             throw new \Exception("Brak mpw id!");
         }
 
+        $searchDirQuery = $db->prepare("
+            SELECT * 
+            FROM plate_multiPartDirectories
+            WHERE
+            id = :id
+        ");
+        $searchDirQuery->bindValue(":id", $_POST["mpw_directory"], PDO::PARAM_INT);
+        $searchDirQuery->execute();
+
+        $dirData = $searchDirQuery->fetch();
+        if ($dirData === false) {
+            throw new \Exception("Brak folderu o id: " . $dirData);
+        }
+
+        $dirDataParts = explode("/", $dirData["dir_name"]);
+        $dirNr = $dirDataParts[0];
 
         //Robimy glowny folder wyceny
-        $mpwPath = $data_src . "multipart/" . date("m") . "/" . $_POST["mpw_directory"];
+        $mpwPath = $data_src . "multipart/" . date("m") . "/" . $dirNr;
         mkdir($mpwPath, 0777, true);
 
         $materialQuery = $db->query("SELECT `name` FROM material WHERE id = " . $this->getMaterial());
@@ -504,8 +520,10 @@ class MPWModel
 
         $attributes = "";
         $attributesData = json_decode($this->getAttributes(), true);
-        foreach ($attributesData as $attribute) {
-            $attributes .= _getChecboxText($attribute);
+        if (count($attributesData) > 0) {
+            foreach ($attributesData as $attribute) {
+                $attributes .= _getChecboxText($attribute);
+            }
         }
 
         $projectData = $db->query("SELECT src FROM projects WHERE id = " . $this->getMpwProject());
@@ -527,6 +545,7 @@ class MPWModel
             $detailNewName .= "." . $detailExt;
 
             $detailOldPath = $projectPath . "/V" . $this->getVersion() . "/dxf/" . $detailName;
+            echo $detailOldPath ." new: " . $mpwPath . "/" . $detailNewName;
             copy($detailOldPath, $mpwPath . "/" . $detailNewName);
 
             $insertQuery->bindValue(":mpw", $this->getMpwId(), PDO::PARAM_INT);
