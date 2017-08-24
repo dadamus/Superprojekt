@@ -30,9 +30,9 @@ class mainCardModel
 
     /**
      * Funkcja przerabia PlateMultiPart na mainCardModel
-     * @param int $priceFactor
+     * @param float $priceFactor
      */
-    public function make(int $priceFactor)
+    public function make(float $priceFactor)
     {
         $plateMultiPart = $this->getPlateMultiPart();
         $programs = $plateMultiPart->getPrograms();
