@@ -182,6 +182,9 @@ class MPWModel
                     break;
 
                 case "atribute":
+                    if ($value == null) {
+                        $value = "";
+                    }
                     $this->setAttributes($value);
                     break;
 
