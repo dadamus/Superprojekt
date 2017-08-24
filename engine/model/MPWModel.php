@@ -586,7 +586,6 @@ class MPWModel
         $sqlBuilder->bindValue("des", $this->getDes(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("date", $this->getDate(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("type", $this->getType(), PDO::PARAM_INT);
-        $sqlBuilder->bindValue("plate_multiDirectory", $this->getMpwDirectory(), PDO::PARAM_INT);
         $sqlBuilder->flush();
 
         if ($insert) {
