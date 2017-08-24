@@ -91,7 +91,7 @@ class mainCardDetailModel
             $this->getCountAll() + $data->getAllSheetQty()
         );
         $this->setAllWeight(
-            $data->getWeight() * $data->getAllSheetQty()
+            $data->getWeight() / 1000 * $data->getAllSheetQty()
         );
     }
 
