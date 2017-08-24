@@ -17,4 +17,5 @@ RewriteRule ^program/(.+)/$ /index.php?site=16&pid=$1
 RewriteRule ^plateFrame/(.+)/$ /index.php?site=20&f=$1
 
 RewriteRule ^plateMulti/([^-]+)/([^-]+)/$ /index.php?site=30&action=viewMainCard&directory_id=$1&program=$2 [L,NC,NS]
+RewriteRule ^plateMulti_r/([^-]+)/$ /index.php?site=30&action=viewMainCard&directory_id=$1&r=1 [L,NC,NS]
 RewriteRule ^plateMulti/([^-]+)/$ /index.php?site=30&action=viewMainCard&directory_id=$1 [L,NC,NS]

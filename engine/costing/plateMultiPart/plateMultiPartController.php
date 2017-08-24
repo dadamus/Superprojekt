@@ -72,6 +72,12 @@ class plateMultiPartController extends mainController
             $mainCardModel->make($plateMultiPart->getPriceFactor());
         }
 
+        if (isset($_GET["r"])) {
+            echo '<pre>';
+            print_r($mainCardModel);
+            echo '</pre>';
+        }
+
         return $this->render("mainView.php", [
             "multiPart" => $plateMultiPart,
             "alerts" => $alerts,
