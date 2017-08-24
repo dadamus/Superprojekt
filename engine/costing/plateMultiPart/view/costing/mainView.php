@@ -137,7 +137,7 @@ $main = $data["main"];
                                                     <td>
                                                         <?php foreach ($material->getPrograms() as $program): ?>
                                                             <span>
-                                                                <?= $program->getSheetName() ?>, 
+                                                                <?= $program->getSheetName() ?>,
                                                             </span>
                                                         <?php endforeach; ?>
                                                     </td>

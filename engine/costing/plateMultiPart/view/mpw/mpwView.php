@@ -78,7 +78,7 @@
 
 <div class="row">
     <div class="col-lg-3 col-lg-offset-9">
-        <input type="button" class="btn btn-success" id="submitMultiMPW" value="Zapisz" disabled="disabled"/>
+        <input type="button" class="btn btn-success" id="submitMultiMPW" value="Zapisz"/>
     </div>
 </div>
 
