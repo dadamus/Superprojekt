@@ -70,9 +70,6 @@ class plateMultiPartController extends mainController
         if ($frameDiv == null) {
             $plateMultiPart->Calculate();
             $mainCardModel->make($plateMultiPart->getPriceFactor());
-            echo '<pre>';
-            print_r($mainCardModel);
-            echo '</pre>';
         }
 
         return $this->render("mainView.php", [
