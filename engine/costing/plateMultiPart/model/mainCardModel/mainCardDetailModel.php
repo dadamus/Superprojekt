@@ -77,7 +77,7 @@ class mainCardDetailModel
             $this->getMatAll() + ($data->getMatValAll() * $data->getPartCount())
         );
         $this->setCountAll(
-            $this->getCountAll() + $data->getPartCount()
+            $this->getCountAll() + $data->getAllSheetQty()
         );
     }
 
