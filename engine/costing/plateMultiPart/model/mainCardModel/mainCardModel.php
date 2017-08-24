@@ -64,10 +64,11 @@ class mainCardModel
                     $detailData = new mainCardDetailModel();
                     $detailData->setProject($project);
                     $detailData->setMaterial($program->getMaterial());
+                    $detailData->setPriceFactor($priceFactor);
                     $addDetail = true;
                 }
 
-                $detailData->Make($part, $priceFactor);
+                $detailData->Make($part, $program->getSheetCount());
                 $client->addMaterial($program->getMaterial(), $program);
 
                 if ($addDetail) {

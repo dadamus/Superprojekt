@@ -66,12 +66,12 @@ class mainCardDetailModel
 
     /**
      * @param ProgramCardPartData $data
-     * @param float $price_factor
+     * @param int $sheetCount
      */
-    public function Make(ProgramCardPartData $data, float $price_factor)
+    public function Make(ProgramCardPartData $data, int $sheetCount)
     {
         $this->setCutAll(
-            $this->getCutAll() + ($data->getComplAllPrice() * $price_factor)
+            $this->getCutAll() + ($data->getComplAllPrice() * $sheetCount * $this->getPriceFactor())
         );
         $this->setMatAll(
             $this->getMatAll() + ($data->getMatValAll() * $data->getPartCount())
