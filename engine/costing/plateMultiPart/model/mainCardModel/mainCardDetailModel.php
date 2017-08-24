@@ -48,7 +48,8 @@ class mainCardDetailModel
     /** @var  float */
     private $SztB;
 
-    private $AllWeight;
+    /** @var int float */
+    private $AllWeight = 0;
 
     /** @var  float */
     private $PrcKgN;
@@ -91,7 +92,7 @@ class mainCardDetailModel
             $this->getCountAll() + $data->getAllSheetQty()
         );
         $this->setAllWeight(
-            $data->getWeight() / 1000 * $data->getAllSheetQty()
+            $this->getAllWeight() + ($data->getWeight() / 1000 * $data->getPartCount() * $sheetCount)
         );
     }
 
