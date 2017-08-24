@@ -3,7 +3,7 @@
         <div class="input-group">
             <input type="text" class="form-control" placeholder="ID/MIESIĄC/ROK" id="multiDirectoryInput" value="<?= $data["folderName"] ?>"/>
             <span class="input-group-btn">
-                <button class="btn green" type="button" disabled="disabled" id="addNewMultiDirectory">
+                <button class="btn green" type="button" id="addNewMultiDirectory">
                     <i class="fa fa-plus-circle"></i>
                 </button>
             </span>

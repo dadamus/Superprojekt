@@ -78,7 +78,7 @@ function validDirectoryName(name) {
         return false;
     }
 
-    if (parseInt(parts[0]) <= 0 || !$.isNumeric(parts[0])) {
+    if (parseInt(parts[0]) <= 0) {
         addErrorToInput($input);
         return false;
     }
