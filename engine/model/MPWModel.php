@@ -514,6 +514,8 @@ class MPWModel
         //Robimy glowny folder wyceny
         $mpwPath = $data_src . "multipart/" . date("m") . "/" . $dirNr;
         mkdir($mpwPath, 0777, true);
+        chmod($mpwPath, 0777);
+        chown($mpwPath, "laser");
 
         $materialQuery = $db->query("SELECT `name` FROM material WHERE id = " . $this->getMaterial());
         $materialName = $materialQuery->fetch()["name"];
