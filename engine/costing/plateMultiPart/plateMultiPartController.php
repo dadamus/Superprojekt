@@ -69,7 +69,9 @@ class plateMultiPartController extends mainController
 
         if ($frameDiv == null) {
             $plateMultiPart->Calculate();
+            var_dump($plateMultiPart);
             $mainCardModel->make($plateMultiPart->getRemnantFactor());
+            var_dump($mainCardModel);
         }
 
         return $this->render("mainView.php", [
