@@ -616,7 +616,7 @@ class ProgramData
                 globalTools::calculate_second($part->getPrgDetAllTime()) / $this->getDetAllTimeC() * $this->getCutAll()
             );
             $part->setDetailCut(
-                $part->getCompleteCut() / $part->getPartCount()
+                $part->getCompleteCut() / $this->getSheetCount() / $part->getPartCount()
             );
             $part->setAllSheetQty(
                 $part->getPartCount() * $this->getSheetCount()
