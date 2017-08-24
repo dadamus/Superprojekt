@@ -622,7 +622,7 @@ class ProgramData
                 $part->getPartCount() * $this->getSheetCount()
             );
             $part->setComplAllPrice(
-                $part->getCompleteCut() * $this->getSheetCount()
+                $part->getCompleteCut() / $this->getSheetCount()
             );
             $part->setLastPrice(
                 $part->getDetailCut() + $part->getMatVal()
