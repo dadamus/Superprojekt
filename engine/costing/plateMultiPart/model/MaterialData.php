@@ -15,6 +15,9 @@ class MaterialData
     private $UsedSheetNum;
 
     /** @var  string */
+    private $name;
+
+    /** @var  string */
     private $MatName;
 
     /** @var  string */
@@ -37,6 +40,14 @@ class MaterialData
 
     /** @var  int */
     private $id;
+
+
+    //Main card
+    /** @var  int */
+    private $time;
+
+    /** @var  ProgramData[] */
+    private $programs;
 
     /**
      * @param array $data
@@ -92,6 +103,22 @@ class MaterialData
     public function getId(): int
     {
         return intval($this->id);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name)
+    {
+        $this->name = $name;
     }
 
     /**
@@ -158,7 +185,7 @@ class MaterialData
     {
         global $db;
         $dataQuery = $db->prepare("
-          SELECT m.cubic, m.price, m.waste
+          SELECT m.cubic, m.price, m.waste, m.name
           FROM T_material tm
           LEFT JOIN material m ON m.name = tm.MaterialTypeName
           WHERE tm.MaterialName = :name
@@ -174,6 +201,7 @@ class MaterialData
         $this->setDensity(floatval($materialData["cubic"]));
         $this->setPrice(floatval($materialData["price"]));
         $this->setWaste(floatval($materialData["waste"]));
+        $this->setName($materialData["name"]);
         $this->calculatePrgSheetPrice();
     }
 
@@ -345,5 +373,38 @@ class MaterialData
         $this->SheetSize = $SheetSize;
     }
 
+    /**
+     * @return int
+     */
+    public function getTime(): int
+    {
+        return $this->time;
+    }
 
+    /**
+     * @param string $time
+     */
+    public function addTime(string $time)
+    {
+        $this->time += globalTools::calculate_second($time);
+    }
+
+    /**
+     * @return ProgramData[]
+     */
+    public function getPrograms(): array
+    {
+        return $this->programs;
+    }
+
+    /**
+     * @param ProgramData $program
+     */
+    public function addProgram(ProgramData $program)
+    {
+        if (!isset($this->programs[$program->getId()])) {
+            $this->programs[$program->getId()] = $program;
+            $this->addTime($program->getPreTime());
+        }
+    }
 }

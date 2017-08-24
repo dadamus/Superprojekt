@@ -8,6 +8,7 @@
 
 require_once dirname(__DIR__) . "/../mainController.php";
 require_once dirname(__FILE__) . "/plateMultiPart.php";
+require_once dirname(__FILE__) . "/model/mainCardModel/mainCardModel.php";
 
 /**
  * Class plateMultiPartController
@@ -68,12 +69,15 @@ class plateMultiPartController extends mainController
         if ($frameDiv == null) {
             $plateMultiPart->Calculate();
         }
+        $mainCardModel = new mainCardModel($plateMultiPart);
+        $mainCardModel->make($plateMultiPart->getRemnantFactor());
 
         return $this->render("mainView.php", [
             "multiPart" => $plateMultiPart,
             "alerts" => $alerts,
             "frameSetup" => $frameSetup,
-            "frameView" => $frameDiv
+            "frameView" => $frameDiv,
+            "main" => $mainCardModel
         ]);
     }
 

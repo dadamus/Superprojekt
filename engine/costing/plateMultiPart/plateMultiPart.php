@@ -24,6 +24,9 @@ class PlateMultiPart
     /** @var  float */
     private $remnantFactor;
 
+    /** @var  float */
+    private $priceFactor;
+
     /** @var  int */
     private $dirId;
 
@@ -49,6 +52,9 @@ class PlateMultiPart
             switch($row["name"]) {
                 case "remnant_factor":
                     $this->setRemnantFactor(floatval($row["value"]));
+                    break;
+                case "p_factor":
+                    $this->setPriceFactor(floatval($row["value"]));
                     break;
             }
         }
@@ -116,6 +122,22 @@ class PlateMultiPart
         $this->programs = $this->MatchProgramsToMaterial($this->programs, $phpData->getMaterials());
         $this->SaveData();
         $this->MpwUpdate();
+    }
+
+    /**
+     * @return float
+     */
+    public function getPriceFactor(): float
+    {
+        return $this->priceFactor;
+    }
+
+    /**
+     * @param float $priceFactor
+     */
+    public function setPriceFactor(float $priceFactor)
+    {
+        $this->priceFactor = $priceFactor;
     }
 
     /**

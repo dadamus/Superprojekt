@@ -321,7 +321,7 @@ if (@$_GET["a"] == 6) { // Set default
                             SELECT 
                             parts.ProgramId,
                             m.name as MaterialName,
-                            mpw.id as MpwId,
+                            d.id as dirId,
                             mpw.pieces,
                             programs.CreateDate,
                             mpw.atribute,
@@ -331,6 +331,7 @@ if (@$_GET["a"] == 6) { // Set default
                             LEFT JOIN mpw ON mpw.id = partDetails.mpw
                             LEFT JOIN material m ON mpw.material = m.id
                             LEFT JOIN plate_multiPartPrograms programs ON programs.id = parts.ProgramId
+                            LEFT JOIN plate_multiPartDirectories d ON d.id = partDetails.dirId
                             WHERE 
                             parts.DetailId = $did
                         ");
@@ -368,7 +369,7 @@ if (@$_GET["a"] == 6) { // Set default
                                     <span class="label label-<?= $status ?>"><?= $text ?></span>
                                 </td>
                                 <td>
-                                    <a href="/plateMulti/<?= $row["MpwId"] ?>/">
+                                    <a href="/plateMulti/<?= $row["dirId"] ?>/">
                                         <i class="fa fa-sign-in fa-2x"></i>
                                     </a>
                                 </td>
