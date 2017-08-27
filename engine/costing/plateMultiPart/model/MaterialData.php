@@ -41,6 +41,11 @@ class MaterialData
     /** @var  int */
     private $id;
 
+    /** @var  float */
+    private $prgSheetPriceMm = 0;
+
+    private $prgSheetPriceKg = 0;
+
 
     //Main card
     /** @var  int */
@@ -150,7 +155,19 @@ class MaterialData
      */
     public function getPrgSheetPriceKg(): float
     {
-        return $this->getPrgSheetPrice() / $this->getPrgSheetAllWeight();
+        if ($this->prgSheetPriceKg == 0) {
+            return $this->getPrgSheetPrice() / $this->getPrgSheetAllWeight();
+        } else {
+            return$this->prgSheetPriceKg;
+        }
+    }
+
+    /**
+     * @param float $prgSheetPriceKg
+     */
+    public function setPrgSheetPriceKg(float $prgSheetPriceKg)
+    {
+        $this->prgSheetPriceKg = $prgSheetPriceKg;
     }
 
     /**
@@ -158,7 +175,19 @@ class MaterialData
      */
     public function getPrgSheetPriceMm(): float
     {
-        return $this->getPrgSheetPrice()/ $this->getPrgSheetSur();
+        if ($this->prgSheetPriceMm == 0) {
+            return $this->getPrgSheetPrice() / $this->getPrgSheetSur();
+        } else {
+            return $this->prgSheetPriceMm;
+        }
+    }
+
+    /**
+     * @param float $prgSheetPriceMm
+     */
+    public function setPrgSheetPriceMm(float $prgSheetPriceMm)
+    {
+        $this->prgSheetPriceMm = $prgSheetPriceMm;
     }
 
     /**

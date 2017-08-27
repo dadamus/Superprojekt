@@ -110,6 +110,9 @@ class ProgramCardPartData
     /** @var  float */
     private $LastPrice;
 
+    /** @var  float */
+    private $p_factor = 0;
+
     /**
      * @param array $data
      * @throws Exception
@@ -126,6 +129,34 @@ class ProgramCardPartData
         }
 
         $this->setDetailIdByPartName();
+    }
+
+    /**
+     * @param int $dirId
+     * @return bool
+     */
+    public function getDetailSettings(int $dirId)
+    {
+        global $db;
+
+        $searchQuery = $db->prepare("
+            SELECT p_factor
+            FROM plate_multiPartCostingDetailsSettings
+            WHERE
+            directory_id = :dirId
+            AND detaild_id = :detailId
+        ");
+        $searchQuery->bindValue(":dirId", $dirId, PDO::PARAM_INT);
+        $searchQuery->bindValue(":detailId", $this->getDetailId(), PDO::PARAM_INT);
+        $searchQuery->execute();
+
+        $data = $searchQuery->fetch();
+        if ($data === false) {
+            return false;
+        }
+
+        $this->setPFactor($data["p_factor"]);
+        return true;
     }
 
     /**
@@ -173,7 +204,22 @@ class ProgramCardPartData
         $saveQuery->bindValue("Weight", $this->getWeight(), PDO::PARAM_STR);
         $saveQuery->bindValue("LaserMatName", $this->getLaserMatName(), PDO::PARAM_STR);
         $saveQuery->bindValue("ProgramId", $programId, PDO::PARAM_INT);
-        $saveQuery->flush();
+    }
+
+    /**
+     * @return float
+     */
+    public function getPFactor(): float
+    {
+        return floatval($this->p_factor);
+    }
+
+    /**
+     * @param float $p_factor
+     */
+    public function setPFactor(float $p_factor)
+    {
+        $this->p_factor = $p_factor;
     }
 
     /**

@@ -21,6 +21,9 @@ class mainCardDetailModel
     /** @var  MaterialData */
     private $material;
 
+    /** @var CheckboxModel */
+    private $checkbox;
+
     /** @var  float */
     private $CutAll = 0;
 
@@ -88,6 +91,9 @@ class mainCardDetailModel
         $this->setDetailId(
             $data->getDetailId()
         );
+
+        $this->setCheckbox();
+
         $this->setWeight($data->getWeight() / 1000);
         $this->setCutAll(
             $this->getCutAll() + ($data->getComplAllPrice() * $sheetCount * $this->getPriceFactor())
@@ -115,7 +121,7 @@ class mainCardDetailModel
             round($this->getCutAll() / $this->getCountAll(), 2)
         );
         $this->setKomN(
-            round($this->getMatAll() + $this->getCutAll(), 2) // + checkboxy
+            round($this->getMatAll() + $this->getCutAll() + ($this->checkbox->getValue() * $this->getCountAll()), 2)
         );
         $this->setKomB(
             round($this->getKomN() * 1.23, 2)
@@ -132,6 +138,72 @@ class mainCardDetailModel
         $this->setPrcKgB(
             round($this->getPrcKgN() * 1.23, 2)
         );
+    }
+
+    /**
+     * @return CheckboxModel
+     */
+    public function getCheckbox(): CheckboxModel
+    {
+        return $this->checkbox;
+    }
+
+    public function setCheckbox()
+    {
+        $this->checkbox = new CheckboxModel();
+        $this->checkbox->getFromDb($this->getDetailId(), CheckboxModel::TYPE_PLATE_MULTIPART);
+        if (isset($_POST["detail_id"])) {
+           $this->checkbox->setFromPost($_POST);
+        }
+
+        if (isset($_POST["save"])) {
+            if (isset($_POST["detail_id"])) {
+                if ($_POST["detail_id"] == $this->getDetailId()) {
+                    $this->checkbox->saveData($this->getDetailId(), CheckboxModel::TYPE_PLATE_MULTIPART);
+                }
+            }
+        }
+    }
+
+    public function saveDetailSettings(int $dirId)
+    {
+        $settingsId = $this->getDetailSettingsId($dirId);
+
+        $saveQuery = new sqlBuilder(sqlBuilder::INSERT, "plate_multiPartCostingDetailsSettings");
+
+        if ($settingsId > 0) {
+            $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartCostingDetailsSettings");
+            $saveQuery->addCondition("id = " . $settingsId);
+        }
+
+        $saveQuery->bindValue("p_factor", $this->getPriceFactor(), PDO::PARAM_STR);
+        $saveQuery->bindValue("directory_id", $dirId, PDO::PARAM_INT);
+        $saveQuery->bindValue("detaild_id", $this->getDetailId(), PDO::PARAM_INT);
+        $saveQuery->flush();
+    }
+
+
+    private function getDetailSettingsId(int $dirId) {
+        global $db;
+
+        $searchQuery = $db->prepare("
+            SELECT id
+            FROM plate_multiPartCostingDetailsSettings
+            WHERE
+            directory_id = :dirId
+            AND detaild_id = :detailId
+        ");
+        $searchQuery->bindValue(":dirId", $dirId, PDO::PARAM_INT);
+        $searchQuery->bindValue(":detailId", $this->getDetailId(), PDO::PARAM_INT);
+        $searchQuery->execute();
+
+        $data = $searchQuery->fetch();
+
+        if ($data === false) {
+            return 0;
+        }
+
+        return $data["id"];
     }
 
     /**

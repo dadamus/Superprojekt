@@ -98,18 +98,60 @@ class plateMultiPartController extends mainController
      */
     public function viewDetailCard(int $directoryId, int $detailId): string
     {
-        $checkboxModel = new CheckboxModel();
         $plateMultiPart = new PlateMultiPart();
         $plateMultiPart->MakeFromDirId($directoryId);
         $mainCardModel = new mainCardModel($plateMultiPart);
 
+        if (isset($_POST["p_factor"])) { //Liczenie
+            $plateMultiPart->setPriceFactor($_POST["p_factor"]);
+        }
+
+        $save = false;
+        if (isset($_POST["save"])) {
+            $save = true;
+        }
+
         $plateMultiPart->Calculate();
-        $mainCardModel->make($plateMultiPart->getPriceFactor());
+        $mainCardModel->make($plateMultiPart->getPriceFactor(), $save);
+
+        /** @var ProgramData[] $programs */
+        $programs = [];
+        /** @var ProgramCardPartData $programDetail */
+        $programDetail = [];
+        /** @var mainCardClientModel $mainClient */
+        $mainClient = null;
+        /** @var mainCardDetailModel $mainDetail */
+        $mainDetail = null;
+
+        foreach ($plateMultiPart->getPrograms() as $program) {
+            foreach ($program->getParts() as $part) {
+                if ($part->getDetailId() == $detailId) {
+                    if (!isset($programs[$program->getSheetName()])) {
+                        $programs[$program->getSheetName()] = $program;
+                        $programDetail[$program->getSheetName()] = $part;
+                        continue 2;
+                    }
+                }
+            }
+        }
+
+        foreach ($mainCardModel->getClients() as $client) {
+            $detail = $client->getDetail($detailId);
+
+            if ($detail !== false) {
+                $mainClient = $client;
+                $mainDetail = $detail;
+            }
+        }
 
         return $this->render("detailView.php", [
-            "checkbox" => $checkboxModel->renderAttributes(),
+            "checkbox" => $mainDetail->getCheckbox()->renderAttributes($mainDetail->getCountAll()),
             "card" => $mainCardModel,
-            "detailId" => $detailId
+            "detailId" => $detailId,
+            "mainClient" => $mainClient,
+            "mainDetail" => $mainDetail,
+            "programs" => $programs,
+            "programDetail" => $programDetail
         ]);
     }
 

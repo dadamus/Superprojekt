@@ -189,7 +189,7 @@ class PlateMultiPart
     {
         foreach($this->programs as $program)
         {
-            $program->SaveData();
+            $program->SaveData($this->getDirId());
         }
     }
 
@@ -243,6 +243,7 @@ class PlateMultiPart
         while($partData = $searchQuery->fetch(PDO::FETCH_ASSOC)) {
             $part = new ProgramCardPartData();
             $part->create($partData);
+            $part->getDetailSettings($dirId);
             $part->Calculate();
             $parts[] = $part;
         }

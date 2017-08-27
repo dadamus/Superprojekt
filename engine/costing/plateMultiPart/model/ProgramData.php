@@ -95,8 +95,6 @@ class ProgramData
                     break;
             }
         }
-
-        $this->setPrgOValue($this->getPrgOTime() * $this->getPrgOPrice());
     }
 
     /**
@@ -311,7 +309,10 @@ class ProgramData
         $this->setFrame($frame);
     }
 
-    public function SaveData()
+    /**
+     * @param int $dirId
+     */
+    public function SaveData(int $dirId)
     {
         global $db;
         $materialId = $this->getMaterial()->getId();
@@ -324,11 +325,13 @@ class ProgramData
 
         $saveQuery = new sqlBuilder(sqlBuilder::INSERT, "plate_multiPartPrograms");
         $programDbId = false;
+
         if ($checkResponse !== false)
         {
             $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartPrograms");
             $saveQuery->addCondition("SheetName = '" . $sheetName . "'");
             $programDbId = $checkResponse["id"];
+
         } else {
             $saveQuery->bindValue("CreateDate", date("Y-m-d H:i:s"), PDO::PARAM_STR);
         }
@@ -346,7 +349,10 @@ class ProgramData
 
         if ($programDbId === false) {
             $programDbId = $db->lastInsertId();
+            $this->id = $programDbId;
         }
+
+        $this->saveSettings();
 
         //Robimy ramke
         $this->createFrame($programDbId);
@@ -355,6 +361,57 @@ class ProgramData
         foreach ($this->getParts() as $part) {
             $part->SaveData($programDbId);
         }
+    }
+
+    public function saveSettings()
+    {
+        global $db;
+        $checkQuery = $db->prepare("
+            SELECT id
+            FROM plate_multiPartProgramsSettings
+            WHERE
+            program_id = :programId
+        ");
+        $checkQuery->bindValue(":programId", $this->getId(), PDO::PARAM_INT);
+        $checkQuery->execute();
+
+        $checkData = $checkQuery->fetch();
+
+        if ($checkData === false) {
+            $saveSettingsQuery = new sqlBuilder(sqlBuilder::INSERT,"plate_multiPartProgramsSettings");
+        } else {
+            $saveSettingsQuery = new sqlBuilder(sqlBuilder::UPDATE,"plate_multiPartProgramsSettings");
+            $saveSettingsQuery->addCondition("id = " . $checkData["id"]);
+        }
+
+        $saveSettingsQuery->bindValue("program_id", $this->getId(), PDO::PARAM_INT);
+        $saveSettingsQuery->bindValue("o_time", $this->getPrgOTime(), PDO::PARAM_INT);
+        $saveSettingsQuery->bindValue("mat_price", $this->getMaterial()->getPrgSheetPrice(), PDO::PARAM_STR);
+        $saveSettingsQuery->bindValue("prg_min_price", $this->getPrgMinPrice(), PDO::PARAM_STR);
+        $saveSettingsQuery->flush();
+    }
+
+    public function getSettings()
+    {
+        global $db;
+        $checkQuery = $db->prepare("
+            SELECT *
+            FROM plate_multiPartProgramsSettings
+            WHERE
+            program_id = :programId
+        ");
+        $checkQuery->bindValue(":programId", $this->getId(), PDO::PARAM_INT);
+        $checkQuery->execute();
+
+        $checkData = $checkQuery->fetch();
+
+        if ($checkData === false) {
+            return false;
+        }
+
+        $this->setPrgOTime($checkData["o_time"]);
+        $this->getMaterial()->setPrgSheetPrice($checkData["mat_price"]);
+        $this->setPrgMinPrice($checkData["prg_min_price"]);
     }
 
     /**
@@ -529,6 +586,25 @@ class ProgramData
     {
         $frame = $this->getFrame();
         $material = $this->getMaterial();
+
+        $this->getSettings();
+
+        if (isset($_POST["program_id"])) {
+            if ($_POST["program_id"] == $this->getId()) {
+                $this->setPrgOTime(globalTools::calculate_second($_POST["oTime"]) / 60);
+                $this->setPrgMinPrice($_POST["prgMinPrice"]);
+                $this->getMaterial()->setPrgSheetPrice($_POST["prgSheetPrice"]);
+            }
+        }
+
+
+        $material->setPrgSheetPriceMm(
+            $material->getPrgSheetPrice() / $material->getPrgSheetSur()
+        );
+        $material->setPrgSheetPriceKg(
+            $material->getPrgSheetPrice() / $material->getPrgSheetAllWeight()
+        );
+        $this->setPrgOValue($this->getPrgOTime() * $this->getPrgOPrice());
 
         /*
          * RAMKA

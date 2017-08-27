@@ -10,11 +10,39 @@
     <tbody>
     <?php foreach ($data["attributes"] as $key => $attribute): ?>
         <tr>
-            <td><input type="checkbox" name="attribute[]" value="<?= $key ?>" style="width: 20px; height: 20px;"/></td>
+            <td><input
+                        type="checkbox"
+                        name="attribute[]"
+                        value="<?= $key ?>"
+                        style="width: 20px; height: 20px;"
+                    <?php if (isset($attribute["checked"])): ?>
+                        <?php if ($attribute["checked"] == 1): ?>
+                            checked="checked"
+                        <?php endif ?>
+                    <?php endif ?>
+                /></td>
             <td><?= $attribute["name"] ?></td>
             <?php if (!isset($attribute["not-inputs"])): ?>
-                <td><input type="text" name="a<?= $key ?>i1" id="a<?= $key ?>i1" class="form-control ai"/></td>
-                <td><input type="text" name="a<?= $key ?>i2" id="a<?= $key ?>i2" class="form-control aik"/></td>
+                <td>
+                    <input
+                            type="text"
+                            name="a<?= $key ?>i1"
+                            id="a<?= $key ?>i1"
+                            class="form-control ai"
+                            data-id="<?= $key ?>"
+                            value="<?= $attribute["szt"] ?>"
+                    />
+                </td>
+                <td>
+                    <input
+                            type="text"
+                            name="a<?= $key ?>i2"
+                            id="a<?= $key ?>i2"
+                            class="form-control aik"
+                            data-id="<?= $key ?>"
+                            value="<?= $attribute["szt"] * $data["partCount"] ?>"
+                    />
+                </td>
             <?php endif; ?>
         </tr>
     <?php endforeach; ?>

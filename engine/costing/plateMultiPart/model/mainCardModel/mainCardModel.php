@@ -31,10 +31,12 @@ class mainCardModel
     /**
      * Funkcja przerabia PlateMultiPart na mainCardModel
      * @param float $priceFactor
+     * @param bool $count
      */
-    public function make(float $priceFactor)
+    public function make(float $priceFactor, bool $count = false)
     {
         $plateMultiPart = $this->getPlateMultiPart();
+
         $programs = $plateMultiPart->getPrograms();
 
         foreach ($programs as $program) {
@@ -64,7 +66,14 @@ class mainCardModel
                     $detailData = new mainCardDetailModel();
                     $detailData->setProject($project);
                     $detailData->setMaterial($program->getMaterial());
-                    $detailData->setPriceFactor($priceFactor);
+
+                    if (isset($_POST["p_factor"]) || $count) {
+                        $detailData->setPriceFactor($_POST["p_factor"]);
+                        $part->setPFactor($_POST["p_factor"]);
+                    } else {
+                        $detailData->setPriceFactor($part->getPFactor());
+                    }
+
                     $addDetail = true;
                 }
 
@@ -81,6 +90,19 @@ class mainCardModel
         foreach ($this->clientModels as $client) {
             foreach ($client->getDetails() as $detail) {
                 $detail->Calculate();
+
+                if (isset($_POST["detail_id"]) && isset($_POST["save"])) {
+                    if ($_POST["detail_id"] == $detail->getDetailId()) {
+                        $detail->saveDetailSettings($plateMultiPart->getDirId());
+                    }
+                }
+            }
+        }
+
+        if (isset($_POST["save"])) {
+            if (isset($_POST["program_id"])) {
+                $program = $plateMultiPart->getProgramById($_POST["program_id"]);
+                $program->saveSettings();
             }
         }
     }

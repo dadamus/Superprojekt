@@ -125,9 +125,4 @@ class PhpData
         $imgId = $db->lastInsertId();
         return $imgId;
     }
-
-    private function createFrame(int $imageId)
-    {
-
-    }
 }
