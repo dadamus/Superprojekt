@@ -26,7 +26,28 @@ $main = $data["main"];
             <div class="portlet box green-jungle">
                 <div class="portlet-title">
                     <div class="caption">
-                        Wycena MP-1/05/2017
+                        Wycena - <?= $data["directoryName"] ?>
+                    </div>
+                    <div class="actions">
+                        <div class="btn-group">
+                            <a class="btn btn-default" href="javascript:;" data-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="fa fa-list"></i> Programy
+                                <i class="fa fa-angle-down "></i>
+                            </a>
+                            <ul class="dropdown-menu pull-right" style="position: absolute;">
+                                <?php
+                                $programs = $main->getPlateMultiPart()->getPrograms();
+                                ?>
+                                <?php foreach ($programs as $program): ?>
+                                    <li>
+                                        <a href="/plateMulti/program/<?= $data["directoryId"] ?>/<?= $program->getId() ?>/">
+                                            <?= $program->getSheetName() ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="portlet-body">
@@ -68,7 +89,12 @@ $main = $data["main"];
                                                     $materialData = $detail->getMaterial();
                                                     $loop++;
                                                     ?>
-                                                    <tr>
+                                                    <tr
+                                                            style="cursor: pointer;"
+                                                            class="detail-card-element"
+                                                            data-detail-id="<?= $detail->getDetailId() ?>"
+                                                            data-directory-id="<?= $data["directoryId"] ?>"
+                                                    >
                                                         <td><?= $loop ?></td>
                                                         <td><?= $detailProject->getDetailName() ?></td>
                                                         <td><?= $detail->getSztN() ?></td>
@@ -81,8 +107,10 @@ $main = $data["main"];
                                                         <td><?= $materialData->getName() ?>
                                                             - <?= $materialData->getThickness() ?></td>
                                                         <td></td>
-                                                        <td><?= $detailProject->getNumber() ?>
-                                                            - <?= $detailProject->getName() ?></td>
+                                                        <td>
+                                                            <?= $detailProject->getNumber() ?>
+                                                            - <?= $detailProject->getName() ?>
+                                                        </td>
                                                     </tr>
                                                 <?php endforeach; ?>
                                                 </tbody>
@@ -175,14 +203,40 @@ $main = $data["main"];
                                 <th>LP</th>
                                 <th>SheetCode</th>
                                 <th>Stal</th>
-                                <th>Grubość</th>
                                 <th>Ilość</th>
+                                <th>Grubość</th>
                                 <th>Rozmiar</th>
                                 <th>Czas</th>
                             </tr>
                             </thead>
                             <tbody>
-
+                            <?php
+                            $materialsPrinted = [];
+                            $lp = 0;
+                            ?>
+                            <?php foreach ($main->getClients() as $client): ?>
+                                <?php
+                                $materials = $client->getMaterials();
+                                ?>
+                                <?php foreach ($materials as $material): ?>
+                                    <?php
+                                    if (isset($materialsPrinted[$material->getSheetCode()])) {
+                                        continue;
+                                    }
+                                    $lp++;
+                                    $materialsPrinted[$material->getSheetCode()] = true;
+                                    ?>
+                                    <tr>
+                                        <td><?= $lp ?></td>
+                                        <td><?= $material->getSheetCode() ?></td>
+                                        <td><?= $material->getName() ?></td>
+                                        <td><?= $material->getUsedSheetNum() ?></td>
+                                        <td><?= $material->getThickness() ?></td>
+                                        <td><?= $material->getSheetSize() ?></td>
+                                        <td><?= globalTools::seconds_to_time($material->getTime()) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
@@ -196,3 +250,4 @@ $main = $data["main"];
 
 <script type="text/javascript" src="/js/plateFrame/jcanvas.min.js"></script>
 <script type="text/javascript" src="/js/plateFrame/plateFrame.js"></script>
+<script type="text/javascript" src="/js/plateMultiPart/mainCard.js"></script>

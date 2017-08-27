@@ -78,6 +78,10 @@ var dotDiv_position;
 
 function init()
 {
+	if (typeof init_dots_position === "undefined") {
+    	return false;
+	}
+
 	for(var p = 0; p < init_dots_position.length; p++) {
 		createObjectDot(init_dots_position[p].pos_x, init_dots_position[p].pos_y);
 	}

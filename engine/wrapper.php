@@ -236,11 +236,11 @@
 				case 20: //Plate costing frame
 					include dirname(__FILE__) . '/costing/plateFrame.php';
 					break;
-                case 29:
+                case 29: //Multipart
                     $mb = 2;
                     include dirname(__FILE__) . '/costing/multiPart.php';
                     break;
-                case 30: //Program card
+                case 30: //plate Program card
                     $mb = 2;
                     include dirname(__FILE__) . '/costing/plateMultiPart.php';
                     break;

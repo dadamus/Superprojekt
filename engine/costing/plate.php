@@ -334,6 +334,7 @@ if (@$_GET["a"] == 6) { // Set default
                             LEFT JOIN plate_multiPartDirectories d ON d.id = partDetails.dirId
                             WHERE 
                             parts.DetailId = $did
+                            GROUP BY dirId
                         ");
                         ?>
                         <?php foreach ($autoq as $row): ?>

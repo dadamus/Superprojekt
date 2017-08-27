@@ -83,8 +83,6 @@ class mainCardModel
                 $detail->Calculate();
             }
         }
-
-        $this->plateMultiPart = null;
     }
 
     /**

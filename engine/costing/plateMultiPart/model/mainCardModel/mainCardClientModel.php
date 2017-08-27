@@ -134,6 +134,7 @@ class mainCardClientModel
 
     /**
      * @param MaterialData $materialData
+     * @param ProgramData $programData
      */
     public function addMaterial(MaterialData $materialData, ProgramData $programData)
     {

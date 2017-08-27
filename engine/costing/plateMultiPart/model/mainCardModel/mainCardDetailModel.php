@@ -15,6 +15,9 @@ class mainCardDetailModel
     /** @var  mainCardProjectModel */
     private $project;
 
+    /** @var  int */
+    private $detailId;
+
     /** @var  MaterialData */
     private $material;
 
@@ -82,6 +85,10 @@ class mainCardDetailModel
      */
     public function Make(ProgramCardPartData $data, int $sheetCount)
     {
+        $this->setDetailId(
+            $data->getDetailId()
+        );
+        $this->setWeight($data->getWeight() / 1000);
         $this->setCutAll(
             $this->getCutAll() + ($data->getComplAllPrice() * $sheetCount * $this->getPriceFactor())
         );
@@ -125,6 +132,22 @@ class mainCardDetailModel
         $this->setPrcKgB(
             round($this->getPrcKgN() * 1.23, 2)
         );
+    }
+
+    /**
+     * @return int
+     */
+    public function getDetailId(): int
+    {
+        return $this->detailId;
+    }
+
+    /**
+     * @param int $detailId
+     */
+    public function setDetailId(int $detailId)
+    {
+        $this->detailId = $detailId;
     }
 
     /**
@@ -244,7 +267,7 @@ class mainCardDetailModel
      */
     public function getCutAll(): float
     {
-        return $this->CutAll;
+        return round($this->CutAll, 2);
     }
 
     /**
@@ -292,7 +315,7 @@ class mainCardDetailModel
      */
     public function getCut(): float
     {
-        return $this->Cut;
+        return round($this->Cut, 2);
     }
 
     /**

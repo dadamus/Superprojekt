@@ -54,4 +54,33 @@ switch ($action) {
 
         echo $plateMultiPartController->viewMainCard($directoryId, $programId);
         break;
+
+    case "viewDetailCard": // Karta detalu
+        $directoryId = 0;
+        $detailId = 0;
+
+        if (isset($_GET["directory_id"])) {
+            $directoryId = $_GET["directory_id"];
+        }
+
+        if (isset($_GET["detail_id"])) {
+            $detailId = $_GET["detail_id"];
+        }
+
+        echo $plateMultiPartController->viewDetailCard($directoryId, $detailId);
+        break;
+    case "viewProgramCard": //Karta programu
+        $directoryId = 0;
+        $programId = 0;
+
+        if (isset($_GET["directory_id"])) {
+            $directoryId = $_GET["directory_id"];
+        }
+
+        if (isset($_GET["program_id"])) {
+            $programId = $_GET["program_id"];
+        }
+
+        echo $plateMultiPartController->viewProgramCard($directoryId, $programId);
+        break;
 }
