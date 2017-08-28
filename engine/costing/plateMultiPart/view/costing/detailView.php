@@ -271,6 +271,9 @@ $laserMaterialName = $programDetail[reset($programs)->getSheetName()]->getLaserM
                                 $lp++;
                                 /** @var ProgramCardPartData $detail */
                                 $detail = $programDetail[$program->getSheetName()];
+                                if ($detail == null) {
+                                    continue;
+                                }
                                 ?>
                                 <tr>
                                     <td><?= $lp ?></td>
