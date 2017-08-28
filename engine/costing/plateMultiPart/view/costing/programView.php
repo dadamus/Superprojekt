@@ -4,7 +4,7 @@ $main = $data["main"];
 /** @var ProgramData $mainProgram */
 $mainProgram = $data["program"];
 /** @var MaterialData $mainMaterial */
-$mainMaterial = $program->getMaterial();
+$mainMaterial = $mainProgram->getMaterial();
 ?>
 <div class="row">
     <div class="col-lg-12">
