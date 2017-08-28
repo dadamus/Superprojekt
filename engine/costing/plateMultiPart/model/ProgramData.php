@@ -592,7 +592,7 @@ class ProgramData
             if ($_POST["program_id"] == $this->getId()) {
                 $this->setPrgOTime(globalTools::calculate_second($_POST["oTime"]) / 60);
                 $this->setPrgMinPrice($_POST["prgMinPrice"]);
-                $this->getMaterial()->setPrgSheetPrice($_POST["prgSheetPrice"]);
+                $material->setPrgSheetPrice($_POST["prgSheetPrice"]);
             }
         }
 
