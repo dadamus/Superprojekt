@@ -269,14 +269,14 @@ $laserMaterialName = $programDetail[reset($programs)->getSheetName()]->getLaserM
                             <?php foreach ($programs as $program): ?>
                                 <?php
                                 $lp++;
-                                /** @var ProgramCardPartData $detail */
-                                $detail = null;
+                                /** @var ProgramCardPartData $dsetail */
+                                $sdetail = null;
 
                                 if (isset($programDetail[$program->getSheetName()])) {
-                                    $detail = $programDetail[$program->getSheetName()];
+                                    $sdetail = $programDetail[$program->getSheetName()];
                                 }
 
-                                if ($detail == null) {
+                                if ($sdetail == null) {
                                     continue;
                                 }
                                 ?>
@@ -284,11 +284,11 @@ $laserMaterialName = $programDetail[reset($programs)->getSheetName()]->getLaserM
                                     <td><?= $lp ?></td>
                                     <td><?= $program->getSheetName() ?></td>
                                     <td><?= $program->getSheetCount() ?></td>
-                                    <td><?= $program->getSheetCount() * $detail->getPartCount() ?></td>
+                                    <td><?= $program->getSheetCount() * $sdetail->getPartCount() ?></td>
                                     <td><?= $program->getMaterial()->getSheetCode() ?></td>
-                                    <td><?= round($detail->getMatVal(), 2) ?></td>
-                                    <td><?= round($detail->getDetailCut(), 2) ?></td>
-                                    <td><?= round($detail->getLastPrice(), 2) ?></td>
+                                    <td><?= round($sdetail->getMatVal(), 2) ?></td>
+                                    <td><?= round($sdetail->getDetailCut(), 2) ?></td>
+                                    <td><?= round($sdetail->getLastPrice(), 2) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
