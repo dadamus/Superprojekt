@@ -290,13 +290,16 @@ class PlateMultiPart
 
         foreach ($programs as $program) {
             $program->setMaterial($material);
+            echo $program->getSheetName() . " daje: " . $material->getMatName() . "|\n";
             $materialSheetNumber -= $program->getSheetCount();
+            echo "Pozostalo: " . $materialSheetNumber . " |\n";
             if ($materialSheetNumber <= 0) {
                 if (next($materials) === false)
                 {
                     break;
                 }
                 $material = current($materials);
+                echo "Zmianiam na nastepny: " . $material->getMatName() . "|\n";
                 $material->save();
             }
 
