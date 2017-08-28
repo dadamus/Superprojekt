@@ -6,13 +6,13 @@ if (!empty($a)) {
     require_once dirname(__FILE__) . '/class/notification.php';
 }
 if ($a == 1) {
-	$warehouseTypes = [
-			0 => "default",
-			1 => "default",
-			2 => "reservation",
-			3 => "deleted",
-			4 => "other"
-	];
+    $warehouseTypes = [
+        0 => "default",
+        1 => "default",
+        2 => "reservation",
+        3 => "deleted",
+        4 => "other"
+    ];
 
     $type = $warehouseTypes[@$_GET["type"]];
 
@@ -50,10 +50,10 @@ if ($a == 1) {
 	FROM `plate_warehouse` 
 	LEFT JOIN `T_material` ON `T_material`.MaterialName = `plate_warehouse`.MaterialName
 	WHERE `state` = '$type' " . $filtr);
-	$data = $pselect->fetchAll(PDO::FETCH_ASSOC);
+    $data = $pselect->fetchAll(PDO::FETCH_ASSOC);
 
     $table = "";
-    foreach($data as $row) {
+    foreach ($data as $row) {
         $table .= "<tr><td>" . $row['SheetCode'] . "</td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td></tr>";
     }
     die($table);
@@ -72,12 +72,69 @@ if ($a == 1) {
             die("e2");
         }
 
-        $sc .= "-".$sheetCodeComent;
+        $sc .= "-" . $sheetCodeComent;
     }
 
     $SheetCode = strtoupper($sc);
     $date = date("Y-m-d H:i:s");
-    $db->query("INSERT INTO `plate_warehouse` (`SheetCode`, `MaterialName`, `QtyAvailable`, `GrainDirection`, `Width`, `Height`, `SpecialInfo`, `SheetType`, `Price`, `Priority`, `Thickness`, `MaterialTypeName`, `type`, `date`, `pdate`, `ndp`) VALUES ('$SheetCode', '', '" . $_POST['QtyAvailable'] . "', '" . $_POST['GrainDirection'] . "', '" . $_POST['Width'] . "', '" . $_POST['Height'] . "', '" . $_POST['SpecialInfo'] . "', '" . $_POST['SheetType'] . "', '" . $_POST['Price'] . "', '" . $_POST['Priority'] . "', '" . $_POST['Thickness'] . "', '" . $_POST['MaterialTypeName'] . "', '1', '$date', '" . $_POST['pdate'] . "', '" . $_POST['ndp'] . "')");
+
+    $densityQuery = $db->prepare("
+        SELECT
+        m.cubis as density
+        FROM T_material t
+        LEFT JOIN material m ON m.name = t.MaterialTypeName
+        WHERE 
+        t.MaterialName = :matName
+    ");
+    $densityQuery->bindValue(":matName", $_POST["MaterialTypeName"], PDO::PARAM_STR);
+    $densityQuery->execute();
+
+    $densityData = $densityQuery->fetch();
+    $density = $densityData["density"];
+
+    /*
+     * Typ ceny
+     * 1 - zl/kg
+     * 2 - zl/szt netto
+    */
+    $cpm = intval($_GET['cpm']);
+
+    if ($cpm == 2) {
+        $waga_arkusz = floatval($_POST["Weight"]) / intval($_POST['QtyAvailable']);
+        $waga_program =
+            floatval($_POST['Width'])
+            * floatval($_POST['Height'])
+            * floatval($_POST["Thickness"])
+            * $density
+            / 1000;
+        $powierzchnia_ramki =
+            (45 * floatval($_POST['Width'])) +
+            (30 * (floatval($_POST['Height']) - 30));
+        $cena_ramka =
+            $powierzchnia_ramki
+            / floatval($_POST['Width'])
+            * floatval($_POST['Height'])
+            * floatval($_POST['Price']);
+    }
+
+    $SqlBuilder = new sqlBuilder(sqlBuilder::INSERT, "plate_warehouse");
+    $SqlBuilder->bindValue("SheetCode", $SheetCode, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("MaterialName", $_POST["MaterialTypeName"], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("QtyAvailable", $_POST['QtyAvailable'], PDO::PARAM_INT);
+    $SqlBuilder->bindValue("StartQty", $_POST['QtyAvailable'], PDO::PARAM_INT);
+    $SqlBuilder->bindValue("GrainDirection", $_POST['GrainDirection'], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("Width", $_POST['Width'], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("Height", $_POST['Height'], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("SpecialInfo", $_POST['SpecialInfo'], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("SheetType", $_POST['SheetType'], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("Price", $_POST['Price'], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("Priority", $_POST['Priority'], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("date", $date, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("pdate", $_POST['pdate'], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("ndp", $_POST['ndp'], PDO::PARAM_STR);
+    $SqlBuilder->bindValue("OwnerId", $_POST["OwnerId"],PDO::PARAM_INT);
+    $SqlBuilder->bindValue("UserID", $_SESSION["login"],PDO::PARAM_INT);
+
     die($db->lastInsertId());
 }
 ?>
@@ -105,9 +162,10 @@ if ($a == 1) {
                             <input type="text" class="form-control" name="f_SheetCode" placeholder="SheetCode"/>
                         </div>
                         <div class="col-lg-2 col-md-12" style="margin-bottom: 3px;">
-                            <select class="bs-select form-control" multiple data-actions-box="true" name="f_SheetType[]">
+                            <select class="bs-select form-control" multiple data-actions-box="true"
+                                    name="f_SheetType[]">
                                 <?php
-                                $material = $db->query("SELECT `name` FROM `material`");
+                                $material = $db->query("SELECT `MaterialName` FROM `T_material` ORDER BY MaterialName DESC");
                                 foreach ($material as $row) {
                                     echo '<option>' . $row["name"] . '</option>';
                                 }
@@ -158,10 +216,12 @@ if ($a == 1) {
                     <div class="tab-content">
                         <?php
 
-                        function getTab($id) {
+                        function getTab($id)
+                        {
                             echo '<table class="table table-striped table-bordered table-hover dt-responsive" id="tab' . $id . '-table"><thead><tr><th>SheetCode</th><th>Rodzaj</th><th>Wymiary</th><th>Grubość</th><th>Data przyjęcia</th><th>Sztuk</th></tr></thead><tbody id="tab' . $id . '-content"></tbody>
                             </table>';
                         }
+
                         ?>
                         <div class="tab-pane active" id="tab1">
                             <?php
@@ -209,7 +269,8 @@ if ($a == 1) {
                             <div class="input-group">
                                 <select class="bs-select form-control" data-live-search="true" id="plist"></select>
                                 <span class="input-group-btn">
-                                    <button data-toggle="modal" href="#maddp" class="btn btn-success" type="button">Nowy</button>
+                                    <button data-toggle="modal" href="#maddp" class="btn btn-success"
+                                            type="button">Nowy</button>
                                 </span>
                             </div>
                         </div>
@@ -241,99 +302,138 @@ if ($a == 1) {
                         <form id="paddf" action="?">
                             <table class="table">
                                 <tbody>
-                                    <tr>
-                                        <td>Blacha</td>
-                                        <td>
-                                            <select name="MaterialTypeName" class="form-control"><?php
-                                                $mtn = $db->query("SELECT `id`, `name` FROM `material`");
-                                                foreach ($mtn as $row) {
-                                                    echo '<option>' . $row["name"] . '</option>';
-                                                }
-                                                ?></select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Wymiary</td>
-                                        <td><input type="text" class="form-control" name="Width" id="newSheetWidth" placeholder="Szerokość"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td><input type="text" class="form-control" name="Height" id="newSheetHeight" placeholder="Wysokość"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Grubość</td>
-                                        <td><input type="text" class="form-control" name="Thickness" id="newSheetThickness" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Sztuk</td>
-                                        <td><input type="text" class="form-control" name="QtyAvailable"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td>GrainDirection</td>
-                                        <td><select name="GrainDirection" class="form-control"><option value="1">Horizontal</option><option value="2">Vertical</option></select></td>
-                                    </tr>
-                                    <tr>
-                                        <td>SpecialInfo</td>
-                                        <td><select name="SpecialInfo" class="form-control"><option value="0">Normal</option><option value="1">Stal farbowana</option><option value="2">Folia</option></select></td>
-                                    </tr>
-                                    <tr>
-                                        <td>SheetType</td>
-                                        <td><select name="SheetType" class="form-control"><option>Standard</option></select></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Priority</td>
-                                        <td><select name="Priority" class="form-control"><option>1</option></select></td>
-                                    </tr>
-                                    <tr>
-                                        <td>SheetCode</td>
-                                        <td>
-                                            <div class="row">
-                                                <div class="col-sm-12 col-lg-6">
-                                                    <input type="text" name="SheetCode" id="newSheetCode" class="form-control" readonly/>
-                                                </div>
-                                                <div class="col-sm-12 col-lg-1" style="text-align: center">
-                                                    <span style="font-size: xx-large">-</span>
-                                                </div>
-                                                <div class="col-sm-12 col-lg-5">
-                                                    <input type="text" name="SheetCodeComment" class="form-control"/>
-                                                </div>
+                                <tr>
+                                    <td>Blacha</td>
+                                    <td>
+                                        <select name="MaterialTypeName" class="form-control"><?php
+                                            $mtn = $db->query("SELECT `MaterialName` FROM `T_material` ORDER BY MaterialName DESC");
+                                            foreach ($mtn as $row) {
+                                                echo '<option>' . $row["MaterialName"] . '</option>';
+                                            }
+                                            ?></select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Wymiary</td>
+                                    <td><input type="text" class="form-control" name="Width" id="newSheetWidth"
+                                               placeholder="Szerokość"/></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><input type="text" class="form-control" name="Height" id="newSheetHeight"
+                                               placeholder="Wysokość"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Grubość</td>
+                                    <td><input type="text" class="form-control" name="Thickness"
+                                               id="newSheetThickness"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Sztuk</td>
+                                    <td><input type="text" class="form-control" name="QtyAvailable"/></td>
+                                </tr>
+                                <tr>
+                                    <td>GrainDirection</td>
+                                    <td><select name="GrainDirection" class="form-control">
+                                            <option value="1">Horizontal</option>
+                                            <option value="2">Vertical</option>
+                                        </select></td>
+                                </tr>
+                                <tr>
+                                    <td>SpecialInfo</td>
+                                    <td><select name="SpecialInfo" class="form-control">
+                                            <option value="0">Normal</option>
+                                            <option value="1">Stal farbowana</option>
+                                            <option value="2">Folia</option>
+                                        </select></td>
+                                </tr>
+                                <tr>
+                                    <td>SheetType</td>
+                                    <td><select name="SheetType" class="form-control">
+                                            <option>Standard</option>
+                                        </select></td>
+                                </tr>
+                                <tr>
+                                    <td>Priority</td>
+                                    <td>
+                                        <select name="Priority" class="form-control">
+                                            <?php for ($i = 1; $i <= 9; $i++): ?>
+                                                <option <?= ($i == 5 ? 'selected="selected"' : '') ?>><?= $i ?></option>
+                                            <?php endfor; ?>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>SheetCode</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-12 col-lg-6">
+                                                <input type="text" name="SheetCode" id="newSheetCode"
+                                                       class="form-control" readonly/>
                                             </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Waga</td>
-                                        <td><input type="text" name="Weight" class="form-control"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Cena</td>
-                                        <td>
-                                            <div class="input-group">
-                                                <input type="text" name="Price" class="form-control"/>
-                                                <div class="input-group-btn">
-                                                    <button type="button" class="btn btn-default" tabindex="-1" id="cpmt">zł/kg</button>
-                                                    <button type="button" class="btn green dropdown-toggle" data-toggle="dropdown" tabindex="-1"><i class="fa fa-angle-down"></i></button>
-                                                    <ul class="dropdown-menu pull-right" role="menu" id="cpm">
-                                                        <li><a href="javascript:;" id="1_cpm">zł/kg</a></li>
-                                                        <li><a href="javascript:;" id="2_cpm">zł/arkusz</a></li>
-                                                        <li><a href="javascript:;" id="3_cpm">zł/paczka</a></li>
-                                                        <li><a href="javascript:;" id="4_cpm">zł/1mm^2</a></li>
-                                                    </ul>
-                                                </div>
+                                            <div class="col-sm-12 col-lg-1" style="text-align: center">
+                                                <span style="font-size: xx-large">-</span>
                                             </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Dzień przyjęcia</td>
-                                        <td>
-                                            <div class="input-group">
-                                                <input class="form-control form-control-inline input-medium date-picker" size="16" id="newSheetDate" type="text" name="pdate" data-date-format="dd-mm-yyyy" value="">
+                                            <div class="col-sm-12 col-lg-5">
+                                                <input type="text" name="SheetCodeComment" class="form-control"/>
                                             </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Numer dokumentu przyjęcia</td>
-                                        <td><input type="text" class="form-control" name="ndp"/></td>
-                                    </tr>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Waga paczki</td>
+                                    <td><input type="text" name="Weight" class="form-control"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Cena</td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="text" name="Price" class="form-control"/>
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-default" tabindex="-1" id="cpmt">
+                                                    zł/kg
+                                                </button>
+                                                <button type="button" class="btn green dropdown-toggle"
+                                                        data-toggle="dropdown" tabindex="-1"><i
+                                                            class="fa fa-angle-down"></i></button>
+                                                <ul class="dropdown-menu pull-right" role="menu" id="cpm">
+                                                    <li><a href="javascript:;" id="1_cpm">zł/kg</a></li>
+                                                    <li><a href="javascript:;" id="2_cpm">zł/szt netto</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Dzień przyjęcia</td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input class="form-control form-control-inline input-medium date-picker"
+                                                   size="16" id="newSheetDate" type="text" name="pdate"
+                                                   data-date-format="dd-mm-yyyy" value="">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Numer dokumentu przyjęcia</td>
+                                    <td><input type="text" class="form-control" name="ndp"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Powierzony</td>
+                                    <td>
+                                        <select class="form-control" name="OwnerId">
+                                            <option value="" selected="selected">Nie</option>
+                                            <?php
+                                            $clientsQuery = $db->query("SELECT id, name FROM clients ORDER BY name");
+                                            $clientsData = $clientsQuery->fetchAll(PDO::FETCH_ASSOC);
+                                            ?>
+                                            <?php foreach ($clientsData as $client): ?>
+                                                <option value="<?= $client["id"] ?>"><?= $client["id"] ?>
+                                                    - <?= $client["name"] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </form>
@@ -374,245 +474,4 @@ if ($a == 1) {
     </div>
 </div>
 
-
-<script type="text/javascript">
-    var $sheetCodeInput = $("#paddf input[name='SheetCode']");
-
-    function reloadDetails(type)
-    {
-        if (typeof (type) == 'undefined') {
-            type = 1;
-            App.blockUI({boxed: !0});
-        }
-        var serialize = $("#filter").serialize();
-        $.ajax({
-            url: "<?php echo $site_path; ?>/engine/plateWarehouse.php?act=1&type=" + type,
-            type: "POST",
-            data: serialize,
-        }).done(function (msg) {
-            if ($.fn.DataTable.isDataTable("#tab" + type + "-table"))
-            {
-                $("#tab" + type + "-table").DataTable().destroy();
-            }
-
-            $("#tab" + type + "-content").html(msg);
-            $("#tab" + type + "-table").dataTable({
-                "pageLength": 50
-            });
-
-            if (type < 4) {
-                var ntype = type + 1;
-                reloadDetails(ntype);
-            } else
-            {
-                App.unblockUI();
-            }
-        });
-    }
-
-    function resetFilter() {
-        var $filter = $("#filter select");
-
-        $filter.val(0);
-        $filter.selectpicker('render');
-        $("#filter input").val('');
-
-        $("#filter input[name='date']").val('');
-
-        reloadDetails();
-        $.uniform.update();
-    }
-
-    function loadProvider() {
-        $.ajax({
-            url: "<?php echo $site_path; ?>/engine/class/provider.php?a=1"
-        }).done(function (msg) {
-            $("#plist").html(msg);
-            $(".bs-select").selectpicker('refresh');
-        });
-    }
-
-    var provider = "";
-    var cpm = 1;
-    var sheet_code_ready = false;
-
-    function getFloat(value, def)
-    {
-        var _v = parseFloat(value.replace(",", "."));
-        if (_v > 0) {
-            return _v;
-        }
-
-        return def;
-    }
-
-    var $newSheetDate = $("#newSheetDate");
-
-    function SheetCodeGenerator() {
-        var _scr = true;
-
-        var x = getFloat($("#newSheetWidth").val(), "x");
-        var y = getFloat($("#newSheetHeight").val(), "y");
-        var z = getFloat($("#newSheetThickness").val(), "z");
-
-        var mm = "M";
-        var yy = "Y";
-
-        var date = moment($newSheetDate.val(), "DD-MM-YYYY");
-        if (date.isValid())
-        {
-            mm = date.months() + 1;
-            if (mm < 10) {
-                mm = "0" + mm;
-            }
-
-            yy = date.years();
-        }
-
-        $("#newSheetCode").val(x + "X" + y + "X" + z + "-" + mm + "" + yy);
-
-        if (x == "x" || y == "y" || z == "z" || !date.isValid()) {
-            _scr = false;
-        }
-
-        sheet_code_ready = _scr;
-    }
-
-    $(document).ready(function () {
-        $(".bs-select").selectpicker({iconBase: "fa", tickIcon: "fa-check"});
-
-        $(".date-picker").datetimepicker({
-            minView : 2,
-            language: 'pl',
-            pickerPosition: "top-left"
-        });
-        $("#defaultrange").daterangepicker({
-            opens: App.isRTL() ? "left" : "right",
-            format: "MM/DD/YYYY",
-            separator: " do ",
-            startDate: moment().subtract("days", 29),
-            endDate: moment(),
-            ranges: {
-                "Dziś": [moment(), moment()],
-                "Wczoraj": [moment().subtract("days", 1), moment().subtract("days", 1)],
-                "Ostatnie 7 dni": [moment().subtract("days", 6), moment()],
-                "Ostatnie 30 dni": [moment().subtract("days", 29), moment()],
-                "Ten miesiąc": [moment().startOf("month"), moment().endOf("month")],
-                "Ostatni miesiąc": [moment().subtract("month", 1).startOf("month"), moment().subtract("month", 1).endOf("month")]},
-            minDate: "01/01/2012",
-            maxDate: "12/31/2018"},
-                function (t, e) {
-                    $("#defaultrange input").val(t.format("YYYY-MM-DD") + " : " + e.format("YYYY-MM-DD"))
-                });
-
-        reloadDetails();
-        //Filter
-        $("#filter").submit(function (e) {
-            e.preventDefault();
-            reloadDetails();
-        });
-
-        $("#b_reset").on("click", function () {
-            resetFilter();
-        });
-
-        $("#newp").on("click", function () {
-            loadProvider();
-            $("#mnewp").modal('show');
-        });
-        $("#bpadd").on("click", function () {
-            App.blockUI({boxed: !0});
-            $.ajax({
-                url: "<?php echo $site_path; ?>/engine/class/provider.php?a=2&name=" + $("#nprovider").val()
-            }).done(function () {
-                loadProvider();
-                $("#maddp").modal('hide');
-                App.unblockUI();
-            });
-        });
-
-        var $padf = $("#paddf input");
-
-        $("#npn").on("click", function () {
-            SheetCodeGenerator();
-            provider = $("#plist").val();
-            $padf.parent().removeClass("has-error");
-            $("#mnewp").modal('hide');
-
-            var $mnewp2 = $("#mnewp2");
-            $mnewp2.modal('show');
-            $mnewp2.find("input").val("");
-        });
-        $("#cpm").on("click", "a", function () {
-            cpm = parseInt($(this).attr("id"));
-            $("#cpmt").html($(this).html());
-        });
-
-        $("#npn2").on("click", function () {
-            $("#paddf").submit();
-        });
-
-        //CodeGenerate
-        $padf.on("keyup", function () {
-            SheetCodeGenerator();
-        });
-
-        $newSheetDate.on("change", function () {
-            SheetCodeGenerator();
-        });
-
-        $("#paddf").on("submit", function (e) {
-            e.preventDefault();
-
-            if (sheet_code_ready == false) {
-                $sheetCodeInput.parent().addClass("has-error");
-                return false;
-            }
-
-            var check = true;
-            $padf.each(function (index, cobject) {
-                if ($(cobject).val().length == 0 && !$(cobject).prop('readonly')) {
-                    check = false;
-                    $(cobject).parent().addClass("has-error");
-                } else if ($(cobject).parent().hasClass("has-error")) {
-                    $(cobject).parent().removeClass("has-error");
-                }
-            });
-            if (check == true) {
-                var data = $("#paddf").serialize();
-                App.blockUI({boxed: !0});
-                $.ajax({
-                    method: "POST",
-                    data: data + "&pr" + provider + "&cpm=" + cpm,
-                    url: "<?php echo $site_path; ?>/engine/plateWarehouse.php?act=2"
-                }).done(function (msg) {
-                    App.unblockUI();
-                    if (msg == "e1") {
-                        $sheetCodeInput.parent().addClass("has-error");
-                    } else if (msg == "e2") {
-                        $("input[name='SheetCodeComment']").parent().addClass("has-error");
-                    } else {
-                        toastr.success("Blacha została dodana do magazynu id: " + msg, "Dodałem blache!");
-
-                        toastr.options = {
-                            "closeButton": true,
-                            "debug": false,
-                            "positionClass": "toast-bottom-right",
-                            "onclick": null,
-                            "showDuration": "1000",
-                            "hideDuration": "1000",
-                            "timeOut": "5000",
-                            "extendedTimeOut": "1000",
-                            "showEasing": "swing",
-                            "hideEasing": "linear",
-                            "showMethod": "fadeIn",
-                            "hideMethod": "fadeOut"
-                        }
-                        $("#mnewp2").modal('hide');
-                    }
-                    sheet_code_ready = false;
-                });
-            }
-        });
-    });
-</script>
+<script src="/js/plateWarehouse/plateWarehouse.js" type="text/javascript"></script>

@@ -220,3 +220,7 @@
 .table tbody.small-font td {
 	font-size: 13px;
 }
+
+.dropdown-menu.open {
+	top: 0px;
+}

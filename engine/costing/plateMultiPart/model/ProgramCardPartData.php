@@ -213,10 +213,10 @@ class ProgramCardPartData
     {
         global $db, $data_src;
 
-        $imgSrc = $data_src . "temp/pimg_" . $this->getPartNo() . ".bmp";
+        $imgSrc = $data_src . "temp/pimg_" . $this->getPartNo() . ".jpg";
         $imgDest = $data_src . "/detale/img/min/";
 
-        $newImgSrc = $imgDest . $this->getDetailId() . ".bmp";
+        $newImgSrc = $imgDest . $this->getDetailId() . ".jpg";
 
         if (!file_exists($imgDest)) {
             mkdir($imgDest, 0777, true);
