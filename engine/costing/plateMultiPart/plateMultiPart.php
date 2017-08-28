@@ -285,14 +285,16 @@ class PlateMultiPart
     {
         $material = reset($materials);
         $materialSheetNumber = $material->getUsedSheetNum();
+        echo "Mam: " . $materialSheetNumber . "\n";
         //Zapisujemy do bazy zeby sie id to samo zapisalo
         $material->save();
 
         foreach ($programs as $program) {
             $program->setMaterial($material);
             echo $program->getSheetName() . " daje: " . $material->getMatName() . "|\n";
-            $materialSheetNumber -= $program->getSheetCount();
+            $materialSheetNumber = $materialSheetNumber - $program->getSheetCount();
             echo "Pozostalo: " . $materialSheetNumber . " |\n";
+            echo "Program odjal: " .$program->getSheetCount() . "\n";
             if ($materialSheetNumber <= 0) {
                 if (next($materials) === false)
                 {
