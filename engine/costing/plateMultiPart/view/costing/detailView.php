@@ -182,7 +182,8 @@ $laserMaterialName = $programDetail[reset($programs)->getSheetName()]->getLaserM
                     <img src="/assets/global/plugins/holder.js/200x200" alt="200x200"
                          style="height: 200px; margin: 0 auto; width: 100%; display: block;">
                     <?php else: ?>
-                    <img src="<?= $img ?>" width="200px" height="200px"/>
+                    <img src="<?= $img ?>" width="200px" height="200px"
+                         style="height: 200px; margin: 0 auto; width: 100%; display: block;"/>
                     <?php endif; ?>
                 </div>
             </div>

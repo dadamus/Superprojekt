@@ -186,7 +186,7 @@ class mainCardDetailModel
             return null;
         }
 
-        return $data["img"];
+        return str_replace("/var/www/html", "", $data["img"]);
     }
 
     /**
