@@ -222,6 +222,10 @@ class ProgramCardPartData
             mkdir($imgDest, 0777, true);
         }
 
+        if (!file_exists($imgSrc)) {
+            return true;
+        }
+
         if (file_exists($newImgSrc)) {
             unlink($newImgSrc);
         }
@@ -237,6 +241,7 @@ class ProgramCardPartData
         $updateQuery->bindValue(":img", $newImgSrc, PDO::PARAM_STR);
         $updateQuery->bindValue(":did", $this->getDetailId(), PDO::PARAM_INT);
         $updateQuery->execute();
+        return true;
     }
 
     /**
