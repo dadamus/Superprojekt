@@ -151,7 +151,8 @@ class plateMultiPartController extends mainController
             "mainClient" => $mainClient,
             "mainDetail" => $mainDetail,
             "programs" => $programs,
-            "programDetail" => $programDetail
+            "programDetail" => $programDetail,
+            "directoryId" => $directoryId
         ]);
     }
 
@@ -169,7 +170,8 @@ class plateMultiPartController extends mainController
         return $this->render("programView.php", [
             "main" => $mainCardModel,
             "programId" => $programId,
-            "program" => $program
+            "program" => $program,
+            "directoryId" => $directoryId
         ]);
     }
 

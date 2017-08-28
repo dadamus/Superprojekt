@@ -325,13 +325,15 @@ if (@$_GET["a"] == 6) { // Set default
                             mpw.pieces,
                             programs.CreateDate,
                             mpw.atribute,
-                            mpw.type
+                            mpw.type,
+                            settings.price
                             FROM plate_multiPartProgramsPart parts
                             LEFT JOIN plate_multiPartDetails partDetails ON parts.PartName = partDetails.name
                             LEFT JOIN mpw ON mpw.id = partDetails.mpw
                             LEFT JOIN material m ON mpw.material = m.id
                             LEFT JOIN plate_multiPartPrograms programs ON programs.id = parts.ProgramId
                             LEFT JOIN plate_multiPartDirectories d ON d.id = partDetails.dirId
+                            LEFT JOIN plate_multiPartCostingDetailsSettings settings ON settings.directory_id = d.id AND settings.detaild_id = parts.DetailId
                             WHERE 
                             parts.DetailId = $did
                         ");
@@ -342,7 +344,7 @@ if (@$_GET["a"] == 6) { // Set default
                                 <td><?= $row["MaterialName"] ?></td>
                                 <td><?= $row["pieces"] ?></td>
                                 <td><?= $row["CreateDate"] ?></td>
-                                <td></td>
+                                <td><?= $row["price"] ?>zł</td>
                                 <td>
                                     <?php if (strlen($row["atribute"]) > 0): ?>
                                         <?php foreach (json_decode($row["atribute"]) as $param): ?>
@@ -364,6 +366,11 @@ if (@$_GET["a"] == 6) { // Set default
                                             $text = 'Brak ramki';
                                             $status = 'warning';
                                             break;
+                                    }
+
+                                    if ($row["price"] > 0) {
+                                        $text = "Wycenione";
+                                        $status = "success";
                                     }
                                     ?>
                                     <span class="label label-<?= $status ?>"><?= $text ?></span>

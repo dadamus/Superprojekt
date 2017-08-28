@@ -479,7 +479,11 @@ class MPWModel
         $this->des = $des;
     }
 
-    public function makeDetails()
+    /**
+     * @param int $dirId
+     * @throws Exception
+     */
+    public function makeDetails(int $dirId)
     {
         global $data_src, $db;
 
@@ -503,12 +507,12 @@ class MPWModel
             WHERE
             id = :id
         ");
-        $searchDirQuery->bindValue(":id", $_POST["mpw_directory"], PDO::PARAM_INT);
+        $searchDirQuery->bindValue(":id", $dirId, PDO::PARAM_INT);
         $searchDirQuery->execute();
 
         $dirData = $searchDirQuery->fetch();
         if ($dirData === false) {
-            throw new \Exception("Brak folderu o id: " . $dirData);
+            throw new \Exception("Brak folderu o id: " . $dirId);
         }
 
         $dirDataParts = explode("/", $dirData["dir_name"]);
@@ -541,7 +545,7 @@ class MPWModel
             $detailNameExploded = explode(".", $detailName);
             $detailExt = end($detailNameExploded);
 
-            $detailNewName = "MP-" . $this->getPieces() . "-" . $this->getThickness() . "MM-$materialName-$detail";
+            $detailNewName = "MP-" . $this->getPieces() . "-" . $this->getThickness() . "MM-$materialName-$detail-$dirId";
             if ($attributes != "") {
                 $detailNewName .= "-" . $attributes;
             }

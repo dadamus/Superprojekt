@@ -309,10 +309,7 @@ class ProgramData
         $this->setFrame($frame);
     }
 
-    /**
-     * @param int $dirId
-     */
-    public function SaveData(int $dirId)
+    public function SaveData()
     {
         global $db;
         $materialId = $this->getMaterial()->getId();

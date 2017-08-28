@@ -38,7 +38,7 @@ switch ($action) {
         break;
 
     case "addMPW": //Create MPW
-        echo $createMPWController->addMpw($_POST);
+        echo $createMPWController->addMpw($_POST, $_POST["mpw_directory"]);
         break;
 
     case "viewMainCard": //Karta glowna wyceny

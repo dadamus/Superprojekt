@@ -184,6 +184,9 @@ class ProgramCardPartData
         if ($checkQueryResult !== false) {
             $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartProgramsPart");
             $saveQuery->addCondition("PartName = '" . $this->getPartName() . "' AND ProgramId = " . $programId);
+        } else {
+            //Trzeba zapisac obrazek detalu
+            $this->saveDetailImg();
         }
 
         $partId = $this->getId();
@@ -204,6 +207,36 @@ class ProgramCardPartData
         $saveQuery->bindValue("Weight", $this->getWeight(), PDO::PARAM_STR);
         $saveQuery->bindValue("LaserMatName", $this->getLaserMatName(), PDO::PARAM_STR);
         $saveQuery->bindValue("ProgramId", $programId, PDO::PARAM_INT);
+    }
+
+    private function saveDetailImg()
+    {
+        global $db, $data_src;
+
+        $imgSrc = $data_src . "temp/pimg_" . $this->getPartNo() . ".bmp";
+        $imgDest = $data_src . "/detale/img/min/";
+
+        $newImgSrc = $imgDest . $this->getDetailId() . ".bmp";
+
+        if (!file_exists($imgDest)) {
+            mkdir($imgDest, 0777, true);
+        }
+
+        if (file_exists($newImgSrc)) {
+            unlink($newImgSrc);
+        }
+
+        rename($imgSrc, $newImgSrc);
+
+        $updateQuery = $db->prepare("
+            UPDATE details
+            SET img = :img
+            WHERE 
+            id = :did
+        ");
+        $updateQuery->bindValue(":img", $newImgSrc, PDO::PARAM_STR);
+        $updateQuery->bindValue(":did", $this->getDetailId(), PDO::PARAM_INT);
+        $updateQuery->execute();
     }
 
     /**

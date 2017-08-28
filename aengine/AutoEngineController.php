@@ -403,9 +403,6 @@ class AutoEngineController
             $detailsSearchQuery = $db->query("SELECT id FROM plate_multiPartCostingDetails WHERE did = $did AND LaserMatName = '$laser_mat_name'");
             $detailsSearch = $detailsSearchQuery->fetch();
 
-            $mpwQuery = $db->query("SELECT mpw FROM plate_multiPartDetails WHERE src = '$sheet'");
-
-
             $queryType = "INSERT";
 
             if ($detailsSearch !== false) {

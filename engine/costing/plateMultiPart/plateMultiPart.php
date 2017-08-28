@@ -189,7 +189,7 @@ class PlateMultiPart
     {
         foreach($this->programs as $program)
         {
-            $program->SaveData($this->getDirId());
+            $program->SaveData();
         }
     }
 

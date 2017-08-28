@@ -29,6 +29,7 @@ $main = $data["main"];
                         Wycena - <?= $data["directoryName"] ?>
                     </div>
                     <div class="actions">
+                        <a class="btn btn-default" href="/plateMulti/<?= $data["directoryId"] ?>/">Main</a>
                         <div class="btn-group">
                             <a class="btn btn-default" href="javascript:;" data-toggle="dropdown"
                                aria-expanded="false">
@@ -45,6 +46,36 @@ $main = $data["main"];
                                             <?= $program->getSheetName() ?>
                                         </a>
                                     </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <a class="btn btn-default" href="javascript:;" data-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="fa fa-list"></i> Detale
+                                <i class="fa fa-angle-down "></i>
+                            </a>
+                            <ul class="dropdown-menu pull-right" style="position: absolute;">
+                                <?php
+                                $usedDetails = [];
+                                $clients = $main->getClients();
+                                ?>
+                                <?php foreach ($clients as $client): ?>
+                                    <?php foreach ($client->getDetails() as $detail): ?>
+                                        <?php
+                                        if (isset($usedDetails[$detail->getDetailId()])) {
+                                            continue;
+                                        }
+                                        ?>
+                                        <li>
+                                            <a href="/plateMulti/detail/<?= $data["directoryId"] ?>/<?= $detail->getDetailId() ?>/">
+                                                <?= $detail->getProject()->getDetailName() ?>
+                                            </a>
+                                        </li>
+                                        <?php
+                                        $usedDetails[$detail->getDetailId()] = true;
+                                        ?>
+                                    <?php endforeach; ?>
                                 <?php endforeach; ?>
                             </ul>
                         </div>
@@ -68,7 +99,7 @@ $main = $data["main"];
                                                 <thead>
                                                 <tr>
                                                     <th>LP</th>
-                                                    <th>Detalu</th>
+                                                    <th>Detal</th>
                                                     <th>zł/szt N</th>
                                                     <th>zł/kom N</th>
                                                     <th>zł/szt B</th>
@@ -156,7 +187,9 @@ $main = $data["main"];
                                                 ?>
                                                 <tr>
                                                     <td><?= $loop ?></td>
-                                                    <td><?= $material->getSheetCode() ?></td>
+                                                    <td>
+                                                        <?= $material->getSheetCode() ?>
+                                                    </td>
                                                     <td><?= $material->getName() ?></td>
                                                     <td><?= $material->getUsedSheetNum() ?></td>
                                                     <td><?= $material->getThickness() ?></td>

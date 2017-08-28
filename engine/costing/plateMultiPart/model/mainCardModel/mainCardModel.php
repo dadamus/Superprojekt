@@ -91,6 +91,9 @@ class mainCardModel
             foreach ($client->getDetails() as $detail) {
                 $detail->Calculate();
 
+                //Tylko pierwszy zapis bedzie dzial
+                $detail->saveDetailSettings($plateMultiPart->getDirId(), true);
+
                 if (isset($_POST["detail_id"]) && isset($_POST["save"])) {
                     if ($_POST["detail_id"] == $detail->getDetailId()) {
                         $detail->saveDetailSettings($plateMultiPart->getDirId());

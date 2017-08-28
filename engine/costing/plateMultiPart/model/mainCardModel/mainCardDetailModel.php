@@ -165,13 +165,46 @@ class mainCardDetailModel
         }
     }
 
-    public function saveDetailSettings(int $dirId)
+    /**
+     * @return string|null
+     */
+    public function getImg()
+    {
+        global $db;
+        $searchImg = $db->prepare("
+            SELECT img
+            FROM details
+            WHERE
+            id = :did
+        ");
+        $searchImg->bindValue(":did", $this->getDetailId(), PDO::PARAM_INT);
+        $searchImg->execute();
+
+        $data = $searchImg->fetch();
+
+        if ($data === false) {
+            return null;
+        }
+
+        return $data["img"];
+    }
+
+    /**
+     * @param int $dirId
+     * @param bool $init
+     * @return bool
+     */
+    public function saveDetailSettings(int $dirId, $init = false)
     {
         $settingsId = $this->getDetailSettingsId($dirId);
 
         $saveQuery = new sqlBuilder(sqlBuilder::INSERT, "plate_multiPartCostingDetailsSettings");
 
         if ($settingsId > 0) {
+            if ($init == true) {
+                return false;
+            }
+
             $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartCostingDetailsSettings");
             $saveQuery->addCondition("id = " . $settingsId);
         }
@@ -179,7 +212,9 @@ class mainCardDetailModel
         $saveQuery->bindValue("p_factor", $this->getPriceFactor(), PDO::PARAM_STR);
         $saveQuery->bindValue("directory_id", $dirId, PDO::PARAM_INT);
         $saveQuery->bindValue("detaild_id", $this->getDetailId(), PDO::PARAM_INT);
+        $saveQuery->bindValue("price", $this->getSztN(), PDO::PARAM_STR);
         $saveQuery->flush();
+        return true;
     }
 
 

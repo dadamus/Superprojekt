@@ -48,9 +48,10 @@ class createMPWController extends mainController
 
     /**
      * @param array $data
+     * @param int $dirId
      * @return string
      */
-    public function addMpw(array $data)
+    public function addMpw(array $data, int $dirId)
     {
         global $db;
         $mpw = new MPWModel($data);
@@ -69,7 +70,7 @@ class createMPWController extends mainController
         $mpwQuery->flush();
 
         $mpw->setMpwId($db->lastInsertId());
-        $mpw->makeDetails();
+        $mpw->makeDetails($dirId);
 
         return "ok";
     }

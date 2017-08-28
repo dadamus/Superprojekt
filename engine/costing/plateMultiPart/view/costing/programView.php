@@ -21,6 +21,58 @@ $material = $program->getMaterial();
                     <div class="caption">
                         Informacje
                     </div>
+                    <div class="actions">
+                        <a class="btn btn-default" href="/plateMulti/<?= $data["directoryId"] ?>/">Main</a>
+                        <div class="btn-group">
+                            <a class="btn btn-default" href="javascript:;" data-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="fa fa-list"></i> Programy
+                                <i class="fa fa-angle-down "></i>
+                            </a>
+                            <ul class="dropdown-menu pull-right" style="position: absolute;">
+                                <?php
+                                $programs = $main->getPlateMultiPart()->getPrograms();
+                                ?>
+                                <?php foreach ($programs as $program): ?>
+                                    <li>
+                                        <a href="/plateMulti/program/<?= $data["directoryId"] ?>/<?= $program->getId() ?>/">
+                                            <?= $program->getSheetName() ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <a class="btn btn-default" href="javascript:;" data-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="fa fa-list"></i> Detale
+                                <i class="fa fa-angle-down "></i>
+                            </a>
+                            <ul class="dropdown-menu pull-right" style="position: absolute;">
+                                <?php
+                                $usedDetails = [];
+                                $clients = $main->getClients();
+                                ?>
+                                <?php foreach ($clients as $client): ?>
+                                    <?php foreach ($client->getDetails() as $detail): ?>
+                                        <?php
+                                        if (isset($usedDetails[$detail->getDetailId()])) {
+                                            continue;
+                                        }
+                                        ?>
+                                        <li>
+                                            <a href="/plateMulti/detail/<?= $data["directoryId"] ?>/<?= $detail->getDetailId() ?>/">
+                                                <?= $detail->getProject()->getDetailName() ?>
+                                            </a>
+                                        </li>
+                                        <?php
+                                        $usedDetails[$detail->getDetailId()] = true;
+                                        ?>
+                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="portlet-body">
                     <div class="table-scrollable">
