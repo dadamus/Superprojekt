@@ -1,10 +1,10 @@
 <?php
 /** @var mainCardModel $main */
 $main = $data["main"];
-/** @var ProgramData $program */
-$program = $data["program"];
-/** @var MaterialData $material */
-$material = $program->getMaterial();
+/** @var ProgramData $mainProgram */
+$mainProgram = $data["program"];
+/** @var MaterialData $mainMaterial */
+$mainMaterial = $program->getMaterial();
 ?>
 <div class="row">
     <div class="col-lg-12">
@@ -12,10 +12,8 @@ $material = $program->getMaterial();
     </div>
 </div>
 
-<?= $program->getPrgOTime() ?>
-
 <form id="count" method="POST" action="?">
-    <input type="hidden" name="program_id" value="<?= $program->getId() ?>">
+    <input type="hidden" name="program_id" value="<?= $mainProgram->getId() ?>">
     <div class="row">
         <div class="col-lg-12">
             <div class="portlet box green-soft">
@@ -94,20 +92,20 @@ $material = $program->getMaterial();
                             </thead>
                             <tbody>
                             <tr>
-                                <td><?= $program->getSheetName() ?></td>
-                                <td><b><?= $material->getName() ?></b> - <i><?= $material->getMatName() ?></i></td>
-                                <td><?= $program->getSheetCount() ?></td>
-                                <td><?= $material->getSheetSize() ?></td>
-                                <td><?= $material->getThickness() ?></td>
-                                <td><?= $material->getSheetCode() ?></td>
-                                <td><b><?= $program->getParts()[0]->getLaserMatName() ?></b></td>
+                                <td><?= $mainProgram->getSheetName() ?></td>
+                                <td><b><?= $mainMaterial->getName() ?></b> - <i><?= $mainMaterial->getMatName() ?></i></td>
+                                <td><?= $mainProgram->getSheetCount() ?></td>
+                                <td><?= $mainMaterial->getSheetSize() ?></td>
+                                <td><?= $mainMaterial->getThickness() ?></td>
+                                <td><?= $mainMaterial->getSheetCode() ?></td>
+                                <td><b><?= $mainProgram->getParts()[0]->getLaserMatName() ?></b></td>
                                 <td><input
                                             class="form-control"
-                                            value="<?= globalTools::seconds_to_time($program->getPrgOTime() * 60) ?>"
+                                            value="<?= globalTools::seconds_to_time($mainProgram->getPrgOTime() * 60) ?>"
                                             id="time1"
                                             name="oTime"
                                     ></td>
-                                <td><?= $program->getPrgOValue() ?></td>
+                                <td><?= $mainProgram->getPrgOValue() ?></td>
                                 <td></td>
                             </tr>
                             </tbody>
@@ -146,7 +144,7 @@ $material = $program->getMaterial();
                             <?php
                             $lp = 0;
                             ?>
-                            <?php foreach ($program->getParts() as $part): ?>
+                            <?php foreach ($mainProgram->getParts() as $part): ?>
                                 <?php
                                 $lp++
                                 ?>
@@ -200,16 +198,16 @@ $material = $program->getMaterial();
                                             </thead>
                                             <tbody>
                                             <tr>
-                                                <td><?= $material->getSheetSize() ?></td>
-                                                <td><?= round($material->getPrgSheetPriceKg(), 2) ?></td>
+                                                <td><?= $mainMaterial->getSheetSize() ?></td>
+                                                <td><?= round($mainMaterial->getPrgSheetPriceKg(), 2) ?></td>
                                                 <td>
                                                     <input
                                                             class="form-control"
                                                             name="prgSheetPrice"
-                                                            value="<?= $material->getPrgSheetPrice() ?>"
+                                                            value="<?= $mainMaterial->getPrgSheetPrice() ?>"
                                                     >
                                                 </td>
-                                                <td><?= $material->getPrgSheetAllWeight() ?></td>
+                                                <td><?= $mainMaterial->getPrgSheetAllWeight() ?></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -253,13 +251,13 @@ $material = $program->getMaterial();
                                             </thead>
                                             <tbody>
                                             <tr>
-                                                <td><?= $program->getPreTime() ?></td>
+                                                <td><?= $mainProgram->getPreTime() ?></td>
                                                 <td><input class="form-control"
-                                                           value="<?= round($program->getPrgMinPrice(), 2) ?>"
+                                                           value="<?= round($mainProgram->getPrgMinPrice(), 2) ?>"
                                                            name="prgMinPrice"
                                                     ></td>
-                                                <td><?= round($program->getCleanCutAll(), 2) ?></td>
-                                                <td><?= round($program->getCutAll(), 2) ?></td>
+                                                <td><?= round($mainProgram->getCleanCutAll(), 2) ?></td>
+                                                <td><?= round($mainProgram->getCutAll(), 2) ?></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -305,7 +303,7 @@ $material = $program->getMaterial();
                                             <?php
                                             $lp = 0;
                                             ?>
-                                            <?php foreach ($program->getParts() as $part): ?>
+                                            <?php foreach ($mainProgram->getParts() as $part): ?>
                                                 <?php
                                                 $lp++;
                                                 ?>
@@ -314,7 +312,7 @@ $material = $program->getMaterial();
                                                     <td><?= $part->getPartName() ?></td>
                                                     <td><?= round($part->getComplAllPrice(), 2) ?></td>
                                                     <td><?= round($part->getDetailCut(), 2) ?></td>
-                                                    <td><?= round($part->getComplAllPrice() * $program->getSheetCount(), 2) ?></td>
+                                                    <td><?= round($part->getComplAllPrice() * $mainProgram->getSheetCount(), 2) ?></td>
                                                     <td><?= $part->getAllSheetQty() ?></td>
                                                     <td><?= round($part->getPriceKg(), 2) ?></td>
                                                     <td><?= round($part->getLastPrice(), 2) ?></td>
