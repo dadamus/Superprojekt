@@ -593,6 +593,7 @@ class ProgramData
                 $this->setPrgOTime(globalTools::calculate_second($_POST["oTime"]) / 60);
                 $this->setPrgMinPrice($_POST["prgMinPrice"]);
                 $material->setPrgSheetPrice($_POST["prgSheetPrice"]);
+                echo "Zmieniam dane";
             }
         }
 
