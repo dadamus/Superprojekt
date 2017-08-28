@@ -246,9 +246,9 @@ class ProgramCardPartData
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getPFactor(): float
+    public function getPFactor()
     {
         return floatval($this->p_factor);
     }

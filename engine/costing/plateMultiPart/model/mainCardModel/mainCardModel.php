@@ -74,6 +74,11 @@ class mainCardModel
                         $detailData->setPriceFactor($part->getPFactor());
                     }
 
+                    if ($part->getPFactor() == 0) {
+                        $part->setPFactor($priceFactor);
+                        $detailData->setPriceFactor($priceFactor);
+                    }
+
                     $addDetail = true;
                 }
 
