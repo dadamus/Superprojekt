@@ -336,9 +336,18 @@ if (@$_GET["a"] == 6) { // Set default
                             LEFT JOIN plate_multiPartCostingDetailsSettings settings ON settings.directory_id = d.id AND settings.detaild_id = parts.DetailId
                             WHERE 
                             parts.DetailId = $did
+                            ORDER BY dirId DESC
                         ");
+                        $lastDirId = 0;
                         ?>
                         <?php foreach ($autoq as $row): ?>
+                            <?php
+                            if ($lastDirId == $row["dirId"]) {
+                                continue;
+                            } else {
+                                $lastDirId = $row["dirId"];
+                            }
+                            ?>
                             <tr>
                                 <td><?= $row["ProgramId"] ?></td>
                                 <td><?= $row["MaterialName"] ?></td>
