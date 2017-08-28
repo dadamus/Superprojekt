@@ -309,6 +309,6 @@ $laserMaterialName = $programDetail[reset($programs)->getSheetName()]->getLaserM
 </form>
 
 <script type="text/javascript">
-    var partQuantity = <?= $detail->getAllSheetQty() ?>
+    var partQuantity = <?= $detail->getCountAll() ?>
 </script>
 <script type="text/javascript" src="/js/plateMultiPart/detailCard.js"></script>
