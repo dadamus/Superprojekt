@@ -12,6 +12,8 @@ $material = $program->getMaterial();
     </div>
 </div>
 
+<?= $program->getPrgOTime() ?>
+
 <form id="count" method="POST" action="?">
     <input type="hidden" name="program_id" value="<?= $program->getId() ?>">
     <div class="row">
