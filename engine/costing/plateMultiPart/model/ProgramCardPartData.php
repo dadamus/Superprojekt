@@ -702,11 +702,11 @@ class ProgramCardPartData
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getPartCount(): int
+    public function getPartCount()
     {
-        return $this->PartCount;
+        return intval($this->PartCount);
     }
 
     /**

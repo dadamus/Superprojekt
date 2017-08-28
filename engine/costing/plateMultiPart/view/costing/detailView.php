@@ -183,7 +183,7 @@ $laserMaterialName = $programDetail[reset($programs)->getSheetName()]->getLaserM
                          style="height: 200px; margin: 0 auto; width: 100%; display: block;">
                     <?php else: ?>
                     <img src="<?= $img ?>" width="200px" height="200px"
-                         style="height: 200px; margin: 0 auto; width: 100%; display: block;"/>
+                         style="height: 200px; margin: 0 auto; display: block;"/>
                     <?php endif; ?>
                 </div>
             </div>
