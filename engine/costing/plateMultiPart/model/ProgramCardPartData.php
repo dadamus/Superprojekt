@@ -174,6 +174,8 @@ class ProgramCardPartData
             }
         }
 
+        echo "1";
+
         $checkQuery = $db->prepare("SELECT id FROM plate_multiPartProgramsPart WHERE PartName = :partName AND ProgramId = :programId");
         $checkQuery->bindValue(":partName", $this->getPartName(), PDO::PARAM_STR);
         $checkQuery->bindValue(":programId", $programId, PDO::PARAM_INT);
@@ -182,18 +184,22 @@ class ProgramCardPartData
 
         $saveQuery = new sqlBuilder(sqlBuilder::INSERT, "plate_multiPartProgramsPart");
         if ($checkQueryResult !== false) {
+            echo "2";
             $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartProgramsPart");
             $saveQuery->addCondition("PartName = '" . $this->getPartName() . "' AND ProgramId = " . $programId);
         } else {
             //Trzeba zapisac obrazek detalu
             $this->saveDetailImg();
+            echo "3";
         }
 
         $partId = $this->getId();
         if ($partId > 0) {
+            echo "4";
             $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartProgramsPart");
             $saveQuery->addCondition("id = " . $partId);
         }
+        echo "5";
 
         $saveQuery->bindValue("DetailId", $this->getDetailId(), PDO::PARAM_INT);
         $saveQuery->bindValue("PartNo", $this->getPartNo(), PDO::PARAM_INT);

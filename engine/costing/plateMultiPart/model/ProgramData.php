@@ -328,6 +328,7 @@ class ProgramData
             $saveQuery = new sqlBuilder(sqlBuilder::UPDATE, "plate_multiPartPrograms");
             $saveQuery->addCondition("SheetName = '" . $sheetName . "'");
             $programDbId = $checkResponse["id"];
+            $this->id = $checkResponse["id"];
 
         } else {
             $saveQuery->bindValue("CreateDate", date("Y-m-d H:i:s"), PDO::PARAM_STR);
@@ -347,6 +348,7 @@ class ProgramData
         if ($programDbId === false) {
             $programDbId = $db->lastInsertId();
             $this->id = $programDbId;
+            echo "ID: " . $this->id;
         }
 
         $this->saveSettings();
