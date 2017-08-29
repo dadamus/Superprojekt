@@ -13,6 +13,7 @@ class bmpCutter
     private $scale;
 
     private $maxWidth;
+    private $realWidth;
 
     /**
      * bmpCutter constructor.
@@ -26,6 +27,22 @@ class bmpCutter
         $this->crop();
         $this->setMaxWidth($maxWidth);
         $this->scaleImg();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRealWidth()
+    {
+        return $this->realWidth;
+    }
+
+    /**
+     * @param mixed $realWidth
+     */
+    public function setRealWidth($realWidth)
+    {
+        $this->realWidth = $realWidth;
     }
 
     /**
@@ -274,6 +291,8 @@ class bmpCutter
         $width = $position["width"];
         $height = $position["height"];
 
+        $this->setRealWidth($width);
+
         $maxWidth = 800;
         if ($this->getMaxWidth() > 0) {
             $maxWidth = $this->getMaxWidth();
@@ -299,7 +318,7 @@ class bmpCutter
                 $height
             );
             $this->image = $newImage;
-            $this->scale = $width / $newWidth;
+            $this->scale = $newWidth / $width;
 
             $this->position = [
                 "x" => $position["x"],

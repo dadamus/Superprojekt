@@ -254,10 +254,16 @@ $mainMaterial = $mainProgram->getMaterial();
 
                             $newDots = [];
 
+                            //Default scale
+                            $oldScale = 1;
+                            if ($bmpCutter->getRealWidth() > 800) {
+                                $oldScale = 800 / $bmpCutter->getRealWidth();
+                            }
+
                             foreach ($dotsData as $points) {
                                 $newDots[] = [
-                                    "pos_x" => $points["pos_x"] / $bmpCutter->getScale(),
-                                    "pos_y" => $points["pos_y"] / $bmpCutter->getScale()
+                                    "pos_x" => $points["pos_x"] * ($oldScale + $bmpCutter->getScale()),
+                                    "pos_y" => $points["pos_y"] * ($oldScale + $bmpCutter->getScale())
                                 ];
                             }
 
