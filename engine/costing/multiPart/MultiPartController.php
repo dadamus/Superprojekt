@@ -32,6 +32,7 @@ class MultiPartController extends mainController
           LEFT JOIN plate_multiPartCostingDetailsSettings settings ON settings.directory_id = d.id
           AND settings.detaild_id = details.did
           LEFT JOIN mpw m ON m.id = details.mpw
+          GROUP BY d.id
         ");
         $search->execute();
 
@@ -109,7 +110,7 @@ class MultiPartController extends mainController
             "dirName" => $dirData["dir_name"],
             "dirId" => explode("/", $dirData["dir_name"])[0],
             "mpw" => $mpw,
-            "materials" => $materialQuery->fetchAll(PDO::FETCH_ASSOC)
+            "materials" => $materialQuery->fetchAll(PDO::FET)
         ]);
     }
 
