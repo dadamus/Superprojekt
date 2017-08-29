@@ -150,11 +150,32 @@ $mainMaterial = $mainProgram->getMaterial();
                             ?>
                             <?php foreach ($mainProgram->getParts() as $part): ?>
                                 <?php
-                                $lp++
+                                $lp++;
+
+                                $detailObject = null;
+                                foreach ($main->getClients() as $client) {
+                                    $detail = $client->getDetail($part->getDetailId());
+                                    if ($detail !== false) {
+                                        $detailObject = $detail;
+                                        break;
+                                    }
+                                }
                                 ?>
                                 <tr>
                                     <td><?= $lp ?></td>
-                                    <td><?= $part->getPartName() ?></td>
+                                    <td>
+                                        <a
+                                                class="popovers"
+                                                data-container="body"
+                                                data-trigger="hover"
+                                                data-placement="right"
+                                                data-html="true"
+                                                data-content="<img src='<?= $detailObject->getImg() ?>' alt='Brak obrazka'>"
+                                                data-original-title=""
+                                        >
+                                            <?= $part->getPartName() ?>
+                                        </a>
+                                    </td>
                                     <td><?= $part->getPartCount() ?></td>
                                     <td><?= $part->getUnfoldXSize() ?> x <?= $part->getUnfoldYSize() ?></td>
                                     <td><?= $part->getRectangleArea() ?></td>
@@ -182,7 +203,7 @@ $mainMaterial = $mainProgram->getMaterial();
                 </div>
                 <div class="portlet-body">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-lg-6">
                             <div class="portlet box blue-dark">
                                 <div class="portlet-title">
                                     <div class="caption">
@@ -220,6 +241,70 @@ $mainMaterial = $mainProgram->getMaterial();
                                 </div>
                             </div>
                         </div>
+                        <?php
+                        $frameData = $program->getFrame();
+                        $imageData = $frameData->getImg();
+                        $bmpCutter = new bmpCutter($imageData->getPath(), 500);
+                        $b64 = $bmpCutter->getBase64();
+                        $imageSize = $bmpCutter->getPosition();
+
+                        $dots = json_encode([]);
+                        if (strlen($frameData->getPoints()) > 0) {
+                            $dotsData = json_decode($frameData->getPoints(), true);
+
+                            $newDots = [];
+
+                            foreach ($dotsData as $points) {
+                                $newDots[] = [
+                                    "pos_x" => $points["pos_x"] / $bmpCutter->getScale(),
+                                    "pos_y" => $points["pos_y"] / $bmpCutter->getScale()
+                                ];
+                            }
+
+                            $dots = json_encode($newDots);
+                        }
+
+                        ?>
+                        <div class="col-lg-6" style="height: <?= $imageSize["height"] ?>px;">
+                            <div style="width: <?= $imageSize["width"] ?>px; height: <?= $imageSize["height"] ?>px; margin: 0 auto;">
+                                <div style="position: absolute; z-index: 2; left: 0px; top: 0px">
+                                    <canvas id="dotConnections" width="<?= $imageSize["width"] ?>px"
+                                            height="<?= $imageSize["height"] ?>px;"></canvas>
+                                </div>
+                                <div style="position: absolute; left: 0px; top: 0px; z-index: 1;">
+                                    <img src="data:image/png;base64,<?= $b64; ?>"/>
+                                </div>
+                            </div>
+                        </div>
+                        <script type="text/javascript" src="/js/plateFrame/jcanvas.min.js"></script>
+                        <script type="text/javascript">
+                            var dots_position = JSON.parse('<?=$dots?>');
+
+                            $(document).ready(function () {
+                                var $canvas = $("#dotConnections");
+                                $canvas.clearCanvas();
+
+                                var object = {
+                                    strokeStyle: '#ff7ff6',
+                                    strokeWidth: 2,
+                                    rounded: true,
+                                    closed: true
+                                };
+
+                                for (var p = 0; p < dots_position.length; p++) {
+
+                                    if (typeof dots_position[p] === 'undefined') {
+                                        continue;
+                                    }
+
+                                    object['x' + (p + 1)] = dots_position[p].pos_x + 5;
+                                    object['y' + (p + 1)] = dots_position[p].pos_y + 5;
+                                }
+
+                                $canvas.drawLine(object);
+                            });
+
+                        </script>
                     </div>
                 </div>
             </div>

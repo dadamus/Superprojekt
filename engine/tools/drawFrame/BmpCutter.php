@@ -12,17 +12,38 @@ class bmpCutter
     private $position;
     private $scale;
 
+    private $maxWidth;
+
     /**
      * bmpCutter constructor.
      * @param $filename
+     * @param int $maxWidth
      */
-    public function __construct($filename)
+    public function __construct($filename, $maxWidth = 800)
     {
         $this->imagecreatefrombmp($filename);
         $this->getCutData();
         $this->crop();
+        $this->setMaxWidth($maxWidth);
         $this->scaleImg();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getMaxWidth()
+    {
+        return $this->maxWidth;
+    }
+
+    /**
+     * @param mixed $maxWidth
+     */
+    public function setMaxWidth($maxWidth)
+    {
+        $this->maxWidth = $maxWidth;
+    }
+
 
     /**
      * @param $filename
@@ -249,13 +270,20 @@ class bmpCutter
     public function scaleImg()
     {
         $position = $this->getPosition();
+
         $width = $position["width"];
         $height = $position["height"];
 
-        if ($width > 800) {
-            $aspect = $width / $height;
-            $newWidth = 800;
-            $newHeight = $height / $aspect;
+        $maxWidth = 800;
+        if ($this->getMaxWidth() > 0) {
+            $maxWidth = $this->getMaxWidth();
+        }
+
+        if ($width > $maxWidth) {
+            $newWidth = $maxWidth;
+            $aspect = $newWidth / $width;
+
+            $newHeight = $height * $aspect;
 
             $newImage = imagecreatetruecolor($newWidth, $newHeight);
             imagecopyresampled(
