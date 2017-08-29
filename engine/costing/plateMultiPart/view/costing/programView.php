@@ -256,8 +256,8 @@ $mainMaterial = $mainProgram->getMaterial();
 
                             foreach ($dotsData as $points) {
                                 $newDots[] = [
-                                    "pos_x" => $points["pos_x"] / $bmpCutter->getScale()  * $bmpCutter->getScale(),
-                                    "pos_y" => $points["pos_y"] / $bmpCutter->getScale()  * $bmpCutter->getScale()
+                                    "pos_x" => $points["pos_x"] / $bmpCutter->getScale(),
+                                    "pos_y" => $points["pos_y"] / $bmpCutter->getScale()
                                 ];
                             }
 
