@@ -113,7 +113,10 @@
                                                                 <td>Atrybuty:</td>
                                                                 <td>
                                                                     <?php
-                                                                    $attributes = json_decode($mpwData["atribute"], true);
+                                                                    $attributes = [];
+                                                                    if (strlen($mpwData["atribute"]) > 0) {
+                                                                        $attributes = json_decode($mpwData["atribute"], true);
+                                                                    }
                                                                     ?>
                                                                     <?php foreach ($attributes as $attribute): ?>
                                                                         <b><?= _getChecboxText($attribute) ?></b>
