@@ -242,7 +242,7 @@ $mainMaterial = $mainProgram->getMaterial();
                             </div>
                         </div>
                         <?php
-                        $frameData = $program->getFrame();
+                        $frameData = $mainProgram->getFrame();
                         $imageData = $frameData->getImg();
                         $bmpCutter = new bmpCutter($imageData->getPath(), 500);
                         $b64 = $bmpCutter->getBase64();
