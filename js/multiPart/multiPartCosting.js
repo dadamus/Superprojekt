@@ -19,7 +19,7 @@ $(document).ready(function () {
             },
             function () {
                 $.ajax({
-                    url: "/engine/costing/multipart.php?action=deleteMpwItem",
+                    url: "/engine/costing/multiPart.php?action=deleteMpwItem",
                     method: "POST",
                     data: "mpw=" + mpwId + "&detail=" + detailId + "&dir=" + dirId
                 }).done(function () {
