@@ -93,19 +93,22 @@ $mainMaterial = $mainProgram->getMaterial();
                             <tbody>
                             <tr>
                                 <td><?= $mainProgram->getSheetName() ?></td>
-                                <td><b><?= $mainMaterial->getName() ?></b> - <i><?= $mainMaterial->getMatName() ?></i></td>
+                                <td><b><?= $mainMaterial->getName() ?></b> - <i><?= $mainMaterial->getMatName() ?></i>
+                                </td>
                                 <td><?= $mainProgram->getSheetCount() ?></td>
                                 <td><?= $mainMaterial->getSheetSize() ?></td>
                                 <td><?= $mainMaterial->getThickness() ?></td>
                                 <td><?= $mainMaterial->getSheetCode() ?></td>
                                 <td><b><?= $mainProgram->getParts()[0]->getLaserMatName() ?></b></td>
-                                <><input
+                                <td>
+                                    <input
                                             class="form-control"
                                             value="<?= globalTools::seconds_to_time($mainProgram->getPrgOTime() * 60) ?>"
                                             id="time1"
                                             name="oTime"
-                                    <?php if ($main->isBlocked()): ?>disabled="disabled"<?php endif; ?>
-                                    ></td>
+                                            <?php if ($main->isBlocked()): ?>disabled="disabled"<?php endif; ?>
+                                    >
+                                </td>
                                 <td><?= $mainProgram->getPrgOValue() ?></td>
                                 <td></td>
                             </tr>
@@ -334,12 +337,12 @@ $mainMaterial = $mainProgram->getMaterial();
     </div>
 
     <?php if (!$main->isBlocked()): ?>
-    <div class="row">
-        <div class="col-lg-2 col-lg-offset-10">
-            <button class="btn btn-info" type="submit">Licz</button>
-            <a class="btn btn-success" href="javascript:;" id="saveProgram">Zapisz</a>
+        <div class="row">
+            <div class="col-lg-2 col-lg-offset-10">
+                <button class="btn btn-info" type="submit">Licz</button>
+                <a class="btn btn-success" href="javascript:;" id="saveProgram">Zapisz</a>
+            </div>
         </div>
-    </div>
     <?php endif; ?>
 </form>
 
