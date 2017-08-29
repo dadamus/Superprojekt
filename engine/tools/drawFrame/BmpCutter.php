@@ -281,9 +281,9 @@ class bmpCutter
 
         if ($width > $maxWidth) {
             $newWidth = $maxWidth;
-            $aspect = $newWidth / $width;
+            $aspect = $width / $newWidth;
 
-            $newHeight = $height * $aspect;
+            $newHeight = $height / $aspect;
 
             $newImage = imagecreatetruecolor($newWidth, $newHeight);
             imagecopyresampled(
