@@ -110,7 +110,7 @@ class MultiPartController extends mainController
             "dirName" => $dirData["dir_name"],
             "dirId" => explode("/", $dirData["dir_name"])[0],
             "mpw" => $mpw,
-            "materials" => $materialQuery->fetchAll(PDO::FET)
+            "materials" => $materialQuery->fetchAll(PDO::FETCH_ASSOC)
         ]);
     }
 
