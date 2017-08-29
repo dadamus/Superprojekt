@@ -169,7 +169,19 @@ $main = $data["main"];
                                                             data-directory-id="<?= $data["directoryId"] ?>"
                                                     >
                                                         <td><?= $loop ?></td>
-                                                        <td><?= $detailProject->getDetailName() ?></td>
+                                                        <td>
+                                                            <a
+                                                                    class="popovers"
+                                                                    data-container="body"
+                                                                    data-trigger="hover"
+                                                                    data-placement="right"
+                                                                    data-html="true"
+                                                                    data-content="<img src='<?= $detail->getImg() ?>' alt='Brak obrazka'>"
+                                                                    data-original-title=""
+                                                            >
+                                                                <?= $detailProject->getDetailName() ?>
+                                                            </a>
+                                                        </td>
                                                         <td><?= $detail->getSztN() ?></td>
                                                         <td><?= $detail->getKomN() ?></td>
                                                         <td><?= $detail->getSztB() ?></td>
