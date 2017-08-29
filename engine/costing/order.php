@@ -42,6 +42,8 @@ if ($action == 1) {
                     $qpc = $db->query("SELECT `priceset` FROM `profile_costing` WHERE `id` = '" . $mpw["mcp"] . "'");
                     $pc = $qpc->fetch();
                     $cost += floatval($pc["priceset"]);
+                } else if ($mpw["type"] == OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) {
+
                 }
             }
         }
@@ -52,14 +54,14 @@ if ($action == 1) {
         $order_status[4] = '<i class="fa fa-industry"></i>';
 
         $table .= "<tr style=\"cursor: pointer \" class=\"o_click\" id=\"" . $order['id'] . "_oi\">"
-                . "<td>" . $order['id'] . "</td>"
-                . "<td>" . $order['on'] . "</td>"
-                . "<td>" . $items . "</td>"
-                . "<td>" . $cost . " zł</td>"
-                . "<td>" . $order_status[$order['status']] . "</td>"
-                . "<td>" . $order['cdate'] . "</td>"
-                . "<td class=\"dob\">Usuń <i class=\"fa fa-trash\"></i></td>"
-                . "</tr>";
+            . "<td>" . $order['id'] . "</td>"
+            . "<td>" . $order['on'] . "</td>"
+            . "<td>" . $items . "</td>"
+            . "<td>" . $cost . " zł</td>"
+            . "<td>" . $order_status[$order['status']] . "</td>"
+            . "<td>" . $order['cdate'] . "</td>"
+            . "<td class=\"dob\">Usuń <i class=\"fa fa-trash\"></i></td>"
+            . "</tr>";
     }
     die($table);
 }
@@ -108,45 +110,118 @@ if ($action == 4) {
 
 //Add items to order
 if ($action == 5) {
+    $mpwId = 0;
+    $didId = 0;
+    $queryType = 0;
+
     $oid = intval($_GET["oid"]);
     $items = explode("|", $_GET["items"]);
 
     foreach ($items as $item) {
-        $mpwq = $db->query("SELECT `src`, `did`, `pid`, `atribute`, `pieces`, `material`, `type`, `code`, `version`, `radius`, `mcp` FROM `mpw` WHERE `id` = '$item'");
-        $mpw = $mpwq->fetch();
-        $pid = $mpw["pid"];
-        $projq = $db->query("SELECT `cid`, `src` FROM `projects` WHERE `id` = '$pid'");
-        $proj = $projq->fetch();
-        $cid = $proj["cid"];
+        if (strlen($item) > 3) {
+            if ($item[0] . $item[1] . $item[2] == "MPL") {
+                $itemSetup = explode("D", $item);
+                $mpwId = intval(str_replace("MPL", "", $itemSetup[0]));
+                $didId = intval($itemSetup[1]);
+                $queryType = 1;
+            }
+        }
 
-        $mpcq = $db->query("SELECT `type`, `mtype`, `thickness`, `wh` FROM `mpc` WHERE `wid` = '$item'");
-        $mpc = $mpcq->fetch();
+        if ($queryType == 0) {
+            $dataQuery = $db->prepare("
+            SELECT
+            mpw.src,
+            mpw.did,
+            mpw.pid,
+            mpw.atribute,
+            mpw.pieces,
+            mpw.material,
+            mpw.type,
+            mpw.code,
+            mpw.version,
+            mpw.radius,
+            mpw.mcp,
+            p.cid,
+            p.src as project_name,
+            mpc.type as mpc_type,
+            mpc.mtype,
+            mpc.thickness as mpc_thickness,
+            mpc.wh,
+            d.type as detail_type,
+            d.src as detail_name
+            FROM
+            mpw mpw
+            LEFT JOIN projects p ON p.id = mpw.pid
+            LEFT JOIN mpc mpc ON mpc.wid = mpw.id
+            LEFT JOIN details d ON d.id = mpw.did
+            WHERE
+            mpw.id = :mpw
+        ");
+            $dataQuery->bindValue(":mpw", $item, PDO::PARAM_INT);
+            $dataQuery->execute();
+        } else if ($queryType == 1) { //Query dal multipartu
+            $dataQuery = $db->prepare("
+                SELECT
+                mpw.src,
+                mpw.did,
+                mpw.pid,
+                mpw.atribute,
+                mpw.pieces,
+                mpw.type,
+                mpw.code,
+                mpw.version,
+                mpw.radius,
+                mpw.thickness as mpc_thickness,
+                mpw.mcp,
+                p.cid,
+                p.src as project_name,
+                mpc.type as mpc_type,
+                mpc.wh,
+                d.type as detail_type,
+                d.src as detail_name,
+                m.name as material_name
+                FROM
+                plate_multiPartDetails mpd
+                LEFT JOIN plate_multiPartCostingDetailsSettings s ON s.directory_id = mpd.dirId AND s.detaild_id = mpd.did
+                LEFT JOIN mpw mpw ON mpw.id = mpd.mpw
+                LEFT JOIN projects p ON p.id = mpw.pid
+                LEFT JOIN mpc mpc ON mpc.wid = mpw.id
+                LEFT JOIN details d ON d.id = mpd.did
+                LEFT JOIN material m ON m.id = mpw.material
+                WHERE
+                mpd.mpw = :mpw
+                AND mpd.did = :did
+            ");
+            $dataQuery->bindValue(":mpw", $mpwId, PDO::PARAM_INT);
+            $dataQuery->bindValue(":did", $didId, PDO::PARAM_INT);
+            $dataQuery->execute();
 
-        $did = $mpw["did"];
-        $dq = $db->query("SELECT `type`, `src` FROM `details` WHERE `id` = '$did'");
-        $d = $dq->fetch();
+            $item = $mpwId;
+        }
+
+        $data = $dataQuery->fetch(PDO::FETCH_ASSOC);
 
         $main = "";
         $dim = "";
 
         $new_type = 2;
-        if ($mpw["type"] == 1) { //Profil
+        if ($data["type"] == 1) { //Profil
             $main = "roto";
-            $thickness = floatval($mpc["thickness"]);
+            $thickness = floatval($data["mpc_thickness"]);
 
             //DIR
-            if ($mpc["type"] == 0) { //Profil
-                $wh = explode("X", $mpc["wh"]);
-                $dim = floatval($wh[0]) . "x" . floatval($wh[1]) . "x" . floatval($mpc["thickness"]);
-            } else if ($mpc["type"] == 1) { //Rura
-                $dim = "fi" . floatval($mpc["wh"]) . "x" . floatval($mpc["thickness"]);
+            if ($data["mpc_type"] == 0) { //Profil
+                $wh = explode("X", $data["wh"]);
+                $dim = floatval($wh[0]) . "x" . floatval($wh[1]) . "x" . floatval($data["mpc_thickness"]);
+            } else if ($data["mpc_type"] == 1) { //Rura
+                $dim = "fi" . floatval($data["wh"]) . "x" . floatval($data["mpc_thickness"]);
             } else { //Inne
-                $dim = "k" . floatval($mpc["thickness"]);
+                $dim = "k" . floatval($data["mpc_thickness"]);
             }
-        } else if ($mpw["type"] == 3) {//Profil manual
+        } else if ($data["type"] == 3) {//Profil manual
             $main = "roto";
             $new_type = 4;
-            $qpc = $db->query("SELECT `dimension`, `type` FROM `profile_costing` WHERE `id` = '" . $mpw["mcp"] . "'");
+            $qpc = $db->query("SELECT `dimension`, `type` FROM `profile_costing` WHERE `id` = '" . $data["mcp"] . "'");
             $pc = $qpc->fetch();
 
             $exdim = explode("x", $pc["dimension"]);
@@ -157,10 +232,14 @@ if ($action == 5) {
             } else {
                 $dim = $pc["dimension"];
             }
-        } else if ($mpw["type"] == 5) { // Blacha
+        } else if ($data["type"] == 5) { // Blacha
             $main = "sheet";
 
-            $dim = floatval($mpc["thickness"]);
+            $dim = floatval($data["mpc_thickness"]);
+        } else if ($data["type"] == OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE) { //Multi
+            $main = "sheet";
+            $new_type = OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA;
+            $dim = floatval($data["mpc_thickness"]);
         } else {
             continue;
         }
@@ -168,14 +247,17 @@ if ($action == 5) {
         $dpath = $data_src . "cutting/" . $main;
 
         //Get material folder
-        if ($mpw["type"] == 3) {
-            $materialId = $mpw["material"];
-            $mq = $db->query("SELECT `lname` FROM `material` WHERE `id` = '$materialId'");
+        if ($data["type"] == 3) {
+            $materialId = $data["material"];
+            $mq = $db->query("SELECT `name` FROM `material` WHERE `id` = '$materialId'");
             $m = $mq->fetch();
             $sm = strtoupper($m["lname"][0]);
+        } else if ($data["type"] == OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE) { //Multi blachy
+            $sm = $data["material_name"];
+            $m["lname"] = $sm;
         } else {
-            $materialSname = $mpc["mtype"];
-            $mq = $db->query("SELECT `lname` FROM `material` WHERE `name` = '$materialSname'");
+            $materialSname = $data["mtype"];
+            $mq = $db->query("SELECT `name` FROM `material` WHERE `name` = '$materialSname'");
             $m = $mq->fetch();
             $sm = strtoupper($m["lname"][0]);
         }
@@ -185,10 +267,10 @@ if ($action == 5) {
         $dpath .= "/" . str_replace(".", "P", $dim);
 
         //Name
-        $esrc = explode(".", $d["src"]);
+        $esrc = explode(".", $data["detail_name"]);
         $ext = end($esrc);
 
-        $j_atr = json_decode($mpw["atribute"], true);
+        $j_atr = json_decode($data["atribute"], true);
         $a = "";
         if (count($j_atr) > 0) {
             foreach ($j_atr as $atr) {
@@ -202,24 +284,27 @@ if ($action == 5) {
           $atribute = "-" . end($ecode);
           } */
 
-        $newName = $cid . "-" . $mpw["pieces"] . "X" . $thickness . "-$sm-$item" . $atribute . "." . $ext;
+        $cid = $data["cid"];
+        $thickness = $data["mpc_thickness"];
+
+        $newName = $cid . "-" . $data["pieces"] . "X" . $thickness . "-$sm-$item" . $atribute . "." . $ext;
 
         //Original path
-        if ($d["type"] == 2) {
-            if ($mpw["radius"] > 0) {
-                $_src = $proj["src"] . "/V" . $mpw["version"] . "/R" . $mpw["radius"] . "/shd/" . $d["src"];
+        if ($data["type"] == 2) {
+            if ($data["radius"] > 0) {
+                $_src = $data["project_name"] . "/V" . $data["version"] . "/R" . $data["radius"] . "/shd/" . $data["detail_name"];
             } else {
-                $_src = $proj["src"] . "/V" . $mpw["version"] . "/shd/" . $d["src"];
+                $_src = $data["project_name"] . "/V" . $data["version"] . "/shd/" . $data["detail_name"];
             }
         } else {
-            $_src = $proj["src"] . "/V" . $mpw["version"] . "/dxf/" . $d["src"];
+            $_src = $data["project_name"] . "/V" . $data["version"] . "/dxf/" . $data["detail_name"];
         }
 
         if (file_exists($dpath) == false) {
             make_dir($dpath);
         }
 
-        $db->query("INSERT INTO `oitems` (`oid`, `mpw`, `code`, `src`, `path`) VALUES ('$oid', '$item', '$newName', '$_src', '$dpath')");
+        $db->query("INSERT INTO `oitems` (`oid`, `mpw`, `code`, `src`, `path`, `did`) VALUES ('$oid', '$item', '$newName', '$_src', '$dpath', $didId)");
         $db->query("UPDATE `mpw` SET `type` = '$new_type' WHERE `id` = '$item'");
         $db->query("UPDATE `order` SET `status` = '2' WHERE `id` = '$oid'");
     }
@@ -231,58 +316,94 @@ if ($action == 5) {
 if ($action == 6) {
     $oid = intval($_GET["oid"]);
 
-    $oquery = $db->query("SELECT `status` FROM `order` WHERE `id` = '$oid'");
-    $foquery = $oquery->fetch();
-    if ($foquery["status"] > 2) {
+    $orderDataQuery = $db->prepare("
+        SELECT
+        o.status,
+        oi.id,
+        oi.code,
+        mpw.id as mpw,
+        mpw.did,
+        mpw.material,
+        m.name as material_name,
+        mpw.pieces,
+        mpw.atribute,
+        mpw.mcp,
+        mpw.type,
+        oi.did as order_detail
+        FROM `order` o
+        LEFT JOIN oitems oi ON oi.oid = o.id
+        LEFT JOIN mpw mpw ON mpw.id = oi.mpw
+        LEFT JOIN material m ON m.id = mpw.material
+        WHERE 
+        o.id = :oid
+    ");
+    $orderDataQuery->bindValue(":oid", $oid, PDO::PARAM_INT);
+    $orderDataQuery->execute();
+
+    $orderData = $orderDataQuery->fetchAll(PDO::FETCH_ASSOC);
+    if ($orderData[0]["status"] > 2) {
         die("2");
     }
 
-    $iquery = $db->query("SELECT `id`, `mpw`, `code` FROM `oitems` WHERE `oid` = '$oid'");
     $content = "";
 
-    foreach ($iquery as $oitem) {
+    foreach ($orderData as $oitem) {
         $wid = $oitem["mpw"];
 
-        $mpwq = $db->query("SELECT `did`, `material`, `pieces`, `atribute`, `mcp`, `type` FROM `mpw` WHERE `id` = '$wid'");
-        $mpw = $mpwq->fetch();
-
         $atribute_s = "";
-        $atribute = json_decode($mpw["atribute"]);
+        $atribute = json_decode($oitem["atribute"]);
         if (count($atribute) > 0) {
             foreach ($atribute as $a) {
                 $atribute_s .= " <b>" . _getChecboxText($a) . "</b> ";
             }
         }
 
-        $did = $mpw["did"];
+        $did = $oitem["did"];
         $nameq = $db->query("SELECT `src` FROM `details` WHERE `id` = '$did'");
         $namef = $nameq->fetch();
         $dname = $namef["src"];
 
-        $mid = $mpw["material"];
-        $materialq = $db->query("SELECT `name` FROM `material` WHERE `id` = '$mid'");
-        $materialf = $materialq->fetch();
-        $material = $materialf["name"];
-
-        if ($mpw["type"] == 2 || $mpw["type"] == 7) {
+        if ($oitem["type"] == 2 || $oitem["type"] == 7) {
             $mpcq = $db->query("SELECT `last_price_all_netto` FROM `mpc` WHERE `wid` = '$wid'");
             $mpc = $mpcq->fetch();
             $cost = $mpc["last_price_all_netto"];
         }
-        if ($mpw["type"] == 4 || $mpw["type"] == 8) {
+        if ($oitem["type"] == 4 || $oitem["type"] == 8) {
             $qpc = $db->query("SELECT `priceset` FROM `profile_costing` WHERE `id` = '" . $mpw["mcp"] . "'");
             $pc = $qpc->fetch();
             $cost = $pc["priceset"];
+        } else if ($oitem["type"] == OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) {
+            $detailDataQuery = $db->prepare("
+              SELECT 
+              d.src,
+              ds.price
+              FROM 
+              details d
+              LEFT JOIN plate_multiPartDetails pd ON pd.did = d.id
+              LEFT JOIN plate_multiPartCostingDetailsSettings ds ON ds.detaild_id = d.id AND ds.directory_id = pd.dirId
+              WHERE 
+              d.id = :did
+              AND pd.mpw = :mpw
+            ");
+            $detailDataQuery->bindValue(":did", $oitem["order_detail"], PDO::PARAM_INT);
+            $detailDataQuery->bindValue(":mpw", $oitem["mpw"], PDO::PARAM_INT);
+            $detailDataQuery->execute();
+            $detailData = $detailDataQuery->fetch();
+
+            $cost = $detailData["price"];
+            $dname = $detailData["src"];
+        } else {
+            $cost = 0;
         }
 
         $content .= '<tr id="' . $oitem["mpw"] . '_mpwoi"><td>' . $oitem["mpw"] . '</td>'
-                . '<td>' . $dname . '</td>'
-                . '<td>' . $oitem["code"] . '</td>'
-                . '<td>' . $material . '</td>'
-                . '<td>' . $mpw["pieces"] . ' <i class="fa fa-pencil pediti" id="' . $wid . '_mpeidd" style="cursor: pointer"></i></td>'
-                . '<td>' . $atribute_s . '</td>'
-                . '<td>' . $cost . '</td>'
-                . '<td style="text-align: center;"><i class="fa fa-trash difo" style="cursor: pointer;"></i></td></tr>';
+            . '<td>' . $dname . '</td>'
+            . '<td>' . $oitem["code"] . '</td>'
+            . '<td>' . $oitem["material_name"] . '</td>'
+            . '<td>' . $oitem["pieces"] . ' <i class="fa fa-pencil pediti" id="' . $wid . '_mpeidd" style="cursor: pointer"></i></td>'
+            . '<td>' . $atribute_s . '</td>'
+            . '<td>' . $cost . '</td>'
+            . '<td style="text-align: center;"><i class="fa fa-trash difo" style="cursor: pointer;"></i></td></tr>';
     }
 
     die($content);

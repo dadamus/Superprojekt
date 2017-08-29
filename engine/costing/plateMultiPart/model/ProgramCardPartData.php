@@ -208,6 +208,16 @@ class ProgramCardPartData
         $saveQuery->bindValue("LaserMatName", $this->getLaserMatName(), PDO::PARAM_STR);
         $saveQuery->bindValue("ProgramId", $programId, PDO::PARAM_INT);
         $saveQuery->flush();
+
+        //Jeszcze zmiany typ detalu na blache
+        $detailUpdateQuery = $db->prepare("
+            UPDATE details
+            SET `type` = 1
+            WHERE 
+            id = :did
+        ");
+        $detailUpdateQuery->bindValue(":did", $this->getDetailId(), PDO::PARAM_INT);
+        $detailUpdateQuery->execute();
     }
 
     private function saveDetailImg()

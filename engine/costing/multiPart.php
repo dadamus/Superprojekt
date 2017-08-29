@@ -17,6 +17,12 @@ if (!is_null($action)) {
 $multiPartController = new MultiPartController();
 
 switch ($action) {
+    case "viewPlateCostingCard":
+        echo $multiPartController->getPlateCosting($_GET["directory_id"]);
+        break;
+    case "deleteMpwItem":
+        echo $multiPartController->deleteDetail($_POST["dir"], $_POST["mpw"], $_POST["detail"]);
+        break;
     default:
         echo $multiPartController->getList();
         break;

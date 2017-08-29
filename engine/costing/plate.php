@@ -368,16 +368,24 @@ if (@$_GET["a"] == 6) { // Set default
                                     switch ($row["type"]) {
                                         case OT::AUTO_WYCENA_BLACH_MULTI_KROK_1:
                                             $text = 'Brak wyceny';
-                                            $status = 'default';
+                                            $status = 'info';
                                             break;
 
                                         case OT::AUTO_WYCENA_BLACH_MULTI_KROK_2:
                                             $text = 'Brak ramki';
                                             $status = 'warning';
                                             break;
+                                        case OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE:
+                                            $text = "Zablokowana";
+                                            $status = 'info';
+                                            break;
+                                        case OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA:
+                                            $text = "Zamówione";
+                                            $status = 'success';
+                                            break;
                                     }
 
-                                    if ($row["price"] > 0) {
+                                    if ($row["price"] > 0 && $row["type"] < OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE) {
                                         $text = "Wycenione";
                                         $status = "success";
                                     }

@@ -481,9 +481,10 @@ class MPWModel
 
     /**
      * @param int $dirId
+     * @param int $mpwId
      * @throws Exception
      */
-    public function makeDetails(int $dirId)
+    public function makeDetails(int $dirId, int $mpwId)
     {
         global $data_src, $db;
 
@@ -523,7 +524,7 @@ class MPWModel
         if (!file_exists($mpwPath)) {
             mkdir($mpwPath, 0777, true);
         }
-        
+
         $materialQuery = $db->query("SELECT `name` FROM material WHERE id = " . $this->getMaterial());
         $materialName = $materialQuery->fetch()["name"];
 
@@ -546,7 +547,7 @@ class MPWModel
             $detailNameExploded = explode(".", $detailName);
             $detailExt = end($detailNameExploded);
 
-            $detailNewName = "MP-" . $this->getPieces() . "-" . $this->getThickness() . "MM-$materialName-$detail-$dirId";
+            $detailNewName = "MP-" . $this->getPieces() . "-" . $this->getThickness() . "MM-$materialName-$detail-$mpwId";
             if ($attributes != "") {
                 $detailNewName .= "-" . $attributes;
             }

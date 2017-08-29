@@ -3,8 +3,50 @@
 $main = $data["main"];
 ?>
 <div class="row">
-    <div class="col-lg-12">
+    <div class="col-lg-7">
         <h2 class="page-title">Costing - multipart </h2>
+    </div>
+    <div class="col-lg-5">
+        <form class="form-horizontal" id="changeDesignerForm" action="?" data-dir-id="<?= $data["directoryId"] ?>">
+            <div class="form-group">
+                <label class="col-md-2 control-label">Projektant: </label>
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <select class="form-control" id="designerId"
+                                <?php if ($main->isBlocked()): ?>disabled="disabled"<?php endif; ?>>
+                            <option value="">Brak</option>
+                            <?php foreach ($data["users"] as $user): ?>
+                                <option
+                                        value="<?= $user["id"] ?>"
+                                    <?php if ($user["id"] == $data["designerId"]): ?>
+                                        selected="selected"
+                                    <?php endif; ?>
+                                >
+                                    <?= $user["name"] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <span class="input-group-btn">
+                            <?php if (!$main->isBlocked()): ?>
+                                <button class="btn blue" type="submit">Zmień</button>
+                            <?php endif; ?>
+                    </span>
+                    </div>
+                </div>
+                <?php if (!$main->isBlocked()): ?>
+                    <div class="col-md-2">
+                        <a
+                                class="btn red"
+                                href="javascript:;"
+                                id="costingBlock"
+                                data-dir-id="<?= $data["directoryId"] ?>"
+                        >
+                            Blokuj
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </form>
     </div>
 </div>
 

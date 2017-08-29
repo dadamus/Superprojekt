@@ -14,6 +14,13 @@ if ($a == 1) {
         4 => "other"
     ];
 
+    //NESTING PLATE UPDATE
+    $db->query("
+        UPDATE plate_warehouse
+        SET state = '" . $warehouseTypes[4] . "'
+        WHERE SheetCode LIKE '%NEST%'
+    ");
+
     $type = $warehouseTypes[@$_GET["type"]];
 
     //FILTR
@@ -34,11 +41,17 @@ if ($a == 1) {
             $filtr .= " AND `date` >= '" . $edate[0] . " 00:00:00' AND `date` <= '" . $edate[1] . " 24:60:60'";
         }
     }
-    if (!empty($_POST["f_Width"])) {
-        $filtr .= " AND `Width` LIKE '%" . $_POST["f_Width"] . "%'";
+    if (!empty($_POST["f_Width_Min"])) {
+        $filtr .= " AND `Width` >= " . $_POST["f_Width_Min"];
     }
-    if (!empty($_POST["f_Height"])) {
-        $filtr .= " AND `Height` LIKE '%" . $_POST["f_Height"] . "%'";
+    if (!empty($_POST["f_Height_Min"])) {
+        $filtr .= " AND `Height` >= " . $_POST["f_Height_Min"];
+    }
+    if (!empty($_POST["f_Width_Max"])) {
+        $filtr .= " AND `Width` <= " . $_POST["f_Width_Max"];
+    }
+    if (!empty($_POST["f_Height_Max"])) {
+        $filtr .= " AND `Height` <= " . $_POST["f_Height_Max"];
     }
     if (!empty($_POST["f_Thickness"])) {
         $filtr .= " AND `Thickness` LIKE '%" . $_POST["f_Thickness"] . "%'";
@@ -46,15 +59,22 @@ if ($a == 1) {
 
     //die("SELECT * FROM `plate_warehouse` WHERE `type` = '$type' ".$filtr);
     $pselect = $db->query("
-	SELECT * 
-	FROM `plate_warehouse` 
-	LEFT JOIN `T_material` ON `T_material`.MaterialName = `plate_warehouse`.MaterialName
-	WHERE `state` = '$type' " . $filtr);
+	SELECT 
+	p.SheetCode,
+	m.MaterialTypeName,
+	p.Width,
+	p.Height,
+	m.Thickness,
+	p.createDate,
+	p.QtyAvailable
+	FROM `plate_warehouse` p
+	LEFT JOIN `T_material` m ON m.MaterialName = p.MaterialName
+	WHERE p.state = '$type' " . $filtr);
     $data = $pselect->fetchAll(PDO::FETCH_ASSOC);
 
     $table = "";
     foreach ($data as $row) {
-        $table .= "<tr><td>" . $row['SheetCode'] . "</td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td></tr>";
+        $table .= "<tr><td></td><td>" . $row['SheetCode'] . "</td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td><td></td></tr>";
     }
     die($table);
 } else if ($a == 2) { //Insert new plate
@@ -99,22 +119,42 @@ if ($a == 1) {
     */
     $cpm = intval($_GET['cpm']);
 
-    if ($cpm == 2) {
-        $waga_arkusz = floatval($_POST["Weight"]) / intval($_POST['QtyAvailable']);
-        $waga_program =
-            floatval($_POST['Width'])
-            * floatval($_POST['Height'])
-            * floatval($_POST["Thickness"])
-            * $density
-            / 1000;
-        $powierzchnia_ramki =
-            (45 * floatval($_POST['Width'])) +
-            (30 * (floatval($_POST['Height']) - 30));
-        $cena_ramka =
-            $powierzchnia_ramki
-            / floatval($_POST['Width'])
-            * floatval($_POST['Height'])
-            * floatval($_POST['Price']);
+    $cena_ramka = 0;
+    $koszty = 0;
+    $arkusz_aktualna = 0;
+    $cena_zl_kg = 0;
+    $roznica_wagi = 0;
+
+    $waga_arkusz = floatval($_POST["Weight"]) / intval($_POST['QtyAvailable']);
+    $waga_program =
+        floatval($_POST['Width'])
+        * floatval($_POST['Height'])
+        * floatval($_POST["Thickness"])
+        * $density
+        / 1000;
+    $powierzchnia_ramki =
+        (45 * floatval($_POST['Width'])) +
+        (30 * (floatval($_POST['Height']) - 30));
+    $cena_ramka =
+        $powierzchnia_ramki
+        / floatval($_POST['Width'])
+        * floatval($_POST['Height'])
+        * floatval($_POST['Price']);
+    $koszty = floatval($_POST["AdditionalPrice"]) / intval($_POST['QtyAvailable']);
+    $roznica_wagi = ($waga_arkusz - $waga_program) / $waga_program;
+
+    if ($cpm == 1) {
+        $cena_baza =
+            floatval($_POST['Price'])
+            * floatval($_POST['Width'])
+            / intval($_POST['QtyAvailable']);
+        $arkusz_aktualna = $cena_baza + $cena_ramka + $koszty;
+    } else if ($cpm == 2) {
+        $arkusz_aktualna =
+            floatval($_POST['Price'])
+            + $cena_ramka
+            + $koszty;
+        $cena_zl_kg = $arkusz_aktualna / $waga_program;
     }
 
     $SqlBuilder = new sqlBuilder(sqlBuilder::INSERT, "plate_warehouse");
@@ -132,8 +172,16 @@ if ($a == 1) {
     $SqlBuilder->bindValue("date", $date, PDO::PARAM_STR);
     $SqlBuilder->bindValue("pdate", $_POST['pdate'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("ndp", $_POST['ndp'], PDO::PARAM_STR);
-    $SqlBuilder->bindValue("OwnerId", $_POST["OwnerId"],PDO::PARAM_INT);
-    $SqlBuilder->bindValue("UserID", $_SESSION["login"],PDO::PARAM_INT);
+    $SqlBuilder->bindValue("OwnerId", $_POST["OwnerId"], PDO::PARAM_INT);
+    $SqlBuilder->bindValue("UserID", $_SESSION["login"], PDO::PARAM_INT);
+
+    $SqlBuilder->bindValue("Price_kg", $cena_zl_kg, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("costs", $koszty, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("actual_weight", $waga_arkusz, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("program_weight", $waga_program, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("sheet_weight", $waga_arkusz, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("difference_weight", $roznica_wagi, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("sheet_actual_price", $arkusz_aktualna, PDO::PARAM_STR);
 
     die($db->lastInsertId());
 }
@@ -165,7 +213,7 @@ if ($a == 1) {
                             <select class="bs-select form-control" multiple data-actions-box="true"
                                     name="f_SheetType[]">
                                 <?php
-                                $material = $db->query("SELECT `MaterialName` FROM `T_material` ORDER BY MaterialName DESC");
+                                $material = $db->query("SELECT `name` FROM `material` ORDER BY name DESC");
                                 foreach ($material as $row) {
                                     echo '<option>' . $row["name"] . '</option>';
                                 }
@@ -178,10 +226,12 @@ if ($a == 1) {
                             </div>
                         </div>
                         <div class="col-lg-2 col-md-12" style="margin-bottom: 3px;">
-                            <input type="text" class="form-control" name="f_Width" placeholder="Szerokość">
+                            <input type="text" class="form-control" name="f_Width_Min" placeholder="X min">
+                            <input type="text" class="form-control" name="f_Width_Max" placeholder="X max">
                         </div>
                         <div class="col-lg-2 col-md-12" style="margin-bottom: 3px;">
-                            <input type="text" class="form-control" name="f_Height" placeholder="Wysokość">
+                            <input type="text" class="form-control" name="f_Height_Min" placeholder="Y min">
+                            <input type="text" class="form-control" name="f_Height_Max" placeholder="Y max">
                         </div>
                         <div class="col-lg-2 col-md-12" style="margin-bottom: 3px;">
                             <input type="text" class="form-control" name="f_Thickness" placeholder="Grubość">
@@ -218,7 +268,26 @@ if ($a == 1) {
 
                         function getTab($id)
                         {
-                            echo '<table class="table table-striped table-bordered table-hover dt-responsive" id="tab' . $id . '-table"><thead><tr><th>SheetCode</th><th>Rodzaj</th><th>Wymiary</th><th>Grubość</th><th>Data przyjęcia</th><th>Sztuk</th></tr></thead><tbody id="tab' . $id . '-content"></tbody>
+                            echo '<table 
+                            class="table table-striped table-bordered table-hover dt-responsive" 
+                            id="tab' . $id . '-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="btn-group">
+                                                <a class="btn btn-sm btn-default">Akcje</a>
+                                            </div>
+                                        </th>
+                                        <th>SheetCode</th>
+                                        <th>Rodzaj</th>
+                                        <th>Wymiary</th>
+                                        <th>Grubość</th>
+                                        <th>Data przyjęcia</th>
+                                        <th>Sztuk</th>
+                                        <th>Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tab' . $id . '-content"></tbody>
                             </table>';
                         }
 
@@ -403,6 +472,10 @@ if ($a == 1) {
                                             </div>
                                         </div>
                                     </td>
+                                </tr>
+                                <tr>
+                                    <td>Koszty</td>
+                                    <td><input type="text" name="AdditionalPrice" class="form-control"></td>
                                 </tr>
                                 <tr>
                                     <td>Dzień przyjęcia</td>

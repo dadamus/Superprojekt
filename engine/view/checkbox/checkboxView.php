@@ -15,6 +15,7 @@
                         name="attribute[]"
                         value="<?= $key ?>"
                         style="width: 20px; height: 20px;"
+                        <?php if ($data["disabled"]): ?>disabled="disabled"<?php endif; ?>
                     <?php if (isset($attribute["checked"])): ?>
                         <?php if ($attribute["checked"] == 1): ?>
                             checked="checked"
@@ -31,6 +32,7 @@
                             class="form-control ai"
                             data-id="<?= $key ?>"
                             value="<?= $attribute["szt"] ?>"
+                            <?php if ($data["disabled"]): ?>disabled="disabled"<?php endif; ?>
                     />
                 </td>
                 <td>
@@ -41,6 +43,7 @@
                             class="form-control aik"
                             data-id="<?= $key ?>"
                             value="<?= $attribute["szt"] * $data["partCount"] ?>"
+                            <?php if ($data["disabled"]): ?>disabled="disabled"<?php endif; ?>
                     />
                 </td>
             <?php endif; ?>

@@ -80,6 +80,29 @@ class plateMultiPartController extends mainController
             echo '</pre>';
         }
 
+        //Info o projektancie
+        $designerId = 0;
+        $designerQuery = $db->query("
+            SELECT 
+            user_id
+            FROM
+            designers
+            WHERE
+            `type` = 'plateMulti'
+            AND item_id = $directoryId
+            ORDER BY id DESC
+            LIMIT 1
+        ");
+        $designerQueryData = $designerQuery->fetch();
+        if ($designerQueryData !== false) {
+            $designerId = $designerQueryData["user_id"];
+        }
+        $usersQuery = $db->query("
+            SELECT 
+            id, `name`
+            FROM accounts
+        ");
+
         return $this->render("mainView.php", [
             "directoryId" => $directoryId,
             "directoryName" => $this->getDirectoryName($directoryId),
@@ -87,7 +110,9 @@ class plateMultiPartController extends mainController
             "alerts" => $alerts,
             "frameSetup" => $frameSetup,
             "frameView" => $frameDiv,
-            "main" => $mainCardModel
+            "main" => $mainCardModel,
+            "designerId" => $designerId,
+            "users" => $usersQuery->fetchAll(PDO::FETCH_ASSOC)
         ]);
     }
 
@@ -194,7 +219,8 @@ class plateMultiPartController extends mainController
      * @return string
      * @throws Exception
      */
-    private function getDirectoryName(int $directoryId): string {
+    private function getDirectoryName(int $directoryId): string
+    {
         global $db;
 
         $searchQuery = $db->prepare("
@@ -214,5 +240,57 @@ class plateMultiPartController extends mainController
         }
 
         return $dirData["dir_name"];
+    }
+
+    /**
+     * @param int $dirId
+     * @param int $userId
+     * @return string
+     */
+    public function changeDesigner(int $dirId, int $userId): string
+    {
+        $SqlBuilder = new sqlBuilder(sqlBuilder::INSERT, "designers");
+        $SqlBuilder->bindValue("user_id", $userId, PDO::PARAM_INT);
+        $SqlBuilder->bindValue("type", "plateMulti", PDO::PARAM_STR);
+        $SqlBuilder->bindValue("item_id", $dirId, PDO::PARAM_INT);
+        $SqlBuilder->bindValue("added_by", $_SESSION["login"], PDO::PARAM_INT);
+        $SqlBuilder->bindValue("created_at", date("Y-m-d H:i:s"), PDO::PARAM_STR);
+        $SqlBuilder->flush();
+        return "ok";
+    }
+
+    /**
+     * @param int $directoryId
+     */
+    public function block(int $directoryId)
+    {
+        global $db;
+
+        $mpwDataQuery = $db->prepare("
+            SELECT 
+            mpw
+            FROM
+            plate_multiPartDetails
+            WHERE
+            dirId = :dir
+        ");
+        $mpwDataQuery->bindValue(":dir", $directoryId, PDO::PARAM_INT);
+        $mpwDataQuery->execute();
+
+        $newType = OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE;
+
+        while ($mpw = $mpwDataQuery->fetch(PDO::FETCH_ASSOC)) {
+            $mpwId = $mpw["mpw"];
+
+            $mpwUpdateQuery = $db->prepare("
+              UPDATE
+              mpw
+              SET `type` = $newType
+              WHERE 
+              id = :id
+            ");
+            $mpwUpdateQuery->bindValue(":id", $mpwId, PDO::PARAM_INT);
+            $mpwUpdateQuery->execute();
+        }
     }
 }

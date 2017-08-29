@@ -1,7 +1,6 @@
 var $sheetCodeInput = $("#paddf input[name='SheetCode']");
 
-function reloadDetails(type)
-{
+function reloadDetails(type) {
     if (typeof (type) == 'undefined') {
         type = 1;
         App.blockUI({boxed: !0});
@@ -12,21 +11,28 @@ function reloadDetails(type)
         type: "POST",
         data: serialize,
     }).done(function (msg) {
-        if ($.fn.DataTable.isDataTable("#tab" + type + "-table"))
-        {
+        if ($.fn.DataTable.isDataTable("#tab" + type + "-table")) {
             $("#tab" + type + "-table").DataTable().destroy();
         }
 
         $("#tab" + type + "-content").html(msg);
         $("#tab" + type + "-table").dataTable({
-            "pageLength": 50
+            "pageLength": 50,
+            'columnDefs': [{
+                'targets': 0,
+                'searchable': false,
+                'orderable': false,
+                'className': 'dt-body-center',
+                'render': function (data, type, full, meta){
+                    return '<input type="checkbox" name="selected[]" value="' + full[1] + '">';
+                }
+            }]
         });
 
         if (type < 4) {
             var ntype = type + 1;
             reloadDetails(ntype);
-        } else
-        {
+        } else {
             App.unblockUI();
         }
     });
@@ -58,8 +64,7 @@ var provider = "";
 var cpm = 1;
 var sheet_code_ready = false;
 
-function getFloat(value, def)
-{
+function getFloat(value, def) {
     var _v = parseFloat(value.replace(",", "."));
     if (_v > 0) {
         return _v;
@@ -81,8 +86,7 @@ function SheetCodeGenerator() {
     var yy = "Y";
 
     var date = moment($newSheetDate.val(), "DD-MM-YYYY");
-    if (date.isValid())
-    {
+    if (date.isValid()) {
         mm = date.months() + 1;
         if (mm < 10) {
             mm = "0" + mm;
@@ -104,7 +108,7 @@ $(document).ready(function () {
     $(".bs-select").selectpicker({iconBase: "fa", tickIcon: "fa-check"});
 
     $(".date-picker").datetimepicker({
-        minView : 2,
+        minView: 2,
         language: 'pl',
         pickerPosition: "top-left"
     });
@@ -120,9 +124,11 @@ $(document).ready(function () {
                 "Ostatnie 7 dni": [moment().subtract("days", 6), moment()],
                 "Ostatnie 30 dni": [moment().subtract("days", 29), moment()],
                 "Ten miesiąc": [moment().startOf("month"), moment().endOf("month")],
-                "Ostatni miesiąc": [moment().subtract("month", 1).startOf("month"), moment().subtract("month", 1).endOf("month")]},
+                "Ostatni miesiąc": [moment().subtract("month", 1).startOf("month"), moment().subtract("month", 1).endOf("month")]
+            },
             minDate: "01/01/2012",
-            maxDate: "12/31/2018"},
+            maxDate: "12/31/2018"
+        },
         function (t, e) {
             $("#defaultrange input").val(t.format("YYYY-MM-DD") + " : " + e.format("YYYY-MM-DD"))
         });

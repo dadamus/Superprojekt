@@ -142,9 +142,18 @@ $status = getOrderStatus($order["status"])
                                     $qmpc = $db->query("SELECT `mtype`, `atributes`, `d_qty`, `thickness` FROM `mpc` WHERE `wid` = '$mpw_id'");
                                     $mpc = $qmpc->fetch();
 
-                                    $qdid = $db->query("SELECT `did`, `pieces`, `program`  FROM `mpw` WHERE `id` = '$mpw_id'");
+                                    $qdid = $db->query("SELECT `did`, `pieces`, `program`, `type`  FROM `mpw` WHERE `id` = '$mpw_id'");
                                     $fdid = $qdid->fetch();
                                     $did = $fdid["did"];
+                                    if ($fdid["type"] == OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) {
+                                        $qmpc = $db->query("
+                                          SELECT m.name as mtype, mpw.`atribute`, mpw.`pieces` as d_qty, mpw.`thickness` 
+                                          FROM `mpw` mpw 
+                                          LEFT JOIN material m ON m.id = mpw.material
+                                          WHERE mpw.`id` = '$mpw_id'
+                                        ");
+                                        $mpc = $qmpc->fetch();
+                                    }
 
                                     echo '<div class="row"><div class="col-md-12"><div class="portlet yellow-gold box">';
                                     echo '<div class="portlet-title"><div class="caption">' . $oitem["code"] . '</div><div class="actions"><a href="' . $site_path . '/detail/' . $did . '/" class="btn btn-default" style="margin-right: 10px;">Karta detalu <i class="fa fa-mail-forward"></i></a><a href="javascript:;" class="btn btn-default OrDB" id="' . $oitem["mpw"] . '_odba">Usuń <i class="fa fa-trash"></i></a></div></div><div class="portlet-body">';

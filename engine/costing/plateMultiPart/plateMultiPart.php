@@ -168,11 +168,14 @@ class PlateMultiPart
     //MPW zeby ramka sie pokazywala
     public function MpwUpdate()
     {
+        global $db;
+        $mpwId = 0;
         $mpws = [];
         foreach ($this->programs as $program) {
             foreach ($program->getParts() as $part) {
                 $detailName = $part->getPartName();
                 $mpw = $this->MPWRepository->getMpwByDetailName($detailName);
+                $mpwId = $mpw->getMpwId();
 
                 if (isset($mpws[$mpw->getMpwId()])) {
                     continue;
@@ -183,6 +186,21 @@ class PlateMultiPart
                 $mpw->save();
             }
         }
+
+        //Folder blokujemy
+        $dirIdQuery = $db->query("
+            SELECT 
+            dirId
+            FROM
+            plate_multiPartDetails d
+            WHERE 
+            mpw = $mpwId
+            LIMIT 1
+        ");
+        $dirData = $dirIdQuery->fetch();
+        $dirId = $dirData["dirId"];
+
+        $db->query("UPDATE plate_multiPartDirectories SET blocked = 1 WHERE id = $dirId");
     }
 
     public function SaveData()

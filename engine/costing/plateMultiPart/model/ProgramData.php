@@ -348,7 +348,6 @@ class ProgramData
         if ($programDbId === false) {
             $programDbId = $db->lastInsertId();
             $this->id = $programDbId;
-            echo "ID: " . $this->id;
         }
 
         $this->saveSettings();

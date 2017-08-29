@@ -452,6 +452,63 @@ if ($action == 7) {
             . "<td class=\"$addClass\">$cost zł</td>"
             . "</tr>";
     }
+
+    //Autowycena blach
+    $autoCostingprice = $db->prepare("
+        SELECT
+        d.id as did,
+        d.src as detail_name,
+        mpw.id as nr,
+        mpw.pieces,
+        mpw.atribute,
+        mpd.name as detail_code,
+        m.name as material_name,
+        mpcds.price
+        FROM 
+        details d
+        LEFT JOIN plate_multiPartCostingDetailsSettings mpcds ON mpcds.detaild_id = d.id
+        LEFT JOIN plate_multiPartDetails mpd ON mpd.did = d.id AND dirId = mpcds.directory_id
+        LEFT JOIN mpw mpw ON mpw.id = mpd.mpw
+        LEFT JOIN material m ON m.id = mpw.material
+        WHERE
+        d.pid = :pid
+        AND mpw.type >= :mpwtype
+        GROUP BY mpcds.directory_id, d.id
+    ");
+    $autoCostingprice->bindValue(":mpwtype", OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE, PDO::PARAM_INT);
+    $autoCostingprice->bindValue(":pid", $pid, PDO::PARAM_INT);
+    $autoCostingprice->execute();
+
+    while ($detail = $autoCostingprice->fetch(PDO::FETCH_ASSOC)) {
+
+        $atribute_s = "";
+        $atribute = json_decode($detail["atribute"]);
+        if (count($atribute) > 0) {
+            foreach ($atribute as $a) {
+                $atribute_s .= " <b>" . _getChecboxText($a) . "</b> ";
+            }
+        }
+
+        $nr = $detail["nr"];
+        $addClass = "auto-costing-plate";
+        $dname = $detail["detail_name"];
+        $did = $detail["did"];
+        $dn = $detail["detail_code"];
+        $material = $detail["material_name"];
+        $pieces = $detail["pieces"];
+        $cost = $detail["price"];
+
+        $content .= "<tr class=\"gradeA\" style=\"cursor: pointer;\">"
+            . '<td style="text-align: center;"><input type="checkbox" class="form-control sorder" name="sorder[]" value="MPL' . $nr . 'D' . $did . '" style="width: 20px; height: 20px; margin: 0 auto;"></td>'
+            . "<td class=\"$addClass\">$nr</td>"
+            . "<td class=\"$addClass\">$dname</td>"
+            . "<td class=\"$addClass did\" id=\"" . $did . "_id\">$dn</td>"
+            . "<td class=\"$addClass\">$material</td>"
+            . "<td class=\"$addClass\">$pieces</td>"
+            . "<td class=\"$addClass\">$atribute_s</td>"
+            . "<td class=\"$addClass\">$cost zł</td>"
+            . "</tr>";
+    }
     die($content);
 }
 

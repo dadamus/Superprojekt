@@ -51,14 +51,15 @@ class directoryViewController extends mainController
     public function getDirectory($filter = '')
     {
         global $db;
-        $partDirectories = $db->query("SELECT id, dir_name FROM plate_multiPartDirectories WHERE dir_name LIKE '%" . $filter . "%'");
+        $partDirectories = $db->query("SELECT id, dir_name, blocked FROM plate_multiPartDirectories WHERE dir_name LIKE '%" . $filter . "%'");
 
         $dirs = [];
 
         while ($d = $partDirectories->fetch()) {
             $dirs[] = [
                 "name" => $d["dir_name"],
-                "id" => $d["id"]
+                "id" => $d["id"],
+                "blocked" => $d["blocked"]
             ];
         }
 

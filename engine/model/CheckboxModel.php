@@ -69,9 +69,10 @@ class CheckboxModel extends mainController
 
     /**
      * @param int $partCount
+     * @param bool $disabled
      * @return string
      */
-    public function renderAttributes(int $partCount): string
+    public function renderAttributes(int $partCount, bool $disabled = false): string
     {
         foreach ($this->attributes as $key => $row) {
             if (!isset($this->attributes[$key]["szt"])) {
@@ -85,7 +86,8 @@ class CheckboxModel extends mainController
 
         return $this->render("checkboxView.php", [
             "attributes" => $this->attributes,
-            "partCount" => $partCount
+            "partCount" => $partCount,
+            "disabled" => $disabled
         ]);
     }
 

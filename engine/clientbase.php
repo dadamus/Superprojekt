@@ -43,8 +43,7 @@ if (@$_GET["a"] == 1) { // AJAX New client
                 }
                 if ($min <= $_id && $_id <= $max) {
                     $src = $data_src . $directories[$i] . "/" . $_id;
-                    mkdir($src, 0700);
-                    mkdir($src . "/PROJEKTY", 0700);
+                    mkdir($src . "/PROJEKTY", 0777, true);
                     $return = true;
                 }
             }
@@ -60,15 +59,11 @@ if (@$_GET["a"] == 1) { // AJAX New client
             $max = 49;
         }
         $directory = $min . "-" . $max;
-        if (mkdir($data_src . $directory, 0700) == false) {
+        if (mkdir($data_src . $directory, 0777, true) == false) {
             die($data_src . $directory);
         }
 
-        chown($data_src . $directory, $user_name);
-        mkdir($data_src . $directory . "/" . $id, 0777);
-        chown($data_src . $directory . "/" . $id, $user_name);
-        mkdir($data_src . $directory . "/" . $id . "/PROJEKTY", 0777);
-        chown($data_src . $directory . "/" . $id . "/PROJEKTY", $user_name);
+        mkdir($data_src . $directory . "/" . $id . "/PROJEKTY", 0777, true);
     }
     die($_id);
 } else if (@$_GET["a"] == 2) { // DANE DO EDYCJI

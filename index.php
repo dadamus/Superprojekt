@@ -43,6 +43,7 @@ require_once dirname(__FILE__) . '/config.php';
         <link href="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo $site_path; ?>/assets/global/plugins/jquery-multi-select/css/multi-select.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+        <link href="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-sweetalert/sweetalert.css" rel="stylesheet" type="text/css"/>
         <!-- END PAGE LEVEL PLUGIN STYLES -->
         <link href="<?php echo $site_path; ?>/assets/global/plugins/fullcalendar/fullcalendar.min.css" rel="stylesheet" type="text/css" />
         <link href="<?php echo $site_path; ?>/assets/global/plugins/jquery-nestable/jquery.nestable.css" rel="stylesheet" type="text/css" />
@@ -115,6 +116,7 @@ require_once dirname(__FILE__) . '/config.php';
         <script src="<?php echo $site_path; ?>/assets/global/plugins/jquery-inputmask/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-select/js/bootstrap-select.min.js" type="text/javascript"></script>
         <script src="<?php echo $site_path; ?>/assets/global/plugins/jquery-multi-select/js/jquery.multi-select.js" type="text/javascript"></script>
+        <script src="<?php echo $site_path; ?>/assets/global/plugins/bootstrap-sweetalert/sweetalert.min.js" type="text/javascript"></script>
         <!-- END PAGE LEVEL PLUGINS -->
         <!-- BEGIN THEME GLOBAL SCRIPTS -->
         <script src="<?php echo $site_path; ?>/assets/global/scripts/app.min.js" type="text/javascript"></script>

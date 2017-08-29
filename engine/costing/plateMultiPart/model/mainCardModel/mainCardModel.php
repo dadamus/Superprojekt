@@ -19,6 +19,9 @@ class mainCardModel
     /** @var  mainCardClientModel[] */
     private $clientModels;
 
+    /** @var bool  */
+    private $blocked = false;
+
     /**
      * mainCardModel constructor.
      * @param PlateMultiPart $plateMultiPart
@@ -35,6 +38,8 @@ class mainCardModel
      */
     public function make(float $priceFactor, bool $count = false)
     {
+        global $db;
+
         $plateMultiPart = $this->getPlateMultiPart();
 
         $programs = $plateMultiPart->getPrograms();
@@ -113,6 +118,33 @@ class mainCardModel
                 $program->saveSettings();
             }
         }
+
+        //Check if not blocked
+        $checkBlockedQuery = $db->prepare("
+            SELECT 
+            mpw.type
+            FROM
+            plate_multiPartDetails mpd
+            LEFT JOIN mpw mpw ON mpw.id = mpd.mpw
+            WHERE
+            mpd.dirId = :dirId
+            LIMIT 1
+        ");
+        $checkBlockedQuery->bindValue(":dirId", $plateMultiPart->getDirId(), PDO::PARAM_INT);
+        $checkBlockedQuery->execute();
+
+        $checkBlockedData = $checkBlockedQuery->fetch(PDO::FETCH_ASSOC);
+        if ($checkBlockedData["type"] >= OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE) {
+            $this->blocked = true;
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBlocked(): bool
+    {
+        return $this->blocked;
     }
 
     /**

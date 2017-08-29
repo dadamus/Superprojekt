@@ -179,11 +179,11 @@ $laserMaterialName = $programDetail[reset($programs)->getSheetName()]->getLaserM
                     $img = $mainDetail->getImg();
                     ?>
                     <?php if ($img == null): ?>
-                    <img src="/assets/global/plugins/holder.js/200x200" alt="200x200"
-                         style="height: 200px; margin: 0 auto; width: 100%; display: block;">
+                        <img src="/assets/global/plugins/holder.js/200x200" alt="200x200"
+                             style="height: 200px; margin: 0 auto; width: 100%; display: block;">
                     <?php else: ?>
-                    <img src="<?= $img ?>" width="200px" height="200px"
-                         style="height: 200px; margin: 0 auto; display: block;"/>
+                        <img src="<?= $img ?>" width="200px" height="200px"
+                             style="height: 200px; margin: 0 auto; display: block;"/>
                     <?php endif; ?>
                 </div>
             </div>
@@ -209,6 +209,7 @@ $laserMaterialName = $programDetail[reset($programs)->getSheetName()]->getLaserM
                                     <tr>
                                         <td>
                                             <input class="form-control" name="p_factor"
+                                                   <?php if ($mainCardModel->isBlocked()): ?>disabled="disabled"<?php endif; ?>
                                                    value="<?= $mainDetail->getPriceFactor() ?>">
                                         </td>
                                         <td>
@@ -299,13 +300,14 @@ $laserMaterialName = $programDetail[reset($programs)->getSheetName()]->getLaserM
         </div>
     </div>
 
+    <?php if (!$mainCardModel->isBlocked()): ?>
     <div class="row">
         <div class="col-lg-2 col-lg-offset-10">
             <button class="btn btn-info" type="submit">Licz</button>
             <a class="btn btn-success" id="saveButton">Zapisz</a>
         </div>
     </div>
-
+    <?php endif; ?>
 </form>
 
 <script type="text/javascript">

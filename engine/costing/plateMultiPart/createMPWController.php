@@ -70,7 +70,7 @@ class createMPWController extends mainController
         $mpwQuery->flush();
 
         $mpw->setMpwId($db->lastInsertId());
-        $mpw->makeDetails($dirId);
+        $mpw->makeDetails($dirId, $mpw->getMpwId());
 
         return "ok";
     }

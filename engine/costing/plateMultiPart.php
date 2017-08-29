@@ -13,6 +13,9 @@ include dirname(__FILE__) . "/plateMultiPart/plateMultiPartController.php";
 
 $action = @$_GET["action"];
 if (!is_null($action)) {
+    if (session_status() == PHP_SESSION_NONE) {
+        require_once dirname(__DIR__) . "/protect.php";
+    }
     require_once dirname(__DIR__) . "/../config.php";
 }
 
@@ -82,5 +85,18 @@ switch ($action) {
         }
 
         echo $plateMultiPartController->viewProgramCard($directoryId, $programId);
+        break;
+    case "changeDesigner": //Zmiana projektanta
+        $directoryId = $_GET["dir"];
+        $userId = $_GET["user"];
+
+        echo $plateMultiPartController->changeDesigner($directoryId, $userId);
+        break;
+
+    case "block": //Blokujemy przed edycja
+        $directoryId = $_GET["dir"];
+
+        $plateMultiPartController->block($directoryId);
+        header("Location: /plateMulti/$directoryId/");
         break;
 }
