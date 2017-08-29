@@ -32,7 +32,6 @@ class MultiPartController extends mainController
           LEFT JOIN plate_multiPartCostingDetailsSettings settings ON settings.directory_id = d.id
           AND settings.detaild_id = details.did
           LEFT JOIN mpw m ON m.id = details.mpw
-          GROUP BY d.id
         ");
         $search->execute();
 
