@@ -103,6 +103,24 @@ class plateMultiPartController extends mainController
             FROM accounts
         ");
 
+        //Komentarze
+        $shoutQuery = $db->prepare("
+          SELECT 
+          c.*,
+          a.name
+          FROM 
+          comments c
+          LEFT JOIN accounts a ON a.id = c.uid
+          WHERE 
+          c.`type` = :type 
+          AND c.eid = :eid
+          ORDER BY c.id DESC
+        ");
+        $shoutQuery->bindValue(":type", "plateMultiCosting", PDO::PARAM_STR);
+        $shoutQuery->bindValue(":eid", $directoryId, PDO::PARAM_INT);
+        $shoutQuery->execute();
+        $comments = $shoutQuery->fetchAll(PDO::FETCH_ASSOC);
+
         return $this->render("mainView.php", [
             "directoryId" => $directoryId,
             "directoryName" => $this->getDirectoryName($directoryId),
@@ -112,7 +130,8 @@ class plateMultiPartController extends mainController
             "frameView" => $frameDiv,
             "main" => $mainCardModel,
             "designerId" => $designerId,
-            "users" => $usersQuery->fetchAll(PDO::FETCH_ASSOC)
+            "users" => $usersQuery->fetchAll(PDO::FETCH_ASSOC),
+            "comments" => $comments
         ]);
     }
 
@@ -278,6 +297,76 @@ class plateMultiPartController extends mainController
         $mpwDataQuery->execute();
 
         $newType = OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE;
+
+        while ($mpw = $mpwDataQuery->fetch(PDO::FETCH_ASSOC)) {
+            $mpwId = $mpw["mpw"];
+
+            $mpwUpdateQuery = $db->prepare("
+              UPDATE
+              mpw
+              SET `type` = $newType
+              WHERE 
+              id = :id
+            ");
+            $mpwUpdateQuery->bindValue(":id", $mpwId, PDO::PARAM_INT);
+            $mpwUpdateQuery->execute();
+        }
+    }
+
+    /**
+     * @param int $directoryId
+     */
+    public function cancel(int $directoryId)
+    {
+        global $db;
+
+        $mpwDataQuery = $db->prepare("
+            SELECT 
+            mpw
+            FROM
+            plate_multiPartDetails
+            WHERE
+            dirId = :dir
+        ");
+        $mpwDataQuery->bindValue(":dir", $directoryId, PDO::PARAM_INT);
+        $mpwDataQuery->execute();
+
+        $newType = OT::AUTO_WYCENA_BLACH_MULTI_ANULOWANA;
+
+        while ($mpw = $mpwDataQuery->fetch(PDO::FETCH_ASSOC)) {
+            $mpwId = $mpw["mpw"];
+
+            $mpwUpdateQuery = $db->prepare("
+              UPDATE
+              mpw
+              SET `type` = $newType
+              WHERE 
+              id = :id
+            ");
+            $mpwUpdateQuery->bindValue(":id", $mpwId, PDO::PARAM_INT);
+            $mpwUpdateQuery->execute();
+        }
+    }
+
+    /**
+     * @param int $directoryId
+     */
+    public function accept(int $directoryId)
+    {
+        global $db;
+
+        $mpwDataQuery = $db->prepare("
+            SELECT 
+            mpw
+            FROM
+            plate_multiPartDetails
+            WHERE
+            dirId = :dir
+        ");
+        $mpwDataQuery->bindValue(":dir", $directoryId, PDO::PARAM_INT);
+        $mpwDataQuery->execute();
+
+        $newType = OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA;
 
         while ($mpw = $mpwDataQuery->fetch(PDO::FETCH_ASSOC)) {
             $mpwId = $mpw["mpw"];

@@ -104,8 +104,6 @@
 	position: fixed;
 	right: 0px;
 	bottom: 30%;
-	width: 50px;
-	height: 50px;
 	background-color: white;
 	z-index: 1000;
 	border-width: 1px 0 1px 1px;
@@ -139,7 +137,7 @@
 	border-radius: 5px !important;
 	margin: 5px 0 5px 0;
 	padding: 2px;
-	background-color: #A8D7FF;
+	background-color: #e4e4e4;
 }
 
 .shout-header {

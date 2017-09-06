@@ -27,7 +27,8 @@ if (@$_GET["a"] == 1) { // AJAX New client
         $directories[] = $dirName;
     }
 
-    function pushClient() {
+    function pushClient()
+    {
         global $data_src, $directories, $_id, $name, $user_name;
         $return = false;
         for ($i = 0; $i < count($directories); $i++) {
@@ -120,7 +121,8 @@ if (@$_GET["a"] == 1) { // AJAX New client
                 </div>
             </div>
             <div class="portlet-body">
-                <div aria-hidden="true" role="dialog" tabindex="-1" id="clientForm" class="modal fade" style="display: none;">
+                <div aria-hidden="true" role="dialog" tabindex="-1" id="clientForm" class="modal fade"
+                     style="display: none;">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button aria-hidden="true" data-dismiss="modal" class="close" type="button">x</button>
@@ -135,34 +137,61 @@ if (@$_GET["a"] == 1) { // AJAX New client
                                 </div>
                                 <div id="doneMessage" style="display: none;">
                                     <div class="alert alert-success alert-block fade in">
-                                        <h4> <i class="icon-ok-sign"></i> Gotowe! </h4>
+                                        <h4><i class="icon-ok-sign"></i> Gotowe! </h4>
                                         <p>Klient został dodany do bazy danych!</p>
                                     </div>
                                 </div>
                                 <table style="margin: 0 auto; border-spacing: 2px; border-collapse: separate;">
-                                    <tr><td style="text-align: right;">Typ:</td><td>
+                                    <tr>
+                                        <td style="text-align: right;">Typ:</td>
+                                        <td>
                                             <div class='md-radio-inline'>
                                                 <div class='md-radio'>
-                                                    <input type="radio" name="type" value="1" checked="checked" id="rtype1" class="md-radiobtn"/> 
-                                                    <label for="rtype1"><span></span> 
+                                                    <input type="radio" name="type" value="1" checked="checked"
+                                                           id="rtype1" class="md-radiobtn"/>
+                                                    <label for="rtype1"><span></span>
                                                         <span class="check"></span>
                                                         <span class="box"></span>
                                                         Firma</label>
                                                 </div>
                                                 <div class='md-radio'>
-                                                    <input type="radio" name="type" value="2" id="rtype2" class="md-radiobtn"/> 
-                                                    <label for="rtype2"><span></span> 
+                                                    <input type="radio" name="type" value="2" id="rtype2"
+                                                           class="md-radiobtn"/>
+                                                    <label for="rtype2"><span></span>
                                                         <span class="check"></span>
                                                         <span class="box"></span>
                                                         Osoba prywatna</label>
                                                 </div>
-                                            </div></td></tr>
-                                    <tr><td style="text-align: right;">Nazwa:</td><td><input type="text" name="name" id="name" class="form-control"/></td></tr>
-                                    <tr><td style="text-align: right;">NIP:</td><td><input type="number" name="nip" class="form-control"/></td></tr>
-                                    <tr><td style="text-align: right;">Email:</td><td><input type="text" name="email" class="form-control"/></td></tr>
-                                    <tr><td style="text-align: right;">Osoba kontaktowa:</td><td><input type="text" name="person" class="form-control"/></td></tr>
-                                    <tr><td style="text-align: right;">Adres:</td><td><input type="text" name="address1" class="form-control"/><input type="text" name="address2" class="form-control"/></td></tr>
-                                    <tr><td style="text-align: right;">Telefon:</td><td><input type="text" name="phone" class="form-control"/></td></tr>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: right;">Nazwa:</td>
+                                        <td><input type="text" name="name" id="name" class="form-control"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: right;">NIP:</td>
+                                        <td><input type="number" name="nip" class="form-control"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: right;">Email:</td>
+                                        <td><input type="text" name="email" class="form-control"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: right;">Osoba kontaktowa:</td>
+                                        <td><input type="text" name="person" class="form-control"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: right;">Adres:</td>
+                                        <td><input type="text" name="address1" class="form-control"/><input type="text"
+                                                                                                            name="address2"
+                                                                                                            class="form-control"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: right;">Telefon:</td>
+                                        <td><input type="text" name="phone" class="form-control"/></td>
+                                    </tr>
 
                                 </table>
                             </div>
@@ -173,34 +202,55 @@ if (@$_GET["a"] == 1) { // AJAX New client
                         </form>
                     </div>
                 </div>
-                <div id="container">
-                    <table cellpadding="0" cellspacing="0" border="0" class="display" id="clients">
-                        <thead>
-                            <tr>
-                                <td>Id</td>
-                                <td>Nazwa</td>
-                                <td>Email</td>
-                                <td>Telefon</td>
-                                <td>Data</td>
-                                <td>Osoba</td>
-                                <td>NIP</td>
-                                <td>Adres</td>
-                                <td>Typ</td>
-                                <td>Akcja</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            echo getClients();
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
+                <table class="table" id="clients">
+                    <thead>
+                    <tr>
+                        <td>Id</td>
+                        <td>Nazwa</td>
+                        <td>Email</td>
+                        <td>Telefon</td>
+                        <td>Data</td>
+                        <td>Osoba</td>
+                        <td>NIP</td>
+                        <td>Adres</td>
+                        <td>Typ</td>
+                        <td>Akcja</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    $clientData = getClients();
+                    ?>
+                    <?php foreach ($clientData as $client): ?>
+                        <tr style="cursor: pointer;" id="<?= $client["id"] ?>_id">
+                            <td><?= $client["id"] ?></td>
+                            <td><?= $client["name"] ?></td>
+                            <td><?= $client["email"] ?></td>
+                            <td><?= $client["phone"] ?></td>
+                            <td><?= @reset(explode(" ", $client["date"])) ?></td>
+                            <td><?= $client["person"] ?></td>
+                            <td><?= $client["nip"] ?></td>
+                            <td><?= $client["address"] ?></td>
+                            <td><?= ($client["type"] == 1 ? "F" : "O") ?></td>
+                            <td>
+                                <a href="/client/<?= $client["id"] ?>/" data-toggle="modal" class="btn btn-xs btn-info">
+                                    Karta
+                                </a>
+                                <a href="#clienteForm" data-toggle="modal" class="btn btn-xs btn-danger cEdit"
+                                   id="<?= $client["id"] ?>_eid">
+                                    Edytuj
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
-<div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="clienteForm" class="modal fade" style="display: none;">
+<div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="clienteForm" class="modal fade"
+     style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
             <button aria-hidden="true" data-dismiss="modal" class="close" type="button">x</button>
@@ -215,36 +265,61 @@ if (@$_GET["a"] == 1) { // AJAX New client
                 </div>
                 <div id="edoneMessage" style="display: none;">
                     <div class="alert alert-success alert-block fade in">
-                        <h4> <i class="icon-ok-sign"></i> Gotowe! </h4>
+                        <h4><i class="icon-ok-sign"></i> Gotowe! </h4>
                         <p>Klient został dodany do bazy danych!</p>
                     </div>
                 </div>
                 <table style="margin: 0 auto; border-spacing: 2px; border-collapse: separate;">
                     <tr>
-                        <td style="text-align: right;">Typ:</td><td>
+                        <td style="text-align: right;">Typ:</td>
+                        <td>
                             <div class='md-radio-inline'>
                                 <div class='md-radio'>
-                                    <input type="radio" name="type" value="1" checked="checked" id="ertype1" class="md-radiobtn"/> 
-                                    <label for="ertype1"><span></span> 
+                                    <input type="radio" name="type" value="1" checked="checked" id="ertype1"
+                                           class="md-radiobtn"/>
+                                    <label for="ertype1"><span></span>
                                         <span class="check"></span>
                                         <span class="box"></span>
                                         Firma</label>
                                 </div>
                                 <div class='md-radio'>
-                                    <input type="radio" name="type" value="2" id="ertype2" class="md-radiobtn"/> 
-                                    <label for="ertype2"><span></span> 
+                                    <input type="radio" name="type" value="2" id="ertype2" class="md-radiobtn"/>
+                                    <label for="ertype2"><span></span>
                                         <span class="check"></span>
                                         <span class="box"></span>
                                         Osoba prywatna</label>
                                 </div>
-                            </div></td>
+                            </div>
+                        </td>
                     </tr>
-                    <tr><td style="text-align: right;">Nazwa:</td><td><input type="text" name="name" id="ename" class="form-control"/></td></tr>
-                    <tr><td style="text-align: right;">NIP:</td><td><input type="number" name="nip" id="enip" class="form-control"/></td></tr>
-                    <tr><td style="text-align: right;">Email:</td><td><input type="text" name="email" id="eemail" class="form-control"/></td></tr>
-                    <tr><td style="text-align: right;">Osoba kontaktowa:</td><td><input type="text" name="person" id="eperson" class="form-control"/></td></tr>
-                    <tr><td style="text-align: right;">Adres:</td><td><input type="text" name="address1" id="eaddress1" class="form-control"/><input type="text" name="address2" id="eaddress2" class="form-control"/></td></tr>
-                    <tr><td style="text-align: right;">Telefon:</td><td><input type="text" name="phone" id="ephone" class="form-control"/></td></tr>
+                    <tr>
+                        <td style="text-align: right;">Nazwa:</td>
+                        <td><input type="text" name="name" id="ename" class="form-control"/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">NIP:</td>
+                        <td><input type="number" name="nip" id="enip" class="form-control"/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">Email:</td>
+                        <td><input type="text" name="email" id="eemail" class="form-control"/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">Osoba kontaktowa:</td>
+                        <td><input type="text" name="person" id="eperson" class="form-control"/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">Adres:</td>
+                        <td><input type="text" name="address1" id="eaddress1" class="form-control"/><input type="text"
+                                                                                                           name="address2"
+                                                                                                           id="eaddress2"
+                                                                                                           class="form-control"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">Telefon:</td>
+                        <td><input type="text" name="phone" id="ephone" class="form-control"/></td>
+                    </tr>
 
                 </table>
             </div>
@@ -258,9 +333,7 @@ if (@$_GET["a"] == 1) { // AJAX New client
 
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function () {
-        $('#clients').dataTable({
-            "sPaginationType": "full_numbers"
-        });
+        $('#clients').DataTable();
 
         $("table").on("click", ".cEdit", function () {
             var _id = parseInt($(this).attr("id"));

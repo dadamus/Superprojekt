@@ -23,12 +23,48 @@ $(document).on("ready", function () {
         });
     });
 
+    $("a#costingCancel").on("click", function () {
+        var dirId = $(this).data("dir-id");
+
+        swal({
+                title: "Jesteś pewien?",
+                text: "Akcja spowoduje anulowanie wyceny",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Tak anuluje!",
+                cancelButtonText: "Anuluj",
+                closeOnConfirm: false
+            },
+            function () {
+                location.href = "/engine/costing/plateMultiPart.php?action=cancel&dir=" + dirId;
+            });
+    });
+
+    $("a#costingAccept").on("click", function () {
+        var dirId = $(this).data("dir-id");
+
+        swal({
+                title: "Jesteś pewien?",
+                text: "Akcja spowoduje akceptacje wyceny",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Tak akcpetuje!",
+                cancelButtonText: "Anuluj",
+                closeOnConfirm: false
+            },
+            function () {
+                location.href = "/engine/costing/plateMultiPart.php?action=accept&dir=" + dirId;
+            });
+    });
+
     $("a#costingBlock").on("click", function () {
         var dirId = $(this).data("dir-id");
 
         swal({
                 title: "Jesteś pewien?",
-                text: "Tej opcji nie można cofnąć!",
+                text: "Akcja spowoduje zablokowanie wyceny",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",

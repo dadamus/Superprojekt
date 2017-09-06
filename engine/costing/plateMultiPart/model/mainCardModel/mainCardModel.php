@@ -87,7 +87,7 @@ class mainCardModel
                     $addDetail = true;
                 }
 
-                $detailData->Make($part, $program->getSheetCount());
+                $detailData->Make($part, $program->getSheetCount(), $plateMultiPart->getDirId());
                 $client->addMaterial($program->getMaterial(), $program);
 
                 if ($addDetail) {
@@ -134,7 +134,7 @@ class mainCardModel
         $checkBlockedQuery->execute();
 
         $checkBlockedData = $checkBlockedQuery->fetch(PDO::FETCH_ASSOC);
-        if ($checkBlockedData["type"] >= OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE) {
+        if ($checkBlockedData["type"] >= OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA) {
             $this->blocked = true;
         }
     }

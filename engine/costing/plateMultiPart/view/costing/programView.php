@@ -262,8 +262,8 @@ $mainMaterial = $mainProgram->getMaterial();
 
                             foreach ($dotsData as $points) {
                                 $newDots[] = [
-                                    "pos_x" => $points["pos_x"] * ($oldScale + $bmpCutter->getScale()),
-                                    "pos_y" => $points["pos_y"] * ($oldScale + $bmpCutter->getScale())
+                                    "pos_x" => $points["pos_x"] * ($oldScale - 0.03 + $bmpCutter->getScale()),
+                                    "pos_y" => $points["pos_y"] * ($oldScale - 0.03 + $bmpCutter->getScale())
                                 ];
                             }
 
@@ -274,8 +274,18 @@ $mainMaterial = $mainProgram->getMaterial();
                         <div class="col-lg-6" style="height: <?= $imageSize["height"] ?>px;">
                             <div style="width: <?= $imageSize["width"] ?>px; height: <?= $imageSize["height"] ?>px; margin: 0 auto;">
                                 <div style="position: absolute; z-index: 2; left: 0px; top: 0px">
+                                    <a
+                                            href="/plateFrame/<?= $frameData->getId() ?>/multi/<?= $mainMaterial->getId() ?>/"
+                                            class="popovers"
+                                            data-container="body"
+                                            data-trigger="hover"
+                                            data-placement="top"
+                                            data-content="Kliknij by edytowac"
+                                            data-original-title=""
+                                    >
                                     <canvas id="dotConnections" width="<?= $imageSize["width"] ?>px"
                                             height="<?= $imageSize["height"] ?>px;"></canvas>
+                                    </a>
                                 </div>
                                 <div style="position: absolute; left: 0px; top: 0px; z-index: 1;">
                                     <img src="data:image/png;base64,<?= $b64; ?>"/>
@@ -294,7 +304,8 @@ $mainMaterial = $mainProgram->getMaterial();
                                     strokeStyle: '#ff7ff6',
                                     strokeWidth: 2,
                                     rounded: true,
-                                    closed: true
+                                    closed: true,
+                                    fillStyle: '#fbe7ff'
                                 };
 
                                 for (var p = 0; p < dots_position.length; p++) {
@@ -303,14 +314,59 @@ $mainMaterial = $mainProgram->getMaterial();
                                         continue;
                                     }
 
-                                    object['x' + (p + 1)] = dots_position[p].pos_x + 5;
-                                    object['y' + (p + 1)] = dots_position[p].pos_y + 5;
+                                    object['x' + (p + 1)] = dots_position[p].pos_x;
+                                    object['y' + (p + 1)] = dots_position[p].pos_y;
                                 }
 
                                 $canvas.drawLine(object);
                             });
 
                         </script>
+                    </div>
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-lg-12">
+                            <div class="portlet box green-seagreen">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        Detale
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="table-scrollable">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>LP</th>
+                                                <th>Wartość materiału</th>
+                                                <th>Wartość odpadu</th>
+                                                <th>Cena materiału / kom</th>
+                                                <th>Cena materiału / szt</th>
+                                                <th>Waga obszaru</th>
+                                                <th>Waga rzeczywista detalu</th>
+                                                <th>Waga odpadu</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <?php $lp = 0; ?>
+                                            <?php foreach ($mainProgram->getParts() as $part): ?>
+                                                <?php $lp++; ?>
+                                                <tr>
+                                                    <td><?= $lp ?></td>
+                                                    <td><?= round($part->getRectangleAreaRectVal(),2) ?></td>
+                                                    <td><?= round($part->getRectangleAreaTrashVal(),2) ?></td>
+                                                    <td><?= round($part->getMatValAll(),2) ?></td>
+                                                    <td><?= round($part->getMatVal(),2) ?></td>
+                                                    <td><?= $part->getRectangleAreaRectWeight() ?></td>
+                                                    <td><?= $part->getRectangleAreaRectWWeight() ?></td>
+                                                    <td><?= $part->getRectangleAreaTrashWeight() ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

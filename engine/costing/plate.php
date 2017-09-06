@@ -383,9 +383,17 @@ if (@$_GET["a"] == 6) { // Set default
                                             $text = "Zamówione";
                                             $status = 'success';
                                             break;
+                                        case OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA:
+                                            $text = "Zatwierdzona";
+                                            $status = 'success';
+                                            break;
+                                        case OT::AUTO_WYCENA_BLACH_MULTI_ANULOWANA:
+                                            $text = "Anulowana";
+                                            $status = 'warning';
+                                            break;
                                     }
 
-                                    if ($row["price"] > 0 && $row["type"] < OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE) {
+                                    if ($row["price"] > 0 && $row["type"] < OT::AUTO_WYCENA_BLACH_MULTI_ANULOWANA) {
                                         $text = "Wycenione";
                                         $status = "success";
                                     }
@@ -467,7 +475,7 @@ if (@$_GET["a"] == 6) { // Set default
                           a.name as user_name
                           FROM `comments` c
                           LEFT JOIN accounts a ON a.id = c.uid
-                          WHERE c.`type` = '1' 
+                          WHERE c.`type` = 'detailView' 
                           AND c.`eid` = '$did' 
                           ORDER BY c.`id` DESC
                         ");

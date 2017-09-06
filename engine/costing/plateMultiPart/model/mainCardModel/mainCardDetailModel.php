@@ -66,6 +66,9 @@ class mainCardDetailModel
     /** @var  float */
     private $Weight;
 
+    /** @var  string */
+    private $checkboxLabels;
+
     /**
      * @return mainCardProjectModel
      */
@@ -85,14 +88,16 @@ class mainCardDetailModel
     /**
      * @param ProgramCardPartData $data
      * @param int $sheetCount
+     * @param int $dirId
      */
-    public function Make(ProgramCardPartData $data, int $sheetCount)
+    public function Make(ProgramCardPartData $data, int $sheetCount, int $dirId)
     {
         $this->setDetailId(
             $data->getDetailId()
         );
 
         $this->setCheckbox();
+        $this->setCheckboxLabels($dirId);
 
         $this->setWeight($data->getWeight() / 1000);
         $this->setCutAll(
@@ -107,6 +112,44 @@ class mainCardDetailModel
         $this->setAllWeight(
             $this->getAllWeight() + ($data->getWeight() / 1000 * $data->getPartCount() * $sheetCount)
         );
+    }
+
+    private function setCheckboxLabels(int $dirId)
+    {
+        global $db;
+
+        $checkboxQuery = $db->prepare("
+            SELECT 
+            mpw.atribute
+            FROM
+            plate_multiPartDetails d
+            LEFT JOIN mpw mpw ON mpw.id = d.mpw
+            WHERE
+            d.did = :did
+            AND dirId = :dirId
+        ");
+        $checkboxQuery->bindValue(":did", $this->getDetailId(), PDO::PARAM_INT);
+        $checkboxQuery->bindValue(":dirId", $dirId, PDO::PARAM_INT);
+        $checkboxQuery->execute();
+
+        $checkboxQueryData = $checkboxQuery->fetch(PDO::FETCH_ASSOC);
+        $checkboxString = $checkboxQueryData["atribute"];
+
+        if (strlen($checkboxString) > 0) {
+            $checkboxData = json_decode($checkboxString, true);
+
+            foreach ($checkboxData as $item) {
+                $this->checkboxLabels .= _getChecboxText($item) . " ";
+            }
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCheckboxLabels()
+    {
+        return $this->checkboxLabels;
     }
 
     /**

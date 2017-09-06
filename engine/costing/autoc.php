@@ -27,7 +27,7 @@ $pname = $fpq["name"];
         <div style="clear: both"></div>
         <div id="shouts" style="height: 275px; padding-top: 10px;">
             <?php
-            $qshout = $db->query("SELECT * FROM `comments` WHERE `type` = 2 AND `eid` = '$nr' ORDER BY `id` DESC");
+            $qshout = $db->query("SELECT * FROM `comments` WHERE `type` = 'costing' AND `eid` = '$nr' ORDER BY `id` DESC");
             foreach ($qshout as $shout) {
                 $uid = $shout["uid"];
                 $uq = $db->query("SELECT `name` FROM `accounts` WHERE `id` = '$uid'");

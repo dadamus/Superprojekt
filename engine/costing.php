@@ -299,9 +299,9 @@ $_SESSION["costingID"] = $costing->type;
                                                 <i class="fa fa-shopping-cart"></i> Lista
                                             </div>
                                             <div class="actions">
-                                                <a href="javascript:;" data-target="#mAddOrder" data-toggle="modal" class="btn btn-default btn-sm">
+                                                <!--<a href="javascript:;" data-target="#mAddOrder" data-toggle="modal" class="btn btn-default btn-sm">
                                                     <i class="fa fa-plus"></i> Nowe
-                                                </a>
+                                                </a>-->
                                             </div>
                                         </div>
                                         <div class="portlet-body">

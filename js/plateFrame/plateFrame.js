@@ -72,6 +72,9 @@ function createDot(pos_x, pos_y, insertId) {
 		pos_y: parseInt(pos_y)
 	};
 
+    areaValue = Math.round(calculate());
+    $("#wynik").html("Pole: " + areaValue + "mm^2");
+
 	return '<div class="dot" id="' + id + '_dot" style="cursor: move; position: absolute; z-index: 100; background-color: #753b3b; width: 10px; height: 10px; border-radius: 20px !important; left: ' + pos_x + 'px; top: ' + pos_y + 'px"></div>';
 }
 var dotDiv_position;

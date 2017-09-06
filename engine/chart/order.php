@@ -1,7 +1,23 @@
 <?php
 $oid = $_GET["oid"];
-$qorder = $db->query("SELECT * FROM `order` WHERE `id` = '$oid'");
-$order = $qorder->fetch();
+$orderQuery = $db->prepare("
+  SELECT 
+  o.*,
+  c.name as client_name,
+  c.nip as client_nip,
+  c.address as client_address,
+  c.email as client_email,
+  c.phone as client_phone
+  FROM
+  `order` o 
+  LEFT JOIN clients c ON c.id = o.cid
+  WHERE 
+  o.id = :oid
+");
+$orderQuery->bindValue(":oid", $oid, PDO::PARAM_INT);
+$orderQuery->execute();
+
+$order = $orderQuery->fetch();
 
 $status = "Brak danych";
 
@@ -18,7 +34,7 @@ $status = getOrderStatus($order["status"])
         <div class="portlet light portlet-fit portlet-datatable bordered">
             <div class="portlet-title">
                 <div class="caption">
-                    <span class="caption-subject font-dark sbold uppercase">Zamówienie numer: #<?php echo $order["id"]; ?></span>
+                    <span class="caption-subject font-dark sbold uppercase">Zamówienie numer: #<?= $order["id"]; ?></span>
                 </div>
             </div>
             <div class="portlet-body">
@@ -37,7 +53,7 @@ $status = getOrderStatus($order["status"])
                                         Kod:
                                     </div>
                                     <div class="col-md-7 value">
-                                        <?php echo $order["on"]; ?>
+                                        <?= $order["on"]; ?>
                                     </div>
                                 </div>
                                 <div class="row static-info">
@@ -45,7 +61,7 @@ $status = getOrderStatus($order["status"])
                                         Data utworzenia:
                                     </div>
                                     <div class="col-md-7 value">
-                                        <?php echo $order["date"]; ?>
+                                        <?= $order["date"]; ?>
                                     </div>
                                 </div>
                                 <div class="row static-info">
@@ -53,7 +69,8 @@ $status = getOrderStatus($order["status"])
                                         Status:
                                     </div>
                                     <div class="col-md-7 value status_change">
-                                        <span class="label label-sm <?php echo $status["color"]; ?>" style="cursor: pointer;"><?php echo $status["text"]; ?></span>
+                                        <span class="label label-sm <?= $status["color"]; ?>"
+                                              style="cursor: pointer;"><?= $status["text"]; ?></span>
                                     </div>
                                 </div>
                                 <div class="row static-info">
@@ -61,7 +78,7 @@ $status = getOrderStatus($order["status"])
                                         Opis:
                                     </div>
                                     <div class="col-md-7 value">
-                                        <?php echo $order["des"]; ?>
+                                        <?= $order["des"]; ?>
                                     </div>
                                 </div>
                             </div>
@@ -76,25 +93,20 @@ $status = getOrderStatus($order["status"])
                                 </div>
                             </div>
                             <div class="portlet-body">
-                                <?php
-                                $cid = $order["cid"];
-                                $qclient = $db->query("SELECT * FROM `clients` WHERE `id` = '$cid'");
-                                $client = $qclient->fetch();
-                                ?>
                                 <div class="row static-info">
                                     <div class="col-md-5 name">
                                         Nazwa:
                                     </div>
                                     <div class="col-md-7 value">
-                                        <?php echo $client["name"]; ?>
-                                    </div> 
+                                        <?= $order["client_name"]; ?>
+                                    </div>
                                 </div>
                                 <div class="row static-info">
                                     <div class="col-md-5 name">
                                         NIP:
                                     </div>
                                     <div class="col-md-7 value">
-                                        <?php echo $client["nip"]; ?>
+                                        <?= $order["client_nip"]; ?>
                                     </div>
                                 </div>
                                 <div class="row static-info">
@@ -102,24 +114,24 @@ $status = getOrderStatus($order["status"])
                                         Adres:
                                     </div>
                                     <div class="col-md-7 value">
-                                        <?php echo $client["address"]; ?>
-                                    </div> 
+                                        <?= $order["client_address"]; ?>
+                                    </div>
                                 </div>
                                 <div class="row static-info">
                                     <div class="col-md-5 name">
                                         Email:
                                     </div>
                                     <div class="col-md-7 value">
-                                        <i class="fa fa-phone-square"></i> <?php echo $client["email"]; ?>
-                                    </div> 
+                                        <i class="fa fa-phone-square"></i> <?= $order["client_email"]; ?>
+                                    </div>
                                 </div>
                                 <div class="row static-info">
                                     <div class="col-md-5 name">
                                         Telefon:
                                     </div>
                                     <div class="col-md-7 value">
-                                        <i class="fa fa-envelope"></i> <?php echo $client["phone"]; ?>
-                                    </div> 
+                                        <i class="fa fa-envelope"></i> <?= $order["client_phone"]; ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -136,16 +148,31 @@ $status = getOrderStatus($order["status"])
                             </div>
                             <div class="portlet-body">
                                 <?php
-                                $odq = $db->query("SELECT `id`, `mpw`, `code`, `dct`, `stored` FROM `oitems` WHERE `oid` = '$oid'");
-                                foreach ($odq as $oitem) {
+                                $odq = $db->prepare("
+                                  SELECT 
+                                  oi.id as oi_id, 
+                                  oi.code, 
+                                  oi.dct, 
+                                  oi.stored,
+                                  oi.mpw,
+                                  mpw.did,
+                                  mpw.pieces,
+                                  mpw.program,
+                                  mpw.type
+                                  FROM 
+                                  oitems oi
+                                  LEFT JOIN mpw mpw ON mpw.id = oi.mpw
+                                  WHERE 
+                                  oi.oid = :oid
+                                ");
+                                $odq->bindValue(":oid", $oid, PDO::PARAM_INT);
+                                $odq->execute();
+                                foreach ($odq->fetchAll(PDO::FETCH_ASSOC) as $oitem) {
                                     $mpw_id = $oitem["mpw"];
                                     $qmpc = $db->query("SELECT `mtype`, `atributes`, `d_qty`, `thickness` FROM `mpc` WHERE `wid` = '$mpw_id'");
                                     $mpc = $qmpc->fetch();
-
-                                    $qdid = $db->query("SELECT `did`, `pieces`, `program`, `type`  FROM `mpw` WHERE `id` = '$mpw_id'");
-                                    $fdid = $qdid->fetch();
-                                    $did = $fdid["did"];
-                                    if ($fdid["type"] == OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) {
+                                    $did = $oitem["did"];
+                                    if ($oitem["type"] >= OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA && $oitem["type"] <= OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) {
                                         $qmpc = $db->query("
                                           SELECT m.name as mtype, mpw.`atribute`, mpw.`pieces` as d_qty, mpw.`thickness` 
                                           FROM `mpw` mpw 
@@ -160,14 +187,21 @@ $status = getOrderStatus($order["status"])
                                     echo '<div class="col-md-6">';
                                     echo '<div class="row static-info"><div class="col-md-5 name">Rodzaj blachy:</div><div class="col-md-7 value">' . $mpc["mtype"] . '</div></div>';
                                     echo '<div class="row static-info"><div class="col-md-5 name">Grubość:</div><div class="col-md-7 value">' . $mpc["thickness"] . '</div></div>';
-                                    echo '<div class="row static-info"><div class="col-md-5 name">Parametry:</div><div class="col-md-7 value">?</div></div>';
+                                    echo '<div class="row static-info"><div class="col-md-5 name">Parametry:</div><div class="col-md-7 value">';
+                                    //Checkboxy
+                                    if (isset($mpc["atribute"])) {
+                                        foreach (json_decode($mpc["atribute"]) as $attribute) {
+                                            echo _getChecboxText($attribute) . " ";
+                                        }
+                                    }
+                                    echo '</div></div>';
                                     echo '<div class="row static-info"><div class="col-md-5 name">Ilość sztuk:</div><div class="col-md-7 value">' . $mpc["d_qty"] . '</div></div>';
                                     echo '</div>';
                                     echo '<div class="col-md-6">';
                                     //production info
                                     $pcr = 0;
 
-                                    $cprogram = $fdid["program"];
+                                    $cprogram = $oitem["program"];
                                     $programs = explode("|", $cprogram);
 
                                     $pval = array();
@@ -192,50 +226,49 @@ $status = getOrderStatus($order["status"])
 
 
                                     $pcr_des1 = "";
-                                    $pcr_des12 = '<span> ' . $pcr . '/' . $fdid["pieces"] . '</span>';
-                                    if ($fdid["pieces"] * 0.5 < $pcr) {
+                                    $pcr_des12 = '<span> ' . $pcr . '/' . $oitem["pieces"] . '</span>';
+                                    if ($oitem["pieces"] * 0.5 < $pcr) {
                                         $pcr_des1 = $pcr_des12;
                                         $pcr_des12 = null;
                                     }
 
-                                    $bar1_size = $pcr * 100 / $fdid["pieces"];
+                                    $bar1_size = $pcr * 100 / $oitem["pieces"];
                                     $bar12_size = 0;
                                     $active1 = "active";
                                     if ($bar1_size >= 100) {
-                                        $bar1_size = $fdid["pieces"] * 100 / $pcr;
+                                        $bar1_size = $oitem["pieces"] * 100 / $pcr;
                                         $bar12_size = 100 - $bar1_size;
                                         $active1 = "";
                                     }
 
                                     $dct_des2 = "";
-                                    $dct_des22 = '<span>' . $oitem["dct"] . '/' . $fdid["pieces"] . '</span>';
-                                    if ($fdid["pieces"] * 0.5 < $oitem["dct"]) {
+                                    $dct_des22 = '<span>' . $oitem["dct"] . '/' . $oitem["pieces"] . '</span>';
+                                    if ($oitem["pieces"] * 0.5 < $oitem["dct"]) {
                                         $dct_des2 = $dct_des22;
                                         $dct_des22 = null;
                                     }
-                                    
-                                    $bar2_size = $oitem["dct"] * 100 / $fdid["pieces"];
+
+                                    $bar2_size = $oitem["dct"] * 100 / $oitem["pieces"];
                                     $bar22_size = 0;
                                     $active2 = "active";
                                     if ($bar2_size >= 100) {
-                                        $bar2_size = $fdid["pieces"] * 100 / $oitem["dct"];
+                                        $bar2_size = $oitem["pieces"] * 100 / $oitem["dct"];
                                         $bar22_size = 100 - $bar2_size;
                                         $active2 = "";
                                     }
-                                    
-                                    $bar3_max = $fdid["pieces"] - $oitem["dct"] + $oitem["stored"];
+
+                                    $bar3_max = $oitem["pieces"] - $oitem["dct"] + $oitem["stored"];
                                     $bar3_size = $oitem["stored"] * 100 / $bar3_max;
                                     $bar32_size = 0;
                                     $active3 = "active";
-                                    
+
                                     $str_des3 = "";
                                     $str_des32 = '<span>' . $oitem["stored"] . '/' . $bar3_max . '</span>';
-                                    if ($bar3_max * 0.5 < $oitem["stored"])
-                                    {
+                                    if ($bar3_max * 0.5 < $oitem["stored"]) {
                                         $str_des3 = $str_des32;
                                         $str_des32 = null;
                                     }
-                                    
+
                                     echo '<div class="row static-info"><div class="col-md-2 name">Program:</div><div class="col-md-10 value"><div class="progress progress-striped ' . $active1 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar1_size . '%">' . $pcr_des1 . '</div>' . $pcr_des12 . '<div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar12_size . '%"></div></div></div></div>';
                                     echo '<div class="row static-info"><div class="col-md-2 name">Produkcja:</div><div class="col-md-10 value"><div class="progress progress-striped ' . $active2 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar2_size . '%">' . $dct_des2 . '</div>' . $dct_des22 . '<div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar22_size . '%"></div></div></div></div>';
                                     echo '<div class="row static-info"><div class="col-md-2 name">Magazyn:</div><div class="col-md-10 value"><div class="progress progress-striped ' . $active3 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar3_size . '%">' . $str_des3 . '</div>' . $str_des32 . '<div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar32_size . '%"></div></div></div></div>';
@@ -275,6 +308,7 @@ $status = getOrderStatus($order["status"])
     function blockSite() {
         App.blockUI({boxed: !0});
     }
+
     function unblockSite() {
         App.unblockUI();
     }

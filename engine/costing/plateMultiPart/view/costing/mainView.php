@@ -10,7 +10,7 @@ $main = $data["main"];
         <form class="form-horizontal" id="changeDesignerForm" action="?" data-dir-id="<?= $data["directoryId"] ?>">
             <div class="form-group">
                 <label class="col-md-2 control-label">Projektant: </label>
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <div class="input-group">
                         <select class="form-control" id="designerId"
                                 <?php if ($main->isBlocked()): ?>disabled="disabled"<?php endif; ?>>
@@ -34,15 +34,48 @@ $main = $data["main"];
                     </div>
                 </div>
                 <?php if (!$main->isBlocked()): ?>
-                    <div class="col-md-2">
-                        <a
-                                class="btn red"
-                                href="javascript:;"
-                                id="costingBlock"
-                                data-dir-id="<?= $data["directoryId"] ?>"
-                        >
-                            Blokuj
-                        </a>
+                    <div class="col-md-4">
+                        <div class="btn-group btn-group-solid">
+                            <a
+                                    class="btn red popovers"
+                                    href="javascript:;"
+                                    id="costingCancel"
+                                    data-dir-id="<?= $data["directoryId"] ?>"
+                                    data-container="body"
+                                    data-trigger="hover"
+                                    data-placement="bottom"
+                                    data-content="Anuluj"
+                                    data-original-title=""
+                            >
+                                <i class="fa fa-ban"></i>
+                            </a>
+                            <a
+                                    class="btn dark popovers"
+                                    href="javascript:;"
+                                    id="costingBlock"
+                                    data-dir-id="<?= $data["directoryId"] ?>"
+                                    data-container="body"
+                                    data-trigger="hover"
+                                    data-placement="bottom"
+                                    data-content="Zablokuj"
+                                    data-original-title=""
+                            >
+                                <i class="fa fa-lock"></i>
+                            </a>
+                            <a
+                                    class="btn green popovers"
+                                    id="costingAccept"
+                                    href="javascript:;"
+                                    data-dir-id="<?= $data["directoryId"] ?>"
+                                    data-container="body"
+                                    data-trigger="hover"
+                                    data-placement="bottom"
+                                    data-content="Akceptuj"
+                                    data-original-title=""
+                            >
+                                <i class="fa fa-check"></i>
+                            </a>
+                        </div>
                     </div>
                 <?php endif; ?>
             </div>
@@ -191,7 +224,7 @@ $main = $data["main"];
                                                         <td><?= $detail->getCountAll() ?></td>
                                                         <td><?= $materialData->getName() ?>
                                                             - <?= $materialData->getThickness() ?></td>
-                                                        <td></td>
+                                                        <td><?= $detail->getCheckboxLabels() ?></td>
                                                         <td>
                                                             <?= $detailProject->getNumber() ?>
                                                             - <?= $detailProject->getName() ?>
@@ -335,6 +368,85 @@ $main = $data["main"];
     <!-- SpisBlach koniec -->
 <?php endif; ?>
 
+<div id="flyingWindowComments">
+    <div id="fwcIcon" class="font-dark"><i class="fa fa-comments"></i></div>
+    <div id="fwcContent">
+        <div style="float: right; position: relative; top: 20px; right: 10px;"><i id="shoutrefreshb"
+                                                                                  class="fa fa-refresh"
+                                                                                  style="cursor: pointer;"></i></div>
+        <div style="clear: both"></div>
+        <div id="shouts" style="height: 275px; padding-top: 10px;">
+            <?php foreach ($data["comments"] as $comment): ?>
+                <div class="shout">
+                    <div class="shout-header">
+                        <b><?= $comment["name"] ?></b>
+                        <div style="float: right">
+                            <?= $comment["date"] ?>
+                        </div>
+                    </div><?= $comment["content"] ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div id="stextarea" style="margin-top: 5px;">
+            <form id="addshout" action="?">
+                <textarea style="width: 100%;" id="shoutbox"></textarea>
+                <button type="submit" class="btn blue btn-block" id="addcoment">Dodaj</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $(document).on("click", function (e) {
+            if (!$(e.target).is("#flyingWindowComments") && $("#flyingWindowComments").has(e.target).length === 0) {
+                var $icon = $("div#fwcIcon");
+
+                $("#fwcContent").hide();
+
+                $icon.parent().animate({
+                    width: "49px",
+                    height: "40px"
+                });
+
+                $icon.show();
+            }
+        });
+        $("div#fwcIcon").on("click", function () {
+            $(this).hide();
+            var $content = $(this).parent();
+
+            $content.animate({
+                width: "300px",
+                height: "375px"
+            }, function () {
+                $("#fwcContent").show();
+            });
+        });
+
+        $("button#addcoment").on("click", function (e) {
+            e.preventDefault();
+
+            var value = $("#shoutbox").val();
+
+            if (value.length === 0) {
+                return 0;
+            }
+
+            var $button = $(this);
+            $button.prop("disabled", true);
+            $.ajax({
+                method: "GET",
+                url: "/engine/addcomment.php",
+                data: 'type=plateMultiCosting&eid=<?= $data["directoryId"] ?>&content=' + value
+            }).done(function (response) {
+                $button.prop("disabled", false);
+                $("#shouts").html(response);
+            });
+        });
+    });
+</script>
 <script type="text/javascript" src="/js/plateFrame/jcanvas.min.js"></script>
 <script type="text/javascript" src="/js/plateFrame/plateFrame.js"></script>
 <script type="text/javascript" src="/js/plateMultiPart/mainCard.js"></script>

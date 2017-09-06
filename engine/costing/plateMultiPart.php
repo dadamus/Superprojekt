@@ -99,4 +99,16 @@ switch ($action) {
         $plateMultiPartController->block($directoryId);
         header("Location: /plateMulti/$directoryId/");
         break;
+    case "accept": //Akcpetujemy
+        $directoryId = $_GET["dir"];
+
+        $plateMultiPartController->accept($directoryId);
+        header("Location: /plateMulti/$directoryId/");
+        break;
+    case "cancel": //Anulujemy
+        $directoryId = $_GET["dir"];
+
+        $plateMultiPartController->cancel($directoryId);
+        header("Location: /plateMulti/$directoryId/");
+        break;
 }

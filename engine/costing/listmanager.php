@@ -475,7 +475,7 @@ if ($action == 7) {
         AND mpw.type >= :mpwtype
         GROUP BY mpcds.directory_id, d.id
     ");
-    $autoCostingprice->bindValue(":mpwtype", OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE, PDO::PARAM_INT);
+    $autoCostingprice->bindValue(":mpwtype", OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA, PDO::PARAM_INT);
     $autoCostingprice->bindValue(":pid", $pid, PDO::PARAM_INT);
     $autoCostingprice->execute();
 

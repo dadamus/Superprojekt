@@ -307,7 +307,7 @@ if (@$_GET["a"] == 6) { // Set default
                     </div>
                     <div class="timeline">
                         <?php
-                        $commentsq = $db->query("SELECT * FROM `comments` WHERE `type` = '1' AND `eid` = '$did' ORDER BY `id` DESC");
+                        $commentsq = $db->query("SELECT * FROM `comments` WHERE `type` = 'detailView' AND `eid` = '$did' ORDER BY `id` DESC");
                         foreach ($commentsq as $row) {
                             $uid = $row["uid"];
                             $uq = $db->query("SELECT `name` FROM `accounts` WHERE `id` = '$uid'");
