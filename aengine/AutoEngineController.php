@@ -437,4 +437,12 @@ class AutoEngineController
             return "Wystąpił błąd: " . $ex->getMessage();
         }
     }
+
+    private function PlateProductionSync()
+    {
+        require_once dirname(__DIR__) . "/engine/costing/plateSync/plateSyncController.php";
+        $plateSync = new PlateSyncController();
+        $plateSync->syncAction($_POST["data"]);
+        return "ok";
+    }
 }

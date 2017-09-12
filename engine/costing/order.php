@@ -425,34 +425,46 @@ if ($action == 7) {
 if ($action == 8) {
     $oid = $_GET["oid"];
     $db->query("UPDATE `order` SET `status` = '3' WHERE `id` = '$oid'");
+    $db->query("UPDATE tickets SET state = 'do zaprogramowania' WHERE order_id = " . $oid);
 
-    $oitems = $db->query("SELECT * FROM `oitems` WHERE `oid` = '$oid'");
-    foreach ($oitems as $row) {
+    $oitemsQuery = $db->prepare("
+      SELECT 
+      oi.*,
+      mpw.type
+      FROM `oitems` oi
+      LEFT JOIN mpw mpw ON mpw.id = oi.mpw
+      WHERE 
+      oi.`oid` = :oid
+    ");
+    $oitemsQuery->bindValue(":oid", $oid, PDO::PARAM_INT);
+    $oitemsQuery->execute();
+    foreach ($oitemsQuery->fetchAll(PDO::FETCH_ASSOC) as $row) {
         //MPW STATUS UPDATE
         $mpw = $row["mpw"];
-        $qtype = $db->query("SELECT `type` FROM `mpw` WHERE `id` = '$mpw'");
-        $dtype = $qtype->fetch();
-        $type = $dtype["type"];
+        $type = $row["type"];
 
         $ntype = 0;
         switch ($type) {
-            case 2:
-                $ntype = 7;
+            case OT::AUTO_WYCENA_DODANE_DO_ZAMOWIENIA:
+                $ntype = OT::AUTO_WYCENA_ZABLOKOWANA_EDYCJA;
                 break;
-            case 4:
-                $ntype = 8;
+            case OT::RECZNA_WYCENA_PROFULU_DODANE_DO_ZAMOWIENIA:
+                $ntype = OT::RECZNA_WYCENA_PROFILU_ZABLOKOWANA_EDYCJA;
                 break;
-            case 6:
-                $ntype = 9;
+            case OT::RECZNA_WYCENA_BLACH_DODANE_DO_ZAMOWIENIA:
+                $ntype = OT::RECZNA_WYCENA_BLACHY_ZABLOKOWANA_EDYCJA;
                 break;
         }
 
         if ($ntype != 0) {
-            $db->query("UPDATE `mpw` SET `type` = '$ntype' WHERE `id` = '$mpw'");
+            $mpwUpdateQuery = $db->prepare("UPDATE `mpw` SET `type` = :ntype WHERE `id` = :mpw");
+            $mpwUpdateQuery->bindValue(':ntype', $ntype, PDO::PARAM_INT);
+            $mpwUpdateQuery->bindValue(':mpw', $mpw, PDO::PARAM_INT);
+            $mpwUpdateQuery->execute();
         }
 
         if (@file_exists($row["src"])) {
-            copy($row["src"], $row["path"] . "/" . $row["code"]);
+            copy($row["src"], $row["path"] . '/' . $row["code"]);
         }
 
         header("Location: $site_path/order/$oid/");
