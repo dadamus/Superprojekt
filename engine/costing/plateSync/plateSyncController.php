@@ -19,7 +19,7 @@ class PlateSyncController
         $detailsNameString = "";
 
         return print_r($programs);
-        
+
         foreach ($programs as $program) {
             $sheetName = $program["SheetName"];
             $details = $program["Details"];

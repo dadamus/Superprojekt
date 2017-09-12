@@ -326,7 +326,7 @@
             }
             ?>
         </div>
-        <p class="copyright">2015 © Metronic by keenthemes, Engine by Adamus.</p>
+        <p class="copyright">2015 © Metronic by keenthemes.</p>
         <a href="#index" class="go2top"><i class="icon-arrow-up"></i></a>
     </div>
 </div>

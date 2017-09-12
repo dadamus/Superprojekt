@@ -441,8 +441,11 @@ class AutoEngineController
     private function PlateProductionSync()
     {
         require_once dirname(__DIR__) . "/engine/costing/plateSync/plateSyncController.php";
+
+        $data = json_decode($_POST["data"], true);
+
         $plateSync = new PlateSyncController();
-        $plateSync->syncAction($_POST["data"]);
+        $plateSync->syncAction($data);
         return "ok";
     }
 }
