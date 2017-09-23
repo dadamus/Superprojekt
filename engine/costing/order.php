@@ -29,21 +29,40 @@ if ($action == 1) {
 
         $cost = 0;
         if ($items > 0) {
-            $oitems = $db->query("SELECT `mpw` FROM `oitems` WHERE `oid` = '$oid'");
+            $oitems = $db->query("SELECT `mpw`, `did` FROM `oitems` WHERE `oid` = '$oid'");
             foreach ($oitems as $item) {
                 $mpwq = $db->query("SELECT `mcp`, `type` FROM `mpw` WHERE `id` = '" . $item["mpw"] . "'");
                 $mpw = $mpwq->fetch();
-                if ($mpw["type"] == 2 || $mpw["type"] == 7) {
+                if ($mpw["type"] == OT::AUTO_WYCENA_DODANE_DO_ZAMOWIENIA || $mpw["type"] == OT::AUTO_WYCENA_ZABLOKOWANA_EDYCJA) {
                     $wid = $item["mpw"];
                     $mpcq = $db->query("SELECT `last_price_all_netto` FROM `mpc` WHERE `wid` = '$wid'");
                     $mpc = $mpcq->fetch();
                     $cost += floatval($mpc["last_price_all_netto"]);
-                } else if ($mpw["type"] == 4 || $mpw["type"] == 8) {
+                } else if ($mpw["type"] == OT::RECZNA_WYCENA_PROFULU_DODANE_DO_ZAMOWIENIA || $mpw["type"] == OT::RECZNA_WYCENA_PROFILU_ZABLOKOWANA_EDYCJA) {
                     $qpc = $db->query("SELECT `priceset` FROM `profile_costing` WHERE `id` = '" . $mpw["mcp"] . "'");
                     $pc = $qpc->fetch();
                     $cost += floatval($pc["priceset"]);
-                } else if ($mpw["type"] == OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) {
+                } else if ($mpw["type"] >= OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) {
+                    $qMultiPartPlate = $db->prepare("
+                        SELECT
+                        ds.price,
+                        pp.PartCount
+                        FROM plate_multiPartDetails pd
+                        LEFT JOIN plate_multiPartCostingDetailsSettings ds ON ds.directory_id = pd.dirId AND ds.detaild_id = pd.did
+                        LEFT JOIN plate_multiPartProgramsPart pp ON pp.PartName = pd.name
+                        WHERE 
+                        pd.mpw = :mpw
+                        AND pd.did = :did
+                    ");
+                    $qMultiPartPlate->bindValue(':mpw', $item["mpw"], PDO::PARAM_INT);
+                    $qMultiPartPlate->bindValue(':did', $item["did"], PDO::PARAM_INT);
+                    $qMultiPartPlate->execute();
 
+                    $multiPartData = $qMultiPartPlate->fetch();
+
+                    if ($multiPartData !== false) {
+                        $cost += floatval($multiPartData['price']) * floatval($multiPartData['PartCount']);
+                    }
                 }
             }
         }
@@ -236,7 +255,7 @@ if ($action == 5) {
             $main = "sheet";
 
             $dim = floatval($data["mpc_thickness"]);
-        } else if ($data["type"] == OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA) { //Multi
+        } else if ($data["type"] == OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA || OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) { //Multi
             $main = "sheet";
             $new_type = OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA;
             $dim = floatval($data["mpc_thickness"]);
@@ -252,7 +271,7 @@ if ($action == 5) {
             $mq = $db->query("SELECT `name` FROM `material` WHERE `id` = '$materialId'");
             $m = $mq->fetch();
             $sm = strtoupper($m["lname"][0]);
-        } else if ($data["type"] == OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE) { //Multi blachy
+        } else if ($data["type"] == OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA || OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) { //Multi blachy
             $sm = $data["material_name"];
             $m["lname"] = $sm;
         } else {
