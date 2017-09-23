@@ -442,8 +442,7 @@ class AutoEngineController
     {
         require_once dirname(__DIR__) . "/engine/costing/plateSync/plateSyncController.php";
 
-        $jsonData = urldecode($_POST["data"]);
-        $data = json_decode($jsonData, true);
+        $data = json_decode($_POST["data"], true);
 
         $plateSync = new PlateSyncController();
         $plateSync->syncAction($data);
