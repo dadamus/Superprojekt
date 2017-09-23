@@ -65,7 +65,7 @@ function getPrograms()
         if ($program["multiplier"] > 1) {
             $position = explode("|", $program["position"]);
             for ($i = 0; $i < $program["multiplier"]; $i++) {
-                $str = '<li class="dd-item dd3-item" data-id="' . $program["id"] . '"><div class="dd-handle dd3-handle"></div><div class="dd3-content">' . $program["name"] . ' #' . ($i + 1) . ' <div style="float: right; cursor: pointer;" class="bPinfo">' . $program["cut"] . '/' . $pieces . ' <i class="fa fa-info-circle"></i></div></div></li>';
+                $str = '<li class="dd-item dd3-item" data-id="' . $program["id"] . '"><div class="dd-handle dd3-handle"></div><div class="dd3-content">' . str_replace('.', '+', $program["name"]) . ' #' . ($i + 1) . ' <div style="float: right; cursor: pointer;" class="bPinfo">' . $program["cut"] . '/' . $pieces . ' <i class="fa fa-info-circle"></i></div></div></li>';
                 if (array_key_exists($i, $position) == true && array_key_exists($position[$i], $queue) == false) {
                     $queue[$position[$i]] = $str;
                 } else {
