@@ -46,6 +46,7 @@ class PlateSyncController
 
             $programQuery = new sqlBuilder(sqlBuilder::INSERT, 'programs');
             $programQuery->bindValue('new_cutting_queue_id', $cuttingQueueId, PDO::PARAM_INT);
+            $programQuery->bindValue('	name', $sheetName, PDO::PARAM_STR);
             $programQuery->flush();
         }
     }
