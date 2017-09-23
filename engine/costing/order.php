@@ -307,7 +307,8 @@ if ($action == 5) {
         $thickness = $data["mpc_thickness"];
 
         $hash = md5(time());
-        $newName = $cid . "-" . $data["pieces"] . "X" . $thickness . "-$sm-$item" . $atribute . '-' . $hash . "." . $ext;
+        $nameWithoutExt = $cid . "-" . $data["pieces"] . "X" . $thickness . "-$sm-$item" . $atribute . '-' . $hash;
+        $newName =  $nameWithoutExt . "." . $ext;
 
         //Original path
         if ($data["type"] == 2) {
@@ -324,7 +325,7 @@ if ($action == 5) {
             make_dir($dpath);
         }
 
-        $db->query("INSERT INTO `oitems` (`oid`, `mpw`, `code`, `src`, `path`, `did`) VALUES ('$oid', '$item', '$newName', '$_src', '$dpath', $didId)");
+        $db->query("INSERT INTO `oitems` (`oid`, `mpw`, `name`, `code`, `src`, `path`, `did`) VALUES ('$oid', '$item', '$nameWithoutExt', '$newName', '$_src', '$dpath', $didId)");
         $db->query("UPDATE `mpw` SET `type` = '$new_type' WHERE `id` = '$item'");
         $db->query("UPDATE `order` SET `status` = '2' WHERE `id` = '$oid'");
     }
