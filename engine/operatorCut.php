@@ -21,7 +21,8 @@ if ($action == 1) { // Save new queue
     die("1");
 }
 
-function getPrograms() {
+function getPrograms()
+{
     global $db;
     $programs = $db->query("SELECT `name`, `id`, `mpw`, `cut`, `multiplier`, `position` FROM `programs` WHERE `status` < 1 ORDER BY `id` DESC");
 
@@ -31,9 +32,14 @@ function getPrograms() {
     foreach ($programs as $program) {
         $mpwa = json_decode($program["mpw"], true);
         $pieces = 0;
-        foreach ($mpwa as $name => $value) {
-            $pieces += $value;
+        if (is_array($mpwa)) {
+            if (count($mpwa) > 0) {
+                foreach ($mpwa as $name => $value) {
+                    $pieces += $value;
+                }
+            }
         }
+
         if ($program["multiplier"] > 1) {
             $position = explode("|", $program["position"]);
             for ($i = 0; $i < $program["multiplier"]; $i++) {
@@ -64,6 +70,7 @@ function getPrograms() {
         echo $row;
     }
 }
+
 ?>
 
 <div class="row">
@@ -81,9 +88,12 @@ function getPrograms() {
                 <div class="alert alert-danger" style="display: none;" id="amd">
                     <strong>Uwaga! Lista nie jest aktualna</strong>
                     <p>Jeśli jesteś w trakcje zmiany kolejki zapisz swój aktualny postęp, lub odświez.</p>
-                    <div style="text-align: right;"><a href="<?php echo $site_path; ?>/site/15/operator" class="btn btn-danger">Odświez</a></div>
+                    <div style="text-align: right;"><a href="<?php echo $site_path; ?>/site/15/operator"
+                                                       class="btn btn-danger">Odświez</a></div>
                 </div>
-                <div id="slbuttons" style="text-align: right; display: none;"><button type="button" class="btn btn-success">Zapisz</button></div>
+                <div id="slbuttons" style="text-align: right; display: none;">
+                    <button type="button" class="btn btn-success">Zapisz</button>
+                </div>
                 <div class="dd" id="nestable">
                     <ol class="dd-list">
                         <?php
@@ -100,7 +110,9 @@ function getPrograms() {
                 <div class="caption">Podgląd</div>
             </div>
             <div class="portlet-body" id="pcontent">
-                <div style="text-align: center;"><small>Najpierw wybierz program...</small></div>
+                <div style="text-align: center;">
+                    <small>Najpierw wybierz program...</small>
+                </div>
                 <div style="clear: both;"></div>
             </div>
         </div>
