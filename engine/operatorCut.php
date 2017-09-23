@@ -24,7 +24,20 @@ if ($action == 1) { // Save new queue
 function getPrograms()
 {
     global $db;
-    $programs = $db->query("SELECT `name`, `id`, `mpw`, `cut`, `multiplier`, `position` FROM `programs` WHERE `status` < 1 ORDER BY `id` DESC");
+    $programs = $db->query("
+      SELECT 
+      p.`name`,
+      p.`id`,
+      p.`mpw`,
+      p.`cut`,
+      p.`multiplier`,
+      p.`position`,
+      cq.quantity
+      FROM `programs` p
+      LEFT JOIN cutting_queue cq ON cq.id = p.new_cutting_queue_id
+      WHERE p.`status` < 1 
+      ORDER BY p.`id` DESC
+    ");
 
     $queue = array();
     $ooq = array();
@@ -38,6 +51,15 @@ function getPrograms()
                     $pieces += $value;
                 }
             }
+        }
+
+
+        if ($program["quantity"] > 0) {
+            $pieces += $program["quantity"];
+        }
+
+        if ($program["cut"] < 1) {
+            $program["cut"] = 0;
         }
 
         if ($program["multiplier"] > 1) {
