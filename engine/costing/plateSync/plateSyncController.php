@@ -24,7 +24,7 @@ class PlateSyncController
             $details = $program["Details"];
 
             $queryBuilder = new sqlBuilder(sqlBuilder::INSERT, 'cutting_queue');
-            $queryBuilder->bindValue('sheet_count', $sheetCount, PDO::PARAM_INT);
+            $queryBuilder->bindValue('quantity', $sheetCount, PDO::PARAM_INT);
             $queryBuilder->bindValue('sheet_name', $sheetName, PDO::PARAM_STR);
             $queryBuilder->bindValue('created_at', date("Y-m-d H:i:s"), PDO::PARAM_STR);
             $queryBuilder->flush();
