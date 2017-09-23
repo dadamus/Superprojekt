@@ -19,7 +19,7 @@ class PlateSyncController
         global $db;
 
         foreach ($programs as $program) {
-            $sheetName = urldecode($program["SheetName"]);
+            $sheetName = $program["SheetName"];
             $sheetCount = $program["SheetCount"];
             $details = $program["Details"];
 
