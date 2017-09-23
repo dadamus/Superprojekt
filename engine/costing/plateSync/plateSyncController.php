@@ -19,7 +19,7 @@ class PlateSyncController
         global $db;
 
         foreach ($programs as $program) {
-            $sheetName = str_replace('+', '.', urldecode($program["SheetName"]));
+            $sheetName = str_replace(['+', ' '], ['.', '.'], urldecode($program["SheetName"]));
             $sheetCount = $program["SheetCount"];
             $details = $program["Details"];
 
