@@ -80,8 +80,8 @@ function getPrograms() {
             <div class="portlet-body">
                 <div class="alert alert-danger" style="display: none;" id="amd">
                     <strong>Uwaga! Lista nie jest aktualna</strong>
-                    <p>Jeśli jesteś w trakcje zmiany kolejki zapisz swój aktualny postęp, lub odświerz.</p>
-                    <div style="text-align: right;"><a href="<?php echo $site_path; ?>/site/15/operator" class="btn btn-danger">Odświerz</a></div>
+                    <p>Jeśli jesteś w trakcje zmiany kolejki zapisz swój aktualny postęp, lub odświez.</p>
+                    <div style="text-align: right;"><a href="<?php echo $site_path; ?>/site/15/operator" class="btn btn-danger">Odświez</a></div>
                 </div>
                 <div id="slbuttons" style="text-align: right; display: none;"><button type="button" class="btn btn-success">Zapisz</button></div>
                 <div class="dd" id="nestable">

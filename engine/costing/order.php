@@ -236,7 +236,7 @@ if ($action == 5) {
             $main = "sheet";
 
             $dim = floatval($data["mpc_thickness"]);
-        } else if ($data["type"] == OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE) { //Multi
+        } else if ($data["type"] == OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA) { //Multi
             $main = "sheet";
             $new_type = OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA;
             $dim = floatval($data["mpc_thickness"]);
@@ -287,7 +287,8 @@ if ($action == 5) {
         $cid = $data["cid"];
         $thickness = $data["mpc_thickness"];
 
-        $newName = $cid . "-" . $data["pieces"] . "X" . $thickness . "-$sm-$item" . $atribute . "." . $ext;
+        $hash = md5(time());
+        $newName = $cid . "-" . $data["pieces"] . "X" . $thickness . "-$sm-$item" . $atribute . '-' . $hash . "." . $ext;
 
         //Original path
         if ($data["type"] == 2) {
