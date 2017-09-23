@@ -59,8 +59,8 @@ class PlateSyncController
     {
         global $db;
 
-        $searchQuery = $db->prepare("SELECT id FROM oitems WHERE code = :code");
-        $searchQuery->bindValue(':code', $detailName, PDO::PARAM_STR);
+        $searchQuery = $db->prepare("SELECT id FROM oitems WHERE `name` = :name");
+        $searchQuery->bindValue(':name', $detailName, PDO::PARAM_STR);
         $searchQuery->execute();
 
         $searchData = $searchQuery->fetch();
