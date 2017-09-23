@@ -190,8 +190,9 @@ $status = getOrderStatus($order["status"])
                                     echo '<div class="row static-info"><div class="col-md-5 name">Parametry:</div><div class="col-md-7 value">';
                                     //Checkboxy
                                     if (isset($mpc["atribute"])) {
-                                        if (count($mpc["atribute"]) > 0) {
-                                            foreach (json_decode($mpc["atribute"]) as $attribute) {
+                                        $attributes = json_decode($mpc["atribute"]);
+                                        if (count($attributes) > 0) {
+                                            foreach ($attributes as $attribute) {
                                                 echo _getChecboxText($attribute) . " ";
                                             }
                                         }
