@@ -306,7 +306,7 @@ if ($action == 5) {
         $cid = $data["cid"];
         $thickness = $data["mpc_thickness"];
 
-        $hash = md5(time());
+        $hash = md5(time() + rand());
         $nameWithoutExt = $cid . "-" . $data["pieces"] . "X" . $thickness . "-$sm-$item" . $atribute . '-' . $hash;
         $newName =  $nameWithoutExt . "." . $ext;
 
