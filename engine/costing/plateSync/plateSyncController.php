@@ -57,11 +57,9 @@ class PlateSyncController
             $materialName = "";
             $materialRow = current($materials);
 
-            if ($materialRow['UsedSheetNum'] <= 0) {
+            if (@$materialRow['UsedSheetNum'] <= 0) {
                 next($materials);
             }
-
-            var_dump($materials);die;
 
             $materialId = key($materials);
             $materials[$materialId]['UsedSheetNum']--;
