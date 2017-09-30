@@ -133,6 +133,16 @@ $listQuery->execute();
 
 $listData = $listQuery->fetchAll(PDO::FETCH_ASSOC);
 
+$listStatus = [
+    0 => 'Oczekuje',
+    1 => 'w trakcje',
+    2 => 'Do potwierdzenia',
+    3 => 'Wycięto',
+    4 => 'Wstrzymany',
+    5 => 'Anulowany',
+    6 => 'Nie rozpoznany',
+];
+
 $programName = str_replace('.', '+', $program['name']);
 $image = str_replace('/var/www/html', '', $program['image_src']);
 ?>
@@ -175,6 +185,7 @@ $image = str_replace('/var/www/html', '', $program['image_src']);
     <tr>
         <th>Numer</th>
         <th>Status</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -184,7 +195,10 @@ $image = str_replace('/var/www/html', '', $program['image_src']);
             <?= $listItem['lp'] ?>
         </td>
         <td>
-            <?= $listItem['state'] ?>
+            <?= $listStatus[$listItem['state']] ?>
+        </td>
+        <td>
+
         </td>
     </tr>
     <?php endforeach; ?>

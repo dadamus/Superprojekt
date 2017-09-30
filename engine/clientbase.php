@@ -30,7 +30,6 @@ if (@$_GET["a"] == 1) { // AJAX New client
     function pushClient()
     {
         global $data_src, $directories, $_id, $name, $user_name;
-        $return = false;
         for ($i = 0; $i < count($directories); $i++) {
             $e_dir = explode("-", $directories[$i]);
             if (count($e_dir) > 1 && is_array($e_dir) == true) {
@@ -45,11 +44,11 @@ if (@$_GET["a"] == 1) { // AJAX New client
                 if ($min <= $_id && $_id <= $max) {
                     $src = $data_src . $directories[$i] . "/" . $_id;
                     mkdir($src . "/PROJEKTY", 0777, true);
-                    $return = true;
+                    return true;
                 }
             }
         }
-        return $return;
+        return false;
     }
 
     if (pushClient() == false) {
@@ -64,7 +63,7 @@ if (@$_GET["a"] == 1) { // AJAX New client
             die($data_src . $directory);
         }
 
-        mkdir($data_src . $directory . "/" . $id . "/PROJEKTY", 0777, true);
+        mkdir($data_src . $directory . "/" . $_id . "/PROJEKTY", 0777, true);
     }
     die($_id);
 } else if (@$_GET["a"] == 2) { // DANE DO EDYCJI
