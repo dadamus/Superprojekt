@@ -63,10 +63,6 @@ class PlateSyncController
 
             $materials[$materialId]['UsedSheetNum'] -= 1;
             $materialName = $materials[$materialId]['SheetCode'];
-
-            echo 't:' . $materialName;
-            echo 'i:' . $materialId;
-
             $this->getImg($materialName, $programId, $sheetNumber);
         }
     }
@@ -81,12 +77,13 @@ class PlateSyncController
     {
         global $data_src, $db;
 
-        try {
+//        try {
             $plateQuery = $db->prepare('SELECT id FROM plate_warehouse WHERE SheetName = :sheetName');
             $plateQuery->bindValue(':sheetName', $sheetName, PDO::PARAM_STR);
             $plateQuery->execute();
 
             $plateData = $plateQuery->fetch();
+            var_dump($plateData);
             if ($plateData === false) {
                 return false;
             }
@@ -108,9 +105,10 @@ class PlateSyncController
             $sqlBuilder->bindValue('src', $newPath, PDO::PARAM_STR);
             $sqlBuilder->bindValue('upload_date', date('Y-m-d H:i:s'), PDO::PARAM_STR);
             $sqlBuilder->flush();
-        } catch (\Exception $ex) {
-            return false;
-        }
+//        } catch (\Exception $ex) {
+//            throw new \Exception($ex);
+//            return false;
+//        }
 
         return true;
     }
