@@ -40,7 +40,7 @@ class PlateSyncController
 
             //Id z bazy
             $plateQuery = $db->prepare('SELECT id FROM plate_warehouse WHERE SheetCode = :sheetName');
-            $plateQuery->bindValue(':sheetName', $sheetName, PDO::PARAM_STR);
+            $plateQuery->bindValue(':sheetName', $materialName, PDO::PARAM_STR);
             $plateQuery->execute();
             $plateData = $plateQuery->fetch();
 
