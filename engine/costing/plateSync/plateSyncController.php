@@ -88,7 +88,8 @@ class PlateSyncController
                 return false;
             }
 
-            $filePath = $data_src . 'temp/' . $sheetNumber . '.bmp';
+            $imgNumber = $sheetNumber + 1;
+            $filePath = $data_src . 'temp/' . $imgNumber . '.bmp';
             $uploadPath = $data_src . 'program_image/';
 
             if (!file_exists($uploadPath)) {
