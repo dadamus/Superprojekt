@@ -55,7 +55,6 @@ class PlateSyncController
 
             $programId = $db->lastInsertId();
 
-            $materialName = "";
             $materialRow = $materials[$materialId];
 
             if (@$materialRow['UsedSheetNum'] <= 0) {
@@ -63,7 +62,10 @@ class PlateSyncController
             }
 
             $materials[$materialId]['UsedSheetNum'] -= 1;
-            $materialName = $materialRow['SheetCode'];
+            $materialName = $materials[$materialId]['SheetCode'];
+
+            echo 't:' . $materialName;
+            echo 'i:' . $materialId;
 
             $this->getImg($materialName, $programId, $sheetNumber);
         }
