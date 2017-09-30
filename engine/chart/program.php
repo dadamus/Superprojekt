@@ -104,6 +104,7 @@ $mpwQuery = $db->prepare('
   tm.Thickness,
   tm.MaterialTypeName,
   cq.sheet_name,
+  cq.sheet_count,
   qd.LaserMatName
   FROM
   cutting_queue_details qd
@@ -164,6 +165,15 @@ $image = str_replace('/var/www/html', '', $program['image_src']);
     </tr>
     </thead>
     <tbody>
-
+    <?php foreach ($mpwData['sheet_count'] as $sheet): ?>
+    <tr>
+        <td>
+            <?= $sheet ?>
+        </td>
+        <td>
+            nie wiem
+        </td>
+    </tr>
+    <?php endforeach; ?>
     </tbody>
 </table>
