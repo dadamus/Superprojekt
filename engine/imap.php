@@ -21,6 +21,10 @@ class Imap {
 
         $this->subject_types = $st;
 
+        imap_timeout(IMAP_OPENTIMEOUT, 3);
+        imap_timeout(IMAP_READTIMEOUT, 3);
+        imap_timeout(IMAP_WRITETIMEOUT, 3);
+        imap_timeout(IMAP_CLOSETIMEOUT, 3);
         $this->imap = imap_open($ip, $user, $pass);
         if (!$this->imap) {
             die("Brak połączenia IMAP");
