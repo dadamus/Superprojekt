@@ -28,7 +28,7 @@ class PlateSyncController
             $details = $program["Details"];
             $sheetNumber = $program["SheetId"];
             $queryBuilder = new sqlBuilder(sqlBuilder::INSERT, 'cutting_queue');
-            $queryBuilder->bindValue('quantity', $sheetCount, PDO::PARAM_INT);
+            $queryBuilder->bindValue('sheet_count', $sheetCount, PDO::PARAM_INT);
             $queryBuilder->bindValue('sheet_name', $sheetName, PDO::PARAM_STR);
             $queryBuilder->bindValue('created_at', date("Y-m-d H:i:s"), PDO::PARAM_STR);
             $queryBuilder->flush();
@@ -77,39 +77,33 @@ class PlateSyncController
     {
         global $data_src, $db;
 
-//        try {
-            $plateQuery = $db->prepare('SELECT id FROM plate_warehouse WHERE SheetCode = :sheetName');
-            $plateQuery->bindValue(':sheetName', $sheetName, PDO::PARAM_STR);
-            $plateQuery->execute();
+        $plateQuery = $db->prepare('SELECT id FROM plate_warehouse WHERE SheetCode = :sheetName');
+        $plateQuery->bindValue(':sheetName', $sheetName, PDO::PARAM_STR);
+        $plateQuery->execute();
 
-            $plateData = $plateQuery->fetch();
-            var_dump($plateData);
-            if ($plateData === false) {
-                return false;
-            }
+        $plateData = $plateQuery->fetch();
+        if ($plateData === false) {
+            return false;
+        }
 
-            $imgNumber = $sheetNumber + 1;
-            $filePath = $data_src . 'temp/' . $imgNumber . '.bmp';
-            $uploadPath = $data_src . 'program_image/';
+        $imgNumber = $sheetNumber + 1;
+        $filePath = $data_src . 'temp/' . $imgNumber . '.bmp';
+        $uploadPath = $data_src . 'program_image/';
 
-            if (!file_exists($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
-            }
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0777, true);
+        }
 
-            $newName = $programId . '_' . date('Y_m_d_H_i_s') . '_' . rand() . '.bmp';
-            $newPath = $uploadPath . $newName;
+        $newName = $programId . '_' . date('Y_m_d_H_i_s') . '_' . rand() . '.bmp';
+        $newPath = $uploadPath . $newName;
 
-            rename($filePath, $newPath);
-            $sqlBuilder = new sqlBuilder(sqlBuilder::INSERT, 'sheet_image');
-            $sqlBuilder->bindValue('plate_warehouse_id', $plateData['id'], PDO::PARAM_INT);
-            $sqlBuilder->bindValue('program_id', $programId, PDO::PARAM_INT);
-            $sqlBuilder->bindValue('src', $newPath, PDO::PARAM_STR);
-            $sqlBuilder->bindValue('upload_date', date('Y-m-d H:i:s'), PDO::PARAM_STR);
-            $sqlBuilder->flush();
-//        } catch (\Exception $ex) {
-//            throw new \Exception($ex);
-//            return false;
-//        }
+        rename($filePath, $newPath);
+        $sqlBuilder = new sqlBuilder(sqlBuilder::INSERT, 'sheet_image');
+        $sqlBuilder->bindValue('plate_warehouse_id', $plateData['id'], PDO::PARAM_INT);
+        $sqlBuilder->bindValue('program_id', $programId, PDO::PARAM_INT);
+        $sqlBuilder->bindValue('src', $newPath, PDO::PARAM_STR);
+        $sqlBuilder->bindValue('upload_date', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $sqlBuilder->flush();
 
         return true;
     }
