@@ -82,7 +82,16 @@ if ($prId == null) {
     die("Brak id programu!");
 }
 
-$qprogram = $db->prepare("SELECT * FROM `programs` WHERE `id` = :prId");
+$qprogram = $db->prepare("
+SELECT 
+p.new_cutting_queue_id,
+p.name,
+i.src as image_src
+FROM `programs` p
+LEFT JOIN sheet_image i ON i.program_id = p.id
+WHERE 
+p.id = :prId
+");
 $qprogram->bindValue(':prId', $prId, PDO::PARAM_INT);
 $qprogram->execute();
 
@@ -111,6 +120,7 @@ $mpwQuery->execute();
 $mpwData = $mpwQuery->fetch();
 
 $programName = str_replace('.', '+', $program['name']);
+$image = str_replace('/var/www/html', '', $program['image_src']);
 ?>
 
 <div class="alert alert-info">
@@ -138,6 +148,10 @@ $programName = str_replace('.', '+', $program['name']);
     <tr>
         <td>Grubość:</td>
         <td><?= $mpwData["Thickness"] ?></td>
+    </tr>
+    <tr>
+        <td>Obrazek:</td>
+        <td><img src="<?= $image ?>" width="200px"></td>
     </tr>
     </tbody>
 </table>
