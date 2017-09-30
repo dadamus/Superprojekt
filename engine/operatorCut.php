@@ -61,7 +61,7 @@ function getPrograms()
             $program["cut"] = 0;
         }
 
-        $programName = str_replace('.', '+'. $program['name']);
+        $programName = str_replace('.', '+', $program['name']);
 
         $position = intval($program["position"]);
         $str2 = '<li class="dd-item dd3-item" data-id="' . $program["id"] . '"><div class="dd-handle dd3-handle"></div><div class="dd3-content">' . $programName . ' <div style="float: right; cursor: pointer;" class="bPinfo">' . $program["cut"] . '/' . $pieces . ' <i class="fa fa-info-circle"></i></div></div></li>';
