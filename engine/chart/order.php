@@ -221,7 +221,7 @@ $status = getOrderStatus($order["status"])
                                         LEFT JOIN programs p ON p.new_cutting_queue_id = q.id
                                         WHERE
                                         d.oitem_id = :oitemId
-                                        AND q.status = 0
+                                        AND p.status = 0
                                     ');
                                     $programsQuery->bindValue(':oitemId', $oid, PDO::PARAM_INT);
                                     $programsQuery->execute();
