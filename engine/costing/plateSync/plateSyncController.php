@@ -78,7 +78,7 @@ class PlateSyncController
         global $data_src, $db;
 
 //        try {
-            $plateQuery = $db->prepare('SELECT id FROM plate_warehouse WHERE SheetName = :sheetName');
+            $plateQuery = $db->prepare('SELECT id FROM plate_warehouse WHERE SheetCode = :sheetName');
             $plateQuery->bindValue(':sheetName', $sheetName, PDO::PARAM_STR);
             $plateQuery->execute();
 
