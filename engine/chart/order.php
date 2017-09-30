@@ -215,9 +215,10 @@ $status = getOrderStatus($order["status"])
                                         q.sheet_count,
                                         q.sheet_name,
                                         q.created_at,
-                                        q.status
+                                        p.status
                                         FROM cutting_queue_details d
                                         LEFT JOIN cutting_queue q ON q.id = d.cutting_queue_id
+                                        LEFT JOIN programs p ON p.new_cutting_queue_id = q.id
                                         WHERE
                                         d.oitem_id = :oitemId
                                         AND q.status = 0
