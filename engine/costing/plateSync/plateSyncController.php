@@ -61,6 +61,8 @@ class PlateSyncController
                 next($materials);
             }
 
+            var_dump($materials);die;
+
             $materialId = key($materials);
             $materials[$materialId]['UsedSheetNum']--;
             $materialName = $materialRow['SheetCode'];
