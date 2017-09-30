@@ -27,6 +27,24 @@ class PlateSyncController
             $sheetCount = $program["SheetCount"];
             $details = $program["Details"];
             $sheetNumber = $program["SheetId"];
+
+            //Material
+            $materialRow = $materials[$materialId];
+
+            if (@$materialRow['UsedSheetNum'] <= 0) {
+                $materialId++;
+            }
+
+            $materials[$materialId]['UsedSheetNum'] -= 1;
+            $materialName = $materials[$materialId]['SheetCode'];
+
+            //Id z bazy
+            $plateQuery = $db->prepare('SELECT id FROM plate_warehouse WHERE SheetCode = :sheetName');
+            $plateQuery->bindValue(':sheetName', $sheetName, PDO::PARAM_STR);
+            $plateQuery->execute();
+            $plateData = $plateQuery->fetch();
+
+            //insert do queue
             $queryBuilder = new sqlBuilder(sqlBuilder::INSERT, 'cutting_queue');
             $queryBuilder->bindValue('sheet_count', $sheetCount, PDO::PARAM_INT);
             $queryBuilder->bindValue('sheet_name', $sheetName, PDO::PARAM_STR);
@@ -45,6 +63,8 @@ class PlateSyncController
                 $detailQuery->bindValue('cutting_queue_id', $cuttingQueueId, PDO::PARAM_INT);
                 $detailQuery->bindValue('oitem_id', $oitemId, PDO::PARAM_INT);
                 $detailQuery->bindValue('qantity', $quantity, PDO::PARAM_INT);
+                $detailQuery->bindValue('plate_warehouse_id', $plateData['id'], PDO::PARAM_INT);
+                $detailQuery->bindValue('LaserMatName', $program['LaserMatName'], PDO::PARAM_STR);
                 $detailQuery->flush();
             }
 
@@ -55,34 +75,21 @@ class PlateSyncController
 
             $programId = $db->lastInsertId();
 
-            $materialRow = $materials[$materialId];
-
-            if (@$materialRow['UsedSheetNum'] <= 0) {
-                $materialId++;
-            }
-
-            $materials[$materialId]['UsedSheetNum'] -= 1;
-            $materialName = $materials[$materialId]['SheetCode'];
-            $this->getImg($materialName, $programId, $sheetNumber);
+            $this->getImg($plateData['id'], $programId, $sheetNumber);
         }
     }
 
     /**
-     * @param string $sheetName
+     * @param int $sheetId
      * @param int $programId
      * @param int $sheetNumber
      * @return bool
      */
-    private function getImg(string $sheetName, int $programId, int $sheetNumber): bool
+    private function getImg(int $sheetId, int $programId, int $sheetNumber): bool
     {
         global $data_src, $db;
 
-        $plateQuery = $db->prepare('SELECT id FROM plate_warehouse WHERE SheetCode = :sheetName');
-        $plateQuery->bindValue(':sheetName', $sheetName, PDO::PARAM_STR);
-        $plateQuery->execute();
-
-        $plateData = $plateQuery->fetch();
-        if ($plateData === false) {
+        if ($sheetId < 1) {
             return false;
         }
 
@@ -99,7 +106,7 @@ class PlateSyncController
 
         rename($filePath, $newPath);
         $sqlBuilder = new sqlBuilder(sqlBuilder::INSERT, 'sheet_image');
-        $sqlBuilder->bindValue('plate_warehouse_id', $plateData['id'], PDO::PARAM_INT);
+        $sqlBuilder->bindValue('plate_warehouse_id', $sheetId, PDO::PARAM_INT);
         $sqlBuilder->bindValue('program_id', $programId, PDO::PARAM_INT);
         $sqlBuilder->bindValue('src', $newPath, PDO::PARAM_STR);
         $sqlBuilder->bindValue('upload_date', date('Y-m-d H:i:s'), PDO::PARAM_STR);

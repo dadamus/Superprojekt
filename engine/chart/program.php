@@ -90,15 +90,17 @@ $program = $qprogram->fetch();
 
 $mpwQuery = $db->prepare('
   SELECT
-  m.name as material_name,
-  mpw.thickness,
-  mpw.radius,
-  mpw.atribute
+  pw.SheetCode,
+  pw.MaterialName,
+  tm.Thickness,
+  tm.MaterialTypeName,
+  cq.sheet_name,
+  qd.LaserMatName
   FROM
   cutting_queue_details qd
-  LEFT JOIN oitems o ON o.id = qd.oitem_id
-  LEFT JOIN mpw mpw ON mpw.id = o.mpw
-  LEFT JOIN material m ON m.id = mpw.material
+  LEFT JOIN cutting_queue cq ON cq.id = qd.cutting_queue_id
+  LEFT JOIN plate_warehouse pw ON pw.id = qd.plate_warehouse_id
+  LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
   WHERE
   qd.cutting_queue_id = :cuttingQueueId
   LIMIT 1
@@ -107,6 +109,8 @@ $mpwQuery->bindValue(':cuttingQueueId', $program['new_cutting_queue_id'], PDO::P
 $mpwQuery->execute();
 
 $mpwData = $mpwQuery->fetch();
+
+$programName = str_replace('.', '+', $program['name']);
 ?>
 
 <div class="alert alert-info">
@@ -120,18 +124,20 @@ $mpwData = $mpwQuery->fetch();
         <td><?= $program["name"] ?></td>
     </tr>
     <tr>
+        <td>SheetCode:</td>
+        <td><?= $mpwData["SheetCode"] ?></td>
+    </tr>
+    <tr>
         <td>Nazwa materiału:</td>
-        <td><?= $mpwData["material_name"] ?></td>
+        <td><?= $mpwData["MaterialTypeName"] ?></td>
+    </tr>
+    <tr>
+        <td>LaserMatName:</td>
+        <td><?= $mpwData["LaserMatName"] ?></td>
     </tr>
     <tr>
         <td>Grubość:</td>
-        <td><?= $mpwData["thickness"] ?></td>
+        <td><?= $mpwData["Thickness"] ?></td>
     </tr>
-    <?php if ($mpwData["radius"] > 0): ?>
-        <tr>
-            <td>Promień:</td>
-            <td><?= $mpwData["radius"] ?></td>
-        </tr>
-    <?php endif; ?>
     </tbody>
 </table>
