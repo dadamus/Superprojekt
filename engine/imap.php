@@ -31,7 +31,7 @@ class Imap {
         }
     }
 
-    public function getMail($date = '22 August 2016') {
+    public function getMail($date = '22 August 2017') {
         $content = [];
         $emails = imap_search($this->imap, 'SINCE "' . $date . '"');
         if (is_array($emails) || is_object($emails)) {
