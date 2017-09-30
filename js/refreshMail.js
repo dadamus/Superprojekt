@@ -27,9 +27,9 @@ function refreshMail() {
 
         //Notifi update
         refreshNotifi();
+    }).always(function () {
+        _to = setTimeout(refreshMail, 10000);
     });
-
-    _to = setTimeout(refreshMail, 10000);
 }
 
 function refreshNotifi() {

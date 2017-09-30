@@ -6,8 +6,8 @@ require_once dirname(__FILE__) . "/../imap.php";
 
 $action = @$_GET["action"];
 if ($action == 1) { //Imap check messages
-    echo "{}";
-    die;//todo chwilowo wylaczone jak sie naprawi serwer to odpalic
+//    echo "{}";
+//    die;//todo chwilowo wylaczone jak sie naprawi serwer to odpalic
     $imap = new Imap($IMAP_IP, $IMAP_USER, $IMAP_PASS);
 
     $response = [];
@@ -131,7 +131,7 @@ $image = str_replace('/var/www/html', '', $program['image_src']);
     <tbody>
     <tr>
         <td>Nazwa:</td>
-        <td><?= $program["name"] ?></td>
+        <td><?= $programName ?></td>
     </tr>
     <tr>
         <td>SheetCode:</td>
@@ -153,5 +153,17 @@ $image = str_replace('/var/www/html', '', $program['image_src']);
         <td>Obrazek:</td>
         <td><img src="<?= $image ?>" width="200px"></td>
     </tr>
+    </tbody>
+</table>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Numer</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+
     </tbody>
 </table>
