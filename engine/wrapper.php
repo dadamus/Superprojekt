@@ -137,6 +137,7 @@
                                 <li><a href="<?= $site_path ?>/site/7/projekty"><i class="fa fa-folder-open"></i> Projekty </a></li>
                                 <li><a href="<?= $site_path ?>/site/8/detale"><i class="fa fa-th-large"></i> Spis detali</a></li>
                                 <li><a href="<?= $site_path ?>/site/17/blachy"><i class="fa fa-clone"></i> Magazyn blach</a></li>
+                                <li><a href="<?= $site_path ?>/site/31/zamowienia"><i class="fa fa-shopping-cart"></i> Lista zamówień</a></li>
                             </ul>
                         </li>
                         <li class="dropdown dropdown-fw active" id="mb4">
@@ -247,6 +248,10 @@
                 case 30: //plate Program card
                     $mb = 2;
                     include dirname(__FILE__) . '/costing/plateMultiPart.php';
+                    break;
+                case 31: //order list
+                    $mb = 3;
+                    include dirname(__FILE__) . '/orderList.php';
                     break;
                 case 200: //Calendar
                     calendar_body();

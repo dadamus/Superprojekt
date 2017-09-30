@@ -209,31 +209,31 @@ $status = getOrderStatus($order["status"])
 
                                     $pval = array();
 
-                                    for ($i = 0; $i < count($programs); $i++) {
-                                        if ($programs[$i] != "") {
-                                            $row = explode(":", $programs[$i]);
-                                            $id = $row[0];
-                                            $qpr = $db->query("SELECT `mpw`, `multiplier` FROM `programs` WHERE `id` = '$id'");
-                                            $pr = $qpr->fetch();
+                                    $programsQuery = $db->prepare('
+                                        SELECT
+                                        d.qantity,
+                                        q.sheet_count,
+                                        q.sheet_name,
+                                        q.created_at,
+                                        q.status
+                                        FROM cutting_queue_details d
+                                        LEFT JOIN cutting_queue q ON q.id = d.cutting_queue_id
+                                        WHERE
+                                        d.oitem_id = :oitemId
+                                        AND q.status = 0
+                                    ');
+                                    $programsQuery->bindValue(':oitemId', $oid, PDO::PARAM_INT);
+                                    $programsQuery->execute();
 
-                                            $pmpw = json_decode($pr["mpw"], true);
-                                            if ($pr["multiplier"] > 0) {
-                                                $pcr += ($pmpw[$mpw_id] * $pr["multiplier"]);
-                                                $pval[$id] = ($pmpw[$mpw_id] * $pr["multiplier"]);
-                                            } else {
-                                                $pcr += $pmpw[$mpw_id];
-                                                $pval[$id] = $pmpw[$mpw_id];
-                                            }
-                                        }
+                                    $programs = [];
+
+                                    while ($program = $programsQuery->fetch()) {
+                                        $pcr += $program["qantity"] * $program["sheet_count"];
+                                        $programs[] = $program;
                                     }
 
-
-                                    $pcr_des1 = "";
-                                    $pcr_des12 = '<span> ' . $pcr . '/' . $oitem["pieces"] . '</span>';
-                                    if ($oitem["pieces"] * 0.5 < $pcr) {
-                                        $pcr_des1 = $pcr_des12;
-                                        $pcr_des12 = null;
-                                    }
+                                    $descStyle = 'style="top: 0px; left: 40%; position:absolute;"';
+                                    $pcr_des1 = '<span ' . $descStyle . '> ' . $pcr . '/' . $oitem["pieces"] . '</span>';
 
                                     $bar1_size = $pcr * 100 / $oitem["pieces"];
                                     $bar12_size = 0;
@@ -244,18 +244,13 @@ $status = getOrderStatus($order["status"])
                                         $active1 = "";
                                     }
 
-                                    $dct_des2 = "";
-                                    $dct_des22 = '<span>' . $oitem["dct"] . '/' . $oitem["pieces"] . '</span>';
-                                    if ($oitem["pieces"] * 0.5 < $oitem["dct"]) {
-                                        $dct_des2 = $dct_des22;
-                                        $dct_des22 = null;
-                                    }
+                                    $dct_des2 = '<span ' . $descStyle . '>' . $oitem["dct"] . '/' . $pcr . '</span>';
 
-                                    $bar2_size = $oitem["dct"] * 100 / $oitem["pieces"];
+                                    $bar2_size = $oitem["dct"] * 100 / $pcr;
                                     $bar22_size = 0;
                                     $active2 = "active";
                                     if ($bar2_size >= 100) {
-                                        $bar2_size = $oitem["pieces"] * 100 / $oitem["dct"];
+                                        $bar2_size = $pcr * 100 / $oitem["dct"];
                                         $bar22_size = 100 - $bar2_size;
                                         $active2 = "";
                                     }
@@ -265,28 +260,38 @@ $status = getOrderStatus($order["status"])
                                     $bar32_size = 0;
                                     $active3 = "active";
 
-                                    $str_des3 = "";
-                                    $str_des32 = '<span>' . $oitem["stored"] . '/' . $bar3_max . '</span>';
-                                    if ($bar3_max * 0.5 < $oitem["stored"]) {
-                                        $str_des3 = $str_des32;
-                                        $str_des32 = null;
-                                    }
+                                    $str_des3 = '<span ' . $descStyle . '>' . $oitem["stored"] . '/' . $bar3_max . '</span>';
 
-                                    echo '<div class="row static-info"><div class="col-md-2 name">Program:</div><div class="col-md-10 value"><div class="progress progress-striped ' . $active1 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar1_size . '%">' . $pcr_des1 . '</div>' . $pcr_des12 . '<div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar12_size . '%"></div></div></div></div>';
-                                    echo '<div class="row static-info"><div class="col-md-2 name">Produkcja:</div><div class="col-md-10 value"><div class="progress progress-striped ' . $active2 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar2_size . '%">' . $dct_des2 . '</div>' . $dct_des22 . '<div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar22_size . '%"></div></div></div></div>';
-                                    echo '<div class="row static-info"><div class="col-md-2 name">Magazyn:</div><div class="col-md-10 value"><div class="progress progress-striped ' . $active3 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar3_size . '%">' . $str_des3 . '</div>' . $str_des32 . '<div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar32_size . '%"></div></div></div></div>';
+                                    echo '<div class="row static-info"><div class="col-md-2 name">Program:</div><div class="col-md-10 value">' . $pcr_des1 . '<div class="progress progress-striped ' . $active1 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar1_size . '%"></div><div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar12_size . '%"></div></div></div></div>';
+                                    echo '<div class="row static-info"><div class="col-md-2 name">Produkcja:</div><div class="col-md-10 value">' . $dct_des2 . '<div class="progress progress-striped ' . $active2 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar2_size . '%"></div><div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar22_size . '%"></div></div></div></div>';
+                                    echo '<div class="row static-info"><div class="col-md-2 name">Magazyn:</div><div class="col-md-10 value">' . $str_des3 . '<div class="progress progress-striped ' . $active3 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar3_size . '%"></div><div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar32_size . '%"></div></div></div></div>';
                                     echo '</div>';
                                     echo '<div style="clear: both;"></div>';
                                     echo '<div class="row"><div class="col-md-12"><div class="portlet"><div class="portlet-body">';
-                                    echo '<div class="note note-info"><h4 class="block">Programy</h4><p><table class="table table-hover programList"><thead><tr><th style="width: 10%;">Nazwa</th><th style="width: 25%;">Data dodania</th><th style="width: 30%;">Ilość sztuk detalu</th><th style="width: 25%;">Sztuk programu</th><th style="width: 10%;"></th></tr></thead><tbody>';
-                                    for ($i = 0; $i < count($programs); $i++) {
-                                        if ($programs[$i] != "") {
-                                            $id = $programs[$i];
-                                            $qpr = $db->query("SELECT * FROM `programs` WHERE `id` = '$id'");
-                                            $pr = $qpr->fetch();
+                                    echo '<div class="note note-info"><h4 class="block">Programy</h4><p><table class="table table-hover programList"><thead><tr><th style="width: 10%;">Nazwa</th><th style="width: 25%;">Data dodania</th><th style="width: 30%;">Ilość sztuk detalu</th><th style="width: 25%;">Sztuk programu</th><th>Status</th><th style="width: 10%;"></th></tr></thead><tbody>';
+                                    foreach ($programs as $program) {
+                                        echo '<tr>';
+                                        echo '<td>' . $program['sheet_name'] . '</td>';
+                                        echo '<td>' . $program['created_at'] . '</td>';
+                                        echo '<td>' . $program['qantity'] . '</td>';
+                                        echo '<td>' . $program['sheet_count'] . '</td>';
 
-                                            echo '<tr><td>' . $pr["name"] . '</td><td>' . $pr["date"] . '</td><td>Elementów: ' . $pval[$id] . '</td><td style="cursor: pointer; text-align: center;" id="' . $id . '_ep" class="epb" ><span class="label label-sm label-info">' . $pr["multiplier"] . ' <i class="fa fa-pencil"></i></span></td><td id="' . $id . '_dp" class="dpb" style="text-align: center; cursor: pointer;">Usuń <i class="fa fa-trash"></i></td></tr>';
+                                        $status = 'Brak';
+                                        switch ($program['status']) {
+                                            case ProgramStatus::ZAPROGRAMOWANY:
+                                                $status = 'Zaprogramowany';
+                                                break;
+                                            case ProgramStatus::WYCIETY:
+                                                $status = 'Wycięty';
+                                                break;
+                                            case ProgramStatus::ANULOWANY:
+                                                $status = 'Anulowany';
+                                                break;
                                         }
+
+                                        echo '<td><span class="badge badge-info">' . $status . '</span></td>';
+                                        echo '<td id="" class="dpb" style="text-align: center; cursor: pointer;">Usuń <i class="fa fa-trash"></i></td>';
+                                        echo '</tr>';
                                     }
                                     echo '</tbody></table></p></div></div></div></div></div></div></div></div></div>';
                                 }

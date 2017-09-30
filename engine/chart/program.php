@@ -6,7 +6,8 @@ require_once dirname(__FILE__) . "/../imap.php";
 
 $action = @$_GET["action"];
 if ($action == 1) { //Imap check messages
-    echo "{}";die;//todo chwilowo wylaczone jak sie naprawi serwer to odpalic
+    echo "{}";
+    die;//todo chwilowo wylaczone jak sie naprawi serwer to odpalic
     $imap = new Imap($IMAP_IP, $IMAP_USER, $IMAP_PASS);
 
     $response = [];
@@ -54,11 +55,11 @@ if ($action == 1) { //Imap check messages
             $pid = 0;
             $pmpw = 0;
         }
-        
+
         if ($type == 3) {
             $done = 1;
         }
-        
+
         if ($type == 1) { //Cycle time
             $db->query("UPDATE `programs` SET `status` = '$type' WHERE `id` = '$pid'");
             $cycle_time = trim(preg_replace('/\s\s+/', '', substr($email_body, $cycle_time_pos + strlen("Cycle Time : "), strlen($email_body) - $cycle_time_pos)));
@@ -81,23 +82,56 @@ if ($prId == null) {
     die("Brak id programu!");
 }
 
-$qprogram = $db->query("SELECT * FROM `programs` WHERE `id` = '$prId'");
+$qprogram = $db->prepare("SELECT * FROM `programs` WHERE `id` = :prId");
+$qprogram->bindValue(':prId', $prId, PDO::PARAM_INT);
+$qprogram->execute();
+
 $program = $qprogram->fetch();
 
-echo '<div class="alert alert-info"><div style="float: right;"><a href=""><i style="cursor: pointer;" class="fa fa-external-link"></i></a></div><div style="clear: both;"></div></div>';
-echo '<table class="table table-striped"><tbody>';
-echo '<tr><td>Nazwa: </td><td>' . $program["name"] . '</td></tr>';
-echo '<tr><td>Nazwa materiału: </td><td>' . $program["material_name"] . '</td></tr>';
-echo '<tr><td>Typ materiału: </td><td>' . $program["material_type"] . '</td></tr>';
-echo '<tr><td>Grubość: </td><td>' . $program["thickness"] . '</td></tr>';
-echo '<tr><td>PiercePosition: </td><td>' . $program["pierceposition"] . '</td></tr>';
-echo '<tr><td>Długość rury: </td><td>' . $program["pipelength"] . ' * ' . @ceil($program["totallength"] / $program["pipelength"]) . '</td></tr>';
-echo '<tr><td>Długość całkowita: </td><td>' . $program["totallength"] . '</td></tr>';
-echo '<tr><td>WidthHeightDiameter: </td><td>' . $program["widthheightdiameter"] . '</td></tr>';
-echo '<tr><td>WidthHeight: </td><td>' . $program["widthheight"] . '</td></tr>';
-echo '<tr><td>Diameter: </td><td>' . $program["diameter"] . '</td></tr>';
-echo '<tr><td>CPipeCornerR: </td><td>' . $program["cpipecornerr"] . '</td></tr>';
-echo '<tr><td>Ilość programów: </td><td>' . $program["multiplier"] . '</td></tr>';
-echo '<tr><td>Utilization: </td><td>' . $program["utilization"] . '</td></tr>';
-echo '<tr><td>Czas operacji: </td><td>' . _secToTime($program["timestudy"], ":") . '</td></tr>';
-echo '</tbody></table>';
+$mpwQuery = $db->prepare('
+  SELECT
+  m.name as material_name,
+  mpw.thickness,
+  mpw.radius,
+  mpw.atribute
+  FROM
+  cutting_queue_details qd
+  LEFT JOIN oitems o ON o.id = qd.oitem_id
+  LEFT JOIN mpw mpw ON mpw.id = o.mpw
+  LEFT JOIN material m ON m.id = mpw.material
+  WHERE
+  qd.cutting_queue_id = :cuttingQueueId
+  LIMIT 1
+');
+$mpwQuery->bindValue(':cuttingQueueId', $program['new_cutting_queue_id'], PDO::PARAM_INT);
+$mpwQuery->execute();
+
+$mpwData = $mpwQuery->fetch();
+?>
+
+<div class="alert alert-info">
+    <div style="float: right;"><a href=""><i style="cursor: pointer;" class="fa fa-external-link"></i></a></div>
+    <div style="clear: both;"></div>
+</div>
+<table class="table table-striped">
+    <tbody>
+    <tr>
+        <td>Nazwa:</td>
+        <td><?= $program["name"] ?></td>
+    </tr>
+    <tr>
+        <td>Nazwa materiału:</td>
+        <td><?= $mpwData["material_name"] ?></td>
+    </tr>
+    <tr>
+        <td>Grubość:</td>
+        <td><?= $mpwData["thickness"] ?></td>
+    </tr>
+    <?php if ($mpwData["radius"] > 0): ?>
+        <tr>
+            <td>Promień:</td>
+            <td><?= $mpwData["radius"] ?></td>
+        </tr>
+    <?php endif; ?>
+    </tbody>
+</table>

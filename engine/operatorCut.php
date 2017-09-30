@@ -30,9 +30,9 @@ function getPrograms()
       p.`id`,
       p.`mpw`,
       p.`cut`,
-      p.`multiplier`,
       p.`position`,
-      cq.quantity
+      cq.sheet_count as quantity,
+      p.new_cutting_queue_id
       FROM `programs` p
       LEFT JOIN cutting_queue cq ON cq.id = p.new_cutting_queue_id
       WHERE p.`status` < 1 
@@ -53,7 +53,6 @@ function getPrograms()
             }
         }
 
-
         if ($program["quantity"] > 0) {
             $pieces += $program["quantity"];
         }
@@ -62,25 +61,13 @@ function getPrograms()
             $program["cut"] = 0;
         }
 
-        if ($program["multiplier"] > 1) {
-            $position = explode("|", $program["position"]);
-            for ($i = 0; $i < $program["multiplier"]; $i++) {
-                $str = '<li class="dd-item dd3-item" data-id="' . $program["id"] . '"><div class="dd-handle dd3-handle"></div><div class="dd3-content">' . str_replace('.', '+', $program["name"]) . ' #' . ($i + 1) . ' <div style="float: right; cursor: pointer;" class="bPinfo">' . $program["cut"] . '/' . $pieces . ' <i class="fa fa-info-circle"></i></div></div></li>';
-                if (array_key_exists($i, $position) == true && array_key_exists($position[$i], $queue) == false) {
-                    $queue[$position[$i]] = $str;
-                } else {
-                    array_push($ooq, $str);
-                }
-            }
-        } else {
-            $position = intval($program["position"]);
-            $str2 = '<li class="dd-item dd3-item" data-id="' . $program["id"] . '"><div class="dd-handle dd3-handle"></div><div class="dd3-content">' . $program["name"] . ' <div style="float: right; cursor: pointer;" class="bPinfo">' . $program["cut"] . '/' . $pieces . ' <i class="fa fa-info-circle"></i></div></div></li>';
+        $position = intval($program["position"]);
+        $str2 = '<li class="dd-item dd3-item" data-id="' . $program["id"] . '"><div class="dd-handle dd3-handle"></div><div class="dd3-content">' . $program["name"] . ' <div style="float: right; cursor: pointer;" class="bPinfo">' . $program["cut"] . '/' . $pieces . ' <i class="fa fa-info-circle"></i></div></div></li>';
 
-            if (array_key_exists($position, $queue) == false) {
-                $queue[$position] = $str2;
-            } else {
-                array_push($ooq, $str2);
-            }
+        if (array_key_exists($position, $queue) == false) {
+            $queue[$position] = $str2;
+        } else {
+            array_push($ooq, $str2);
         }
     }
 

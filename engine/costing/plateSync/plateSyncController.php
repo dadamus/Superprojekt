@@ -12,17 +12,20 @@
 class PlateSyncController
 {
     /**
-     * @param array $programs
+     * @param array $data
      */
-    public function syncAction(array $programs)
+    public function syncAction(array $data)
     {
         global $db;
+
+        $programs = $data['programs'];
+        $materials = reset($data['materials']);
 
         foreach ($programs as $program) {
             $sheetName = str_replace(['+', ' '], ['.', '.'], urldecode($program["SheetName"]));
             $sheetCount = $program["SheetCount"];
             $details = $program["Details"];
-
+            $sheetNumber = $program["SheetId"];
             $queryBuilder = new sqlBuilder(sqlBuilder::INSERT, 'cutting_queue');
             $queryBuilder->bindValue('quantity', $sheetCount, PDO::PARAM_INT);
             $queryBuilder->bindValue('sheet_name', $sheetName, PDO::PARAM_STR);
@@ -48,7 +51,66 @@ class PlateSyncController
             $programQuery->bindValue('new_cutting_queue_id', $cuttingQueueId, PDO::PARAM_INT);
             $programQuery->bindValue('name', $sheetName, PDO::PARAM_STR);
             $programQuery->flush();
+
+            $programId = $db->lastInsertId();
+
+            $materialName = "";
+            $materialRow = current($materials);
+
+            if ($materialRow['UsedSheetNum'] <= 0) {
+                next($materials);
+            }
+
+            $materialId = key($materials);
+            $materials[$materialId]['UsedSheetNum']--;
+            $materialName = $materialRow['SheetCode'];
+
+            $this->getImg($materialName, $programId, $sheetNumber);
         }
+    }
+
+    /**
+     * @param string $sheetName
+     * @param int $programId
+     * @param int $sheetNumber
+     * @return bool
+     */
+    private function getImg(string $sheetName, int $programId, int $sheetNumber): bool
+    {
+        global $data_src, $db;
+
+        try {
+            $plateQuery = $db->prepare('SELECT id FROM plate_warehouse WHERE SheetName = :sheetName');
+            $plateQuery->bindValue(':sheetName', $sheetName, PDO::PARAM_STR);
+            $plateQuery->execute();
+
+            $plateData = $plateQuery->fetch();
+            if ($plateData === false) {
+                return false;
+            }
+
+            $filePath = $data_src . 'temp/' . $sheetNumber . '.bmp';
+            $uploadPath = $data_src . 'program_image/';
+
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+
+            $newName = $programId . '_' . date('Y_m_d_H_i_s') . '_' . rand() . '.bmp';
+            $newPath = $uploadPath . $newName;
+
+            rename($filePath, $newPath);
+            $sqlBuilder = new sqlBuilder(sqlBuilder::INSERT, 'sheet_image');
+            $sqlBuilder->bindValue('plate_warehouse_id', $plateData['id'], PDO::PARAM_INT);
+            $sqlBuilder->bindValue('program_id', $programId, PDO::PARAM_INT);
+            $sqlBuilder->bindValue('src', $newPath, PDO::PARAM_STR);
+            $sqlBuilder->bindValue('upload_date', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+            $sqlBuilder->flush();
+        } catch (\Exception $ex) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -56,7 +118,7 @@ class PlateSyncController
      * @return int
      * @throws Exception
      */
-    private function getOItemIdByDetailName(string $detailName): int
+    private function getOItemIdByDetailName(string $detailName): ?int
     {
         global $db;
 
