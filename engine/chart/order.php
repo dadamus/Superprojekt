@@ -246,9 +246,11 @@ $status = getOrderStatus($order["status"])
 
                                     $dct_des2 = '<span ' . $descStyle . '>' . $oitem["dct"] . '/' . $pcr . '</span>';
 
+                                    $bar2_size = 0;
                                     if ($pcr > 0) {
                                         $bar2_size = $oitem["dct"] * 100 / $pcr;
                                     }
+
                                     $bar22_size = 0;
                                     $active2 = "active";
                                     if ($bar2_size >= 100) {
