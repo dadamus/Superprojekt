@@ -120,6 +120,19 @@ $mpwQuery->execute();
 
 $mpwData = $mpwQuery->fetch();
 
+$listQuery = $db->prepare('
+    SELECT
+    l.*
+    FROM
+    cutting_queue_list l
+    WHERE
+    l.cutting_queue_id = :qid
+');
+$listQuery->bindValue(':qid', $program['new_cutting_queue_id'], PDO::PARAM_INT);
+$listQuery->execute();
+
+$listData = $listQuery->fetchAll(PDO::FETCH_ASSOC);
+
 $programName = str_replace('.', '+', $program['name']);
 $image = str_replace('/var/www/html', '', $program['image_src']);
 ?>
@@ -165,13 +178,13 @@ $image = str_replace('/var/www/html', '', $program['image_src']);
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($mpwData['sheet_count'] as $sheet): ?>
+    <?php foreach ($listData as $listItem): ?>
     <tr>
         <td>
-            <?= $sheet ?>
+            <?= $listItem['lp'] ?>
         </td>
         <td>
-            nie wiem
+            <?= $listItem['state'] ?>
         </td>
     </tr>
     <?php endforeach; ?>
