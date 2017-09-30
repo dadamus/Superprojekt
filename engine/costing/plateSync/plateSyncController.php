@@ -19,7 +19,8 @@ class PlateSyncController
         global $db;
 
         $programs = $data['programs'];
-        $materials = reset($data['materials']);
+        $materials = $data['materials'];
+        $materialId = 0;
 
         foreach ($programs as $program) {
             $sheetName = str_replace(['+', ' '], ['.', '.'], urldecode($program["SheetName"]));
@@ -55,14 +56,13 @@ class PlateSyncController
             $programId = $db->lastInsertId();
 
             $materialName = "";
-            $materialRow = current($materials);
+            $materialRow = $materials[$materialId];
 
             if (@$materialRow['UsedSheetNum'] <= 0) {
-                next($materials);
+                $materialId++;
             }
 
-            $materialId = key($materials);
-            $materials[$materialId]['UsedSheetNum']--;
+            $materials[$materialId]['UsedSheetNum'] -= 1;
             $materialName = $materialRow['SheetCode'];
 
             $this->getImg($materialName, $programId, $sheetNumber);
