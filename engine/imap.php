@@ -33,7 +33,7 @@ class Imap {
 
     public function getMail($date = '22 August 2017') {
         $content = [];
-        $emails = imap_search($this->imap, 'SINCE "' . $date . '"');
+        $emails = imap_search($this->imap, 'SINCE "' . $date . '" NEW');
         if (is_array($emails) || is_object($emails)) {
             foreach ($emails as $eid) {
                 $header = imap_fetch_overview($this->imap, $eid, 0);
