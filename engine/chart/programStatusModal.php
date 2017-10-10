@@ -2,9 +2,10 @@
 $firstDetail = reset($listItems);
 $state = $firstDetail['state'];
 
-$firstState = $state;
-if ($state > 0) {
-    $firstState = $state - 1;
+$firstState = $state - 1;
+
+if ($firstState < 0) {
+    $firstState = 0;
 }
 
 $maxState = count($listStatus) - 1;
