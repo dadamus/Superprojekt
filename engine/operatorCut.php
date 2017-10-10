@@ -162,4 +162,78 @@ function getPrograms()
         });
     });
 
+    $("#pcontent").on('click', '.ajax-modal', function (e) {
+        //Modal do zmiany statusu
+        e.preventDefault();
+
+        App.blockUI();
+        var url = $(this).attr('href');
+        $.ajax({
+            method: 'GET',
+            url: url
+        }).done(function (response) {
+            $('#modal-container').html(response).find('#status-modal').modal('show');
+        }).always(function () {
+            App.unblockUI();
+        });
+    });
+    $(document).on('change', 'select[name="list-state"]', function () {
+        //Tu przy statusie 2,3 otwieramy pole do wpisanie sztuk detali
+        var $statusSelect = $('select[name="list-state"]');
+        var state = $statusSelect.val();
+
+        var $detailsRow = $('.list-details');
+
+        if (state == 2 || state == 3) {
+            $detailsRow.show();
+        } else {
+            $detailsRow.hide();
+            return true;
+        }
+
+    });
+    $(document).on('click', '.submit-status-change', function () {
+        //A tu juz zmiana statusu
+        var listId = $(this).data('list-id');
+        var $statusSelect = $('select[name="list-state"]');
+        var state = $statusSelect.val();
+        var optionText = $statusSelect.find('option[value="' + state + '"]').text();
+
+        var postData = "state=" + state + "&list-id=" + listId;
+
+        //Liczmy detale
+        var details = "";
+        var $detailsRow = $('.list-details');
+
+        $detailsRow.find('.detail-count').each(function () {
+            var detailId = $(this).data('detail-id');
+
+            if (details !== "") {
+                details += ",";
+            }
+
+            details += detailId;
+            postData += "&detail_" + detailId + "=" + $(this).val();
+        });
+
+        postData += "&details=" + details;
+
+        $('#status-modal').modal('hide');
+        App.blockUI();
+
+        $.ajax({
+            method: 'POST',
+            url: '/engine/chart/program.php?action=3',
+            data: postData
+        }).done(function () {
+            toastr.success('Status zmieniony!');
+            //Zmiamy status zeby widzieli ladne
+            $('.list-item-state[data-item-id="' + listId + '"]').html(optionText);
+        }).error(function () {
+            toastr.error('Wystąpił błąd!');
+            $('#status-modal').modal('hide');
+        }).always(function () {
+            App.unblockUI();
+        });
+    });
 </script>

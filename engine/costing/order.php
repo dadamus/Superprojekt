@@ -165,6 +165,9 @@ if ($action == 5) {
             mpc.type as mpc_type,
             mpc.mtype,
             mpc.thickness as mpc_thickness,
+            mpc.d_last_price_n as detailPriceAuto,
+            pc.priceset as detailPriceProfile,
+            pspcc.price_kom_n as splate_all_cost_netto as detailPriceSinglePlate,
             mpc.wh,
             d.type as detail_type,
             d.src as detail_name
@@ -173,6 +176,8 @@ if ($action == 5) {
             LEFT JOIN projects p ON p.id = mpw.pid
             LEFT JOIN mpc mpc ON mpc.wid = mpw.id
             LEFT JOIN details d ON d.id = mpw.did
+            LEFT JOIN profile_costing pc ON pc.id = mpw.mcp
+            LEFT JOIN plate_singlePartCosting pspc ON pspc.detal_code = mpw.code
             WHERE
             mpw.id = :mpw
         ");
@@ -198,7 +203,8 @@ if ($action == 5) {
                 mpc.wh,
                 d.type as detail_type,
                 d.src as detail_name,
-                m.name as material_name
+                m.name as material_name,
+                s.price as detailPrice
                 FROM
                 plate_multiPartDetails mpd
                 LEFT JOIN plate_multiPartCostingDetailsSettings s ON s.directory_id = mpd.dirId AND s.detaild_id = mpd.did
@@ -222,6 +228,19 @@ if ($action == 5) {
 
         $main = "";
         $dim = "";
+        $price = 0;
+
+        if (isset($data['detailPrice'])) {
+            $price = $data['detailPrice'];
+        } else {
+            if ($data['detailPriceAuto'] > 0) {
+                $price = $data['detailPriceAuto'];
+            } else if ($data['detailPriceProfile'] > 0) {
+                $price = $data['detailPriceProfile'];
+            } else if ($data['detailPriceSinglePlate'] > 0) {
+                $price = $data['detailPriceSinglePlate'];
+            }
+        }
 
         $new_type = 2;
         if ($data["type"] == 1) { //Profil
@@ -325,7 +344,17 @@ if ($action == 5) {
             make_dir($dpath);
         }
 
-        $db->query("INSERT INTO `oitems` (`oid`, `mpw`, `name`, `code`, `src`, `path`, `did`) VALUES ('$oid', '$item', '$nameWithoutExt', '$newName', '$_src', '$dpath', $didId)");
+        $oitemQuery = new sqlBuilder(sqlBuilder::INSERT, 'oitems');
+        $oitemQuery->bindValue('oid', $oid, PDO::PARAM_INT);
+        $oitemQuery->bindValue('mpw', $item, PDO::PARAM_INT);
+        $oitemQuery->bindValue('name', $nameWithoutExt, PDO::PARAM_STR);
+        $oitemQuery->bindValue('code', $newName, PDO::PARAM_STR);
+        $oitemQuery->bindValue('src', $_src, PDO::PARAM_STR);
+        $oitemQuery->bindValue('path', $dpath, PDO::PARAM_STR);
+        $oitemQuery->bindValue('did', $didId, PDO::PARAM_INT);
+        $oitemQuery->bindValue('price', $price, PDO::PARAM_STR);
+        $oitemQuery->flush();
+
         $db->query("UPDATE `mpw` SET `type` = '$new_type' WHERE `id` = '$item'");
         $db->query("UPDATE `order` SET `status` = '2' WHERE `id` = '$oid'");
     }

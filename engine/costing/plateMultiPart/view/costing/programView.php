@@ -280,7 +280,7 @@ $mainMaterial = $mainProgram->getMaterial();
                                             data-container="body"
                                             data-trigger="hover"
                                             data-placement="top"
-                                            data-content="Kliknij by edytowac"
+                                            data-content="Kliknij obrazek by edytowac"
                                             data-original-title=""
                                     >
                                     <canvas id="dotConnections" width="<?= $imageSize["width"] ?>px"

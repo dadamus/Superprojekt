@@ -253,6 +253,10 @@
                     $mb = 3;
                     include dirname(__FILE__) . '/orderList.php';
                     break;
+                case 32:
+                    $mb = 3;
+                    include dirname(__FILE__) . '/wz.php';
+                    break;
                 case 200: //Calendar
                     calendar_body();
                     $active = 0;

@@ -60,21 +60,25 @@ class PlateSyncController
                 $programListQuery->bindValue('cutting_queue_id', $cuttingQueueId, PDO::PARAM_INT);
                 $programListQuery->bindValue('state', 0, PDO::PARAM_INT);
                 $programListQuery->flush();
-            }
 
-            foreach ($details as $detail) {
-                $detailName = $detail["PartName"];
-                $quantity = $detail["Quantity"];
+                $listId = $db->lastInsertId();
 
-                $oitemId = $this->getOItemIdByDetailName($detailName);
+                foreach ($details as $detail) {
+                    $detailName = $detail["PartName"];
+                    $quantity = $detail["Quantity"];
+                    $RectangleAreaW = $detail["RectangleAreaW"];
 
-                $detailQuery = new sqlBuilder(sqlBuilder::INSERT, 'cutting_queue_details');
-                $detailQuery->bindValue('cutting_queue_id', $cuttingQueueId, PDO::PARAM_INT);
-                $detailQuery->bindValue('oitem_id', $oitemId, PDO::PARAM_INT);
-                $detailQuery->bindValue('qantity', $quantity, PDO::PARAM_INT);
-                $detailQuery->bindValue('plate_warehouse_id', $plateData['id'], PDO::PARAM_INT);
-                $detailQuery->bindValue('LaserMatName', $program['LaserMatName'], PDO::PARAM_STR);
-                $detailQuery->flush();
+                    $oitemId = $this->getOItemIdByDetailName($detailName);
+
+                    $detailQuery = new sqlBuilder(sqlBuilder::INSERT, 'cutting_queue_details');
+                    $detailQuery->bindValue('cutting_queue_list_id', $listId, PDO::PARAM_INT);
+                    $detailQuery->bindValue('oitem_id', $oitemId, PDO::PARAM_INT);
+                    $detailQuery->bindValue('qantity', $quantity, PDO::PARAM_INT);
+                    $detailQuery->bindValue('plate_warehouse_id', $plateData['id'], PDO::PARAM_INT);
+                    $detailQuery->bindValue('LaserMatName', $program['LaserMatName'], PDO::PARAM_STR);
+                    $detailQuery->bindValue('RectangleAreaW', $RectangleAreaW, PDO::PARAM_STR);
+                    $detailQuery->flush();
+                }
             }
 
             $programQuery = new sqlBuilder(sqlBuilder::INSERT, 'programs');

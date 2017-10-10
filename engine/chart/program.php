@@ -4,6 +4,16 @@ require_once dirname(__FILE__) . "/../protect.php";
 require_once dirname(__FILE__) . "/../../config.php";
 require_once dirname(__FILE__) . "/../imap.php";
 
+$listStatus = [
+    0 => 'Oczekuje',
+    1 => 'w trakcje',
+    2 => 'Do potwierdzenia',
+    3 => 'Wycięto',
+    4 => 'Wstrzymany',
+    5 => 'Anulowany',
+    6 => 'Nie rozpoznany',
+];
+
 $action = @$_GET["action"];
 if ($action == 1) { //Imap check messages
     echo "{}";
@@ -75,6 +85,129 @@ if ($action == 1) { //Imap check messages
     $ndate = date("j F Y", $d);
     $db->query("UPDATE `settings` SET `value` = '$ndate' WHERE `name` = 'email_last_date'");
     die(json_encode($response));
+} else if ($action == 2) { //Zmiana statusu z listy
+    $listItemQuery = $db->prepare('
+        SELECT
+        d.id as queue_detail_id,
+        d.qantity,
+        d.cutting,
+        l.state,
+        l.id as list_id,
+        det.src
+        FROM
+        cutting_queue_details d
+        LEFT JOIN oitems oitems ON oitems.id = d.oitem_id
+        LEFT JOIN details det ON det.id = oitems.did
+        LEFT JOIN cutting_queue_list l ON l.id = d.cutting_queue_list_id
+        WHERE
+        l.lp = :lp
+        AND l.cutting_queue_id = :cqid
+    ');
+    $listItemQuery->bindValue(':lp', $_GET['lp'], PDO::PARAM_INT);
+    $listItemQuery->bindValue(':cqid', $_GET['p'], PDO::PARAM_INT);
+    $listItemQuery->execute();
+
+    $listItems = $listItemQuery->fetchAll(PDO::FETCH_ASSOC);
+    include dirname(__FILE__) . '/programStatusModal.php';
+    die;
+} else if ($action == 3) { //Zapis zmiany statusu
+    $newState = $_POST['state'];
+    $listId = $_POST['list-id'];
+    $detailCount = [];
+
+    $checkOldState = $db->prepare('
+        SELECT 
+        state,
+        cutting_queue_id
+        FROM
+        cutting_queue_list
+        WHERE 
+        id = :listId
+    ');
+    $checkOldState->bindValue(':listId', $listId, PDO::PARAM_INT);
+    $checkOldState->execute();
+
+    $oldStateData = $checkOldState->fetch();
+    $oldState = $oldStateData['state'];
+
+    $details = explode(',', $_POST['details']);
+    foreach ($details as $detailId) {
+        $oitemDataQuery = $db->prepare('
+            SELECT
+            d.oitem_id,
+            o.dct,
+            o.stored,
+            d.cutting
+            FROM 
+            cutting_queue_details d
+            LEFT JOIN oitems o ON o.id = d.oitem_id
+            WHERE
+            d.id = :qdid
+        ');
+        $oitemDataQuery->bindValue(':qdid', $detailId, PDO::PARAM_INT);
+        $oitemDataQuery->execute();
+        $oitemData = $oitemDataQuery->fetch();
+
+        $cutting = $_POST['detail_' . $detailId];
+        if ($newState == 2 || $newState == 3) {
+            $cuttingUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'cutting_queue_details');
+            $cuttingUpdate->addCondition('id = ' . $detailId);
+            $cuttingUpdate->bindValue('cutting', $cutting, PDO::PARAM_INT);
+            $cuttingUpdate->flush();
+        }
+
+        if ($newState == 3) {
+            $oitemData['dct'] += $cutting;
+            $oitemData['stored'] += $cutting;
+
+            $oitemUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'oitems');
+            $oitemUpdate->addCondition('id = ' . $oitemData['oitem_id']);
+            $oitemUpdate->bindValue('dct', $oitemData['dct'], PDO::PARAM_INT);
+            $oitemUpdate->bindValue('stored', $oitemData['stored'], PDO::PARAM_INT);
+            $oitemUpdate->flush();
+        }
+
+        if ($oldState == 3) {
+            $oitemData['dct'] -= $oitemData['cutting'];
+            $oitemData['stored'] -= $oitemData['cutting'];
+
+            $oitemUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'oitems');
+            $oitemUpdate->addCondition('id = ' . $oitemData['oitem_id']);
+            $oitemUpdate->bindValue('dct', $oitemData['dct'], PDO::PARAM_INT);
+            $oitemUpdate->bindValue('stored', $oitemData['stored'], PDO::PARAM_INT);
+            $oitemUpdate->flush();
+        }
+    }
+
+    $stateUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'cutting_queue_list');
+    $stateUpdate->bindValue('state', $newState, PDO::PARAM_INT);
+    $stateUpdate->addCondition('id = ' . $listId);
+    $stateUpdate->flush();
+
+    $checkListQuery = $db->prepare('
+      SELECT COUNT(*) as wrongState
+      FROM cutting_queue_list
+      WHERE
+      state not in (5, 3)
+      AND cutting_queue_id = :cqid
+    ');
+    $checkListQuery->bindValue(':cqid', $oldStateData['cutting_queue_id'], PDO::PARAM_INT);
+    $checkListQuery->execute();
+
+    $countData = $checkListQuery->fetch();
+
+    $mainListUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'programs');
+    $mainListUpdate->addCondition('new_cutting_queue_id = ' . $oldStateData['cutting_queue_id']);
+
+    if ($countData['wrongState'] == 0) {
+        $mainListUpdate->bindValue('status', 1, PDO::PARAM_INT);
+        $mainListUpdate->flush();
+    } else {
+        $mainListUpdate->bindValue('status', 0, PDO::PARAM_INT);
+        $mainListUpdate->flush();
+    }
+
+    die;
 }
 
 $prId = @$_GET["prId"];
@@ -99,6 +232,7 @@ $program = $qprogram->fetch();
 
 $mpwQuery = $db->prepare('
   SELECT
+  cq.id,
   pw.SheetCode,
   pw.MaterialName,
   tm.Thickness,
@@ -108,11 +242,12 @@ $mpwQuery = $db->prepare('
   qd.LaserMatName
   FROM
   cutting_queue_details qd
-  LEFT JOIN cutting_queue cq ON cq.id = qd.cutting_queue_id
+  LEFT JOIN cutting_queue_list l ON l.id = qd.cutting_queue_list_id
+  LEFT JOIN cutting_queue cq ON cq.id = l.cutting_queue_id
   LEFT JOIN plate_warehouse pw ON pw.id = qd.plate_warehouse_id
   LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
   WHERE
-  qd.cutting_queue_id = :cuttingQueueId
+  cq.id = :cuttingQueueId
   LIMIT 1
 ');
 $mpwQuery->bindValue(':cuttingQueueId', $program['new_cutting_queue_id'], PDO::PARAM_INT);
@@ -132,16 +267,6 @@ $listQuery->bindValue(':qid', $program['new_cutting_queue_id'], PDO::PARAM_INT);
 $listQuery->execute();
 
 $listData = $listQuery->fetchAll(PDO::FETCH_ASSOC);
-
-$listStatus = [
-    0 => 'Oczekuje',
-    1 => 'w trakcje',
-    2 => 'Do potwierdzenia',
-    3 => 'Wycięto',
-    4 => 'Wstrzymany',
-    5 => 'Anulowany',
-    6 => 'Nie rozpoznany',
-];
 
 $programName = str_replace('.', '+', $program['name']);
 $image = str_replace('/var/www/html', '', $program['image_src']);
@@ -190,17 +315,22 @@ $image = str_replace('/var/www/html', '', $program['image_src']);
     </thead>
     <tbody>
     <?php foreach ($listData as $listItem): ?>
-    <tr>
-        <td>
-            <?= $listItem['lp'] ?>
-        </td>
-        <td>
-            <?= $listStatus[$listItem['state']] ?>
-        </td>
-        <td>
-
-        </td>
-    </tr>
+        <tr>
+            <td>
+                <?= $listItem['lp'] ?>
+            </td>
+            <td class="list-item-state" data-item-id="<?= $listItem['id'] ?>">
+                <?= $listStatus[$listItem['state']] ?>
+            </td>
+            <td>
+                <a href="<?= '/engine/chart/program.php?action=2&p=' . $mpwData['id'] . '&lp=' . $listItem['lp'] ?>"
+                   data-toggle="modal" class="ajax-modal">
+                    <i class="fa fa-pencil"></i>
+                </a>
+            </td>
+        </tr>
     <?php endforeach; ?>
     </tbody>
 </table>
+
+<div id="modal-container"></div>

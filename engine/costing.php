@@ -878,7 +878,8 @@ if (@$_GET["plist"] != null) {
                 $.ajax({
                     url: "<?php echo $site_path; ?>/engine/costing/order.php?id=5&oid=" + oid + "&items=" + items
                 }).done(function () {
-                    //location.reload();
+                    $("#addToOrder").modal('hide');
+                    toastr.success('Dodałem!');
                 });
             }
         });

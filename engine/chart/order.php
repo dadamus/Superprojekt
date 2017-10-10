@@ -145,6 +145,12 @@ $status = getOrderStatus($order["status"])
                                     <i class="fa fa-list"></i>
                                     Lista detali
                                 </div>
+                                <div class="actions">
+                                    <a href="/wz/create/<?= $order['id'] ?>/"
+                                       class="btn btn-default" style="margin-right: 10px;">
+                                        Generuj WZ <i class="fa fa-globe"></i>
+                                    </a>
+                                </div>
                             </div>
                             <div class="portlet-body">
                                 <?php
@@ -167,7 +173,9 @@ $status = getOrderStatus($order["status"])
                                 ");
                                 $odq->bindValue(":oid", $oid, PDO::PARAM_INT);
                                 $odq->execute();
-                                foreach ($odq->fetchAll(PDO::FETCH_ASSOC) as $oitem) {
+                                ?>
+                                <?php foreach ($odq->fetchAll(PDO::FETCH_ASSOC) as $oitem): ?>
+                                    <?php
                                     $mpw_id = $oitem["mpw"];
                                     $qmpc = $db->query("SELECT `mtype`, `atributes`, `d_qty`, `thickness` FROM `mpc` WHERE `wid` = '$mpw_id'");
                                     $mpc = $qmpc->fetch();
@@ -181,126 +189,245 @@ $status = getOrderStatus($order["status"])
                                         ");
                                         $mpc = $qmpc->fetch();
                                     }
+                                    ?>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="portlet yellow-gold box">
+                                                <div class="portlet-title">
+                                                    <div class="caption"><?= $oitem["code"] ?></div>
+                                                    <div class="actions">
+                                                        <a href="<?= $site_path ?>/detail/<?= $did ?>/"
+                                                           class="btn btn-default" style="margin-right: 10px;">
+                                                            Karta detalu <i class="fa fa-mail-forward"></i>
+                                                        </a>
+                                                        <a href="javascript:;" class="btn btn-default OrDB"
+                                                           id="<?= $oitem[" mpw"] ?>_odba">
+                                                        Usuń <i class="fa fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="portlet-body">
+                                                    <div class="col-md-6">
+                                                        <div class="row static-info">
+                                                            <div class="col-md-5 name">Rodzaj blachy:</div>
+                                                            <div class="col-md-7 value"><?= $mpc["mtype"] ?></div>
+                                                        </div>
+                                                        <div class="row static-info">
+                                                            <div class="col-md-5 name">Grubość:</div>
+                                                            <div class="col-md-7 value"><?= $mpc["thickness"] ?></div>
+                                                        </div>
+                                                        <div class="row static-info">
+                                                            <div class="col-md-5 name">Parametry:</div>
+                                                            <div class="col-md-7 value">
+                                                                <?php //Checkboxy
+                                                                if (isset($mpc["atribute"])) {
+                                                                    $attributes = json_decode($mpc["atribute"]);
+                                                                    if (count($attributes) > 0) {
+                                                                        foreach ($attributes as $attribute) {
+                                                                            echo _getChecboxText($attribute) . " ";
+                                                                        }
+                                                                    }
+                                                                }
+                                                                ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row static-info">
+                                                            <div class="col-md-5 name">Ilość sztuk:</div>
+                                                            <div class="col-md-7 value"><?= $mpc["d_qty"] ?></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <?php
+                                                        //production info
+                                                        $pcr = 0;
 
-                                    echo '<div class="row"><div class="col-md-12"><div class="portlet yellow-gold box">';
-                                    echo '<div class="portlet-title"><div class="caption">' . $oitem["code"] . '</div><div class="actions"><a href="' . $site_path . '/detail/' . $did . '/" class="btn btn-default" style="margin-right: 10px;">Karta detalu <i class="fa fa-mail-forward"></i></a><a href="javascript:;" class="btn btn-default OrDB" id="' . $oitem["mpw"] . '_odba">Usuń <i class="fa fa-trash"></i></a></div></div><div class="portlet-body">';
-                                    echo '<div class="col-md-6">';
-                                    echo '<div class="row static-info"><div class="col-md-5 name">Rodzaj blachy:</div><div class="col-md-7 value">' . $mpc["mtype"] . '</div></div>';
-                                    echo '<div class="row static-info"><div class="col-md-5 name">Grubość:</div><div class="col-md-7 value">' . $mpc["thickness"] . '</div></div>';
-                                    echo '<div class="row static-info"><div class="col-md-5 name">Parametry:</div><div class="col-md-7 value">';
-                                    //Checkboxy
-                                    if (isset($mpc["atribute"])) {
-                                        $attributes = json_decode($mpc["atribute"]);
-                                        if (count($attributes) > 0) {
-                                            foreach ($attributes as $attribute) {
-                                                echo _getChecboxText($attribute) . " ";
-                                            }
-                                        }
-                                    }
-                                    echo '</div></div>';
-                                    echo '<div class="row static-info"><div class="col-md-5 name">Ilość sztuk:</div><div class="col-md-7 value">' . $mpc["d_qty"] . '</div></div>';
-                                    echo '</div>';
-                                    echo '<div class="col-md-6">';
-                                    //production info
-                                    $pcr = 0;
+                                                        $cprogram = $oitem["program"];
+                                                        $programs = explode("|", $cprogram);
 
-                                    $cprogram = $oitem["program"];
-                                    $programs = explode("|", $cprogram);
+                                                        $pval = array();
 
-                                    $pval = array();
+                                                        $programsQuery = $db->prepare('
+                                                          SELECT
+                                                          d.qantity,
+                                                          q.sheet_count,
+                                                          q.sheet_name,
+                                                          q.created_at,
+                                                          p.status
+                                                          FROM cutting_queue_details d
+                                                          LEFT JOIN cutting_queue_list l ON l.id = cutting_queue_list_id
+                                                          LEFT JOIN cutting_queue q ON q.id = l.cutting_queue_id
+                                                          LEFT JOIN programs p ON p.new_cutting_queue_id = q.id
+                                                          WHERE
+                                                          d.oitem_id = :oitemId
+                                                          AND p.status = 0
+                                                        ');
+                                                        $programsQuery->bindValue(':oitemId', $oid, PDO::PARAM_INT);
+                                                        $programsQuery->execute();
 
-                                    $programsQuery = $db->prepare('
-                                        SELECT
-                                        d.qantity,
-                                        q.sheet_count,
-                                        q.sheet_name,
-                                        q.created_at,
-                                        p.status
-                                        FROM cutting_queue_details d
-                                        LEFT JOIN cutting_queue q ON q.id = d.cutting_queue_id
-                                        LEFT JOIN programs p ON p.new_cutting_queue_id = q.id
-                                        WHERE
-                                        d.oitem_id = :oitemId
-                                        AND p.status = 0
-                                    ');
-                                    $programsQuery->bindValue(':oitemId', $oid, PDO::PARAM_INT);
-                                    $programsQuery->execute();
+                                                        $programs = [];
 
-                                    $programs = [];
+                                                        while ($program = $programsQuery->fetch()) {
+                                                            $pcr += $program["qantity"] * $program["sheet_count"];
+                                                            $programs[] = $program;
+                                                        }
 
-                                    while ($program = $programsQuery->fetch()) {
-                                        $pcr += $program["qantity"] * $program["sheet_count"];
-                                        $programs[] = $program;
-                                    }
+                                                        $descStyle = 'style="top: 0px; left: 40%; position:absolute;"';
+                                                        $pcr_des1 = '<span ' . $descStyle . '> ' . $pcr . '/' . $oitem["pieces"] . '</span>';
 
-                                    $descStyle = 'style="top: 0px; left: 40%; position:absolute;"';
-                                    $pcr_des1 = '<span ' . $descStyle . '> ' . $pcr . '/' . $oitem["pieces"] . '</span>';
+                                                        $bar1_size = $pcr * 100 / $oitem["pieces"];
+                                                        $bar12_size = 0;
+                                                        $active1 = "active";
+                                                        if ($bar1_size >= 100) {
+                                                            $bar1_size = $oitem["pieces"] * 100 / $pcr;
+                                                            $bar12_size = 100 - $bar1_size;
+                                                            $active1 = "";
+                                                        }
 
-                                    $bar1_size = $pcr * 100 / $oitem["pieces"];
-                                    $bar12_size = 0;
-                                    $active1 = "active";
-                                    if ($bar1_size >= 100) {
-                                        $bar1_size = $oitem["pieces"] * 100 / $pcr;
-                                        $bar12_size = 100 - $bar1_size;
-                                        $active1 = "";
-                                    }
+                                                        $dct_des2 = '<span ' . $descStyle . '>' . $oitem["dct"] . '/' . $pcr . '</span>';
 
-                                    $dct_des2 = '<span ' . $descStyle . '>' . $oitem["dct"] . '/' . $pcr . '</span>';
+                                                        $bar2_size = 0;
+                                                        if ($pcr > 0) {
+                                                            $bar2_size = $oitem["dct"] * 100 / $pcr;
+                                                        }
 
-                                    $bar2_size = 0;
-                                    if ($pcr > 0) {
-                                        $bar2_size = $oitem["dct"] * 100 / $pcr;
-                                    }
+                                                        $bar22_size = 0;
+                                                        $active2 = "active";
+                                                        if ($bar2_size >= 100) {
+                                                            $bar2_size = $pcr * 100 / $oitem["dct"];
+                                                            $bar22_size = 100 - $bar2_size;
+                                                            $active2 = "";
+                                                        }
 
-                                    $bar22_size = 0;
-                                    $active2 = "active";
-                                    if ($bar2_size >= 100) {
-                                        $bar2_size = $pcr * 100 / $oitem["dct"];
-                                        $bar22_size = 100 - $bar2_size;
-                                        $active2 = "";
-                                    }
+                                                        $bar3_max = $oitem["pieces"] - $oitem["dct"] + $oitem["stored"];
+                                                        $bar3_size = $oitem["stored"] * 100 / $bar3_max;
+                                                        $bar32_size = 0;
+                                                        $active3 = "active";
 
-                                    $bar3_max = $oitem["pieces"] - $oitem["dct"] + $oitem["stored"];
-                                    $bar3_size = $oitem["stored"] * 100 / $bar3_max;
-                                    $bar32_size = 0;
-                                    $active3 = "active";
+                                                        $str_des3 = '<span ' . $descStyle . '>' . $oitem["stored"] . '/' . $bar3_max . '</span>';
+                                                        ?>
+                                                        <div class="row static-info">
+                                                            <div class="col-md-2 name">Program:</div>
+                                                            <div class="col-md-10 value">
+                                                                <?= $pcr_des1 ?>
+                                                                <div class="progress progress-striped <?= $active1 ?>"
+                                                                     style="height: 20px;">
+                                                                    <div class="progress-bar progress-bar-success"
+                                                                         role="progressbar"
+                                                                         style="width: <?= $bar1_size ?>%"></div>
+                                                                    <div class="progress-bar progress-bar-warning"
+                                                                         role="progressbar"
+                                                                         style="width: <?= $bar12_size ?>%"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row static-info">
+                                                            <div class="col-md-2 name">Produkcja:</div>
+                                                            <div class="col-md-10 value"><?= $dct_des2 ?>
+                                                                <div class="progress progress-striped <?= $active2 ?>"
+                                                                     style="height: 20px;">
+                                                                    <div class="progress-bar progress-bar-success"
+                                                                         role="progressbar"
+                                                                         style="width: <?= $bar2_size ?>%"></div>
+                                                                    <div class="progress-bar progress-bar-warning"
+                                                                         role="progressbar"
+                                                                         style="width: <?= $bar22_size ?>%"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row static-info">
+                                                            <div class="col-md-2 name">Magazyn:</div>
+                                                            <div class="col-md-10 value"><?= $str_des3 ?>
+                                                                <div class="progress progress-striped <?= $active3 ?>"
+                                                                     style="height: 20px;">
+                                                                    <div class="progress-bar progress-bar-success"
+                                                                         role="progressbar"
+                                                                         style="width: <?= $bar3_size ?>%"></div>
+                                                                    <div class="progress-bar progress-bar-warning"
+                                                                         role="progressbar"
+                                                                         style="width: <?= $bar32_size ?>%"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div style="clear: both;"></div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="portlet">
+                                                                <div class="portlet-body">
+                                                                    <div class="note note-info">
+                                                                        <h4 class="block">Programy</h4>
+                                                                        <p>
+                                                                        <table class="table table-hover programList">
+                                                                            <thead>
+                                                                            <tr>
+                                                                                <th style="width: 10%;">Nazwa
+                                                                                </th>
+                                                                                <th style="width: 25%;">Data dodania
+                                                                                </th>
+                                                                                <th style="width: 30%;">
+                                                                                    Ilość sztuk detalu
+                                                                                </th>
+                                                                                <th style="width: 25%;">
+                                                                                    Sztuk programu
+                                                                                </th>
+                                                                                <th>
+                                                                                    Status
+                                                                                </th>
+                                                                                <th style="width: 10%;"></th>
+                                                                            </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                            <?php foreach ($programs as $program): ?>
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        <?= $program['sheet_name'] ?>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <?= $program['created_at'] ?>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <?= $program['qantity'] ?>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <?= $program['sheet_count'] ?>
+                                                                                    </td>
 
-                                    $str_des3 = '<span ' . $descStyle . '>' . $oitem["stored"] . '/' . $bar3_max . '</span>';
+                                                                                    <?php
+                                                                                    $status = 'Brak';
+                                                                                    switch ($program['status']) {
+                                                                                        case ProgramStatus::ZAPROGRAMOWANY:
+                                                                                            $status = 'Zaprogramowany';
+                                                                                            break;
+                                                                                        case ProgramStatus::WYCIETY:
+                                                                                            $status = 'Wycięty';
+                                                                                            break;
+                                                                                        case ProgramStatus::ANULOWANY:
+                                                                                            $status = 'Anulowany';
+                                                                                            break;
+                                                                                    }
+                                                                                    ?>
 
-                                    echo '<div class="row static-info"><div class="col-md-2 name">Program:</div><div class="col-md-10 value">' . $pcr_des1 . '<div class="progress progress-striped ' . $active1 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar1_size . '%"></div><div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar12_size . '%"></div></div></div></div>';
-                                    echo '<div class="row static-info"><div class="col-md-2 name">Produkcja:</div><div class="col-md-10 value">' . $dct_des2 . '<div class="progress progress-striped ' . $active2 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar2_size . '%"></div><div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar22_size . '%"></div></div></div></div>';
-                                    echo '<div class="row static-info"><div class="col-md-2 name">Magazyn:</div><div class="col-md-10 value">' . $str_des3 . '<div class="progress progress-striped ' . $active3 . '" style="height: 20px;"><div class="progress-bar progress-bar-success" role="progressbar" style="width: ' . $bar3_size . '%"></div><div class="progress-bar progress-bar-warning" role="progressbar" style="width: ' . $bar32_size . '%"></div></div></div></div>';
-                                    echo '</div>';
-                                    echo '<div style="clear: both;"></div>';
-                                    echo '<div class="row"><div class="col-md-12"><div class="portlet"><div class="portlet-body">';
-                                    echo '<div class="note note-info"><h4 class="block">Programy</h4><p><table class="table table-hover programList"><thead><tr><th style="width: 10%;">Nazwa</th><th style="width: 25%;">Data dodania</th><th style="width: 30%;">Ilość sztuk detalu</th><th style="width: 25%;">Sztuk programu</th><th>Status</th><th style="width: 10%;"></th></tr></thead><tbody>';
-                                    foreach ($programs as $program) {
-                                        echo '<tr>';
-                                        echo '<td>' . $program['sheet_name'] . '</td>';
-                                        echo '<td>' . $program['created_at'] . '</td>';
-                                        echo '<td>' . $program['qantity'] . '</td>';
-                                        echo '<td>' . $program['sheet_count'] . '</td>';
-
-                                        $status = 'Brak';
-                                        switch ($program['status']) {
-                                            case ProgramStatus::ZAPROGRAMOWANY:
-                                                $status = 'Zaprogramowany';
-                                                break;
-                                            case ProgramStatus::WYCIETY:
-                                                $status = 'Wycięty';
-                                                break;
-                                            case ProgramStatus::ANULOWANY:
-                                                $status = 'Anulowany';
-                                                break;
-                                        }
-
-                                        echo '<td><span class="badge badge-info">' . $status . '</span></td>';
-                                        echo '<td id="" class="dpb" style="text-align: center; cursor: pointer;">Usuń <i class="fa fa-trash"></i></td>';
-                                        echo '</tr>';
-                                    }
-                                    echo '</tbody></table></p></div></div></div></div></div></div></div></div></div>';
-                                }
-                                ?>
+                                                                                    <td><span class="badge badge-info"><?= $status ?></span>
+                                                                                    </td>
+                                                                                    <td id="" class="dpb"
+                                                                                        style="text-align: center; cursor: pointer;">
+                                                                                        Usuń <i class="fa fa-trash"></i>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            <?php endforeach; ?>
+                                                                            </tbody>
+                                                                        </table>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
@@ -308,7 +435,6 @@ $status = getOrderStatus($order["status"])
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <script type="text/javascript">
