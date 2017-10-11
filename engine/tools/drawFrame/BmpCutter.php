@@ -276,6 +276,14 @@ class bmpCutter
                 }
             }
         }
+
+        if (count($position) === 1) {
+            $position[1] = [
+                "x" => imagesx($this->image),
+                "y" => imagesy($this->image)
+            ];
+        }
+
         $this->position = [
             "x" => $position[0]["x"],
             "y" => $position[0]["y"],
