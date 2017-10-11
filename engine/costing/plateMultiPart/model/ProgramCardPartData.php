@@ -696,9 +696,9 @@ class ProgramCardPartData
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getPartName(): string
+    public function getPartName(): ?string
     {
         return $this->PartName;
     }
