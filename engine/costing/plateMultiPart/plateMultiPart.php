@@ -260,13 +260,12 @@ class PlateMultiPart
         $parts = [];
         while($partData = $searchQuery->fetch(PDO::FETCH_ASSOC)) {
             $part = new ProgramCardPartData();
+            var_dump($partData);
             $part->create($partData);
             $part->getDetailSettings($dirId);
             $part->Calculate();
             $parts[] = $part;
         }
-
-        print_r($parts);die;
 
         return $parts;
     }
