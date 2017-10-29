@@ -19,6 +19,10 @@ if ($action !== null) {
 $materialCardController = new MaterialCardController();
 
 switch ($action) {
+    case 'release':
+        echo $materialCardController->releaseAction($_POST);
+        break;
+
     default:
         $sheetCode = $_GET['sheet_code'];
         echo $materialCardController->indexAction($sheetCode);

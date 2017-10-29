@@ -36,4 +36,19 @@ class MaterialCardController extends mainController
             'sheetData' => $sheetData
         ]);
     }
+
+    /**
+     * @param array $data
+     * @return string
+     */
+    public function releaseAction(array $data): string
+    {
+        global $db;
+
+        PlateWarehouseJob::NewJob(PlateWarehouseJob::JOB_CHANGE_QUANTITY, $data['SheetCode'], [
+            'quantity' => $data['quantity']
+        ]);
+
+        return 'ok';
+    }
 }

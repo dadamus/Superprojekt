@@ -41,7 +41,7 @@ if ($a == 1) {
         $rdate = str_replace(' ', '', $_POST["f_date"]);
         $edate = explode(':', $rdate);
         if (count($edate) == 2) {
-            $filtr .= " AND `date` >= '" . $edate[0] . " 00:00:00' AND `date` <= '" . $edate[1] . " 24:60:60'";
+            $filtr .= " AND `createDate` >= '" . $edate[0] . " 00:00:00' AND `createDate` <= '" . $edate[1] . " 24:60:60'";
         }
     }
     if (!empty($_POST["f_Width_Min"])) {

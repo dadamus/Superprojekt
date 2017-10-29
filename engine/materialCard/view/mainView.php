@@ -94,10 +94,11 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-lg-12">
-                <form id="release-form">
+                <form id="release-form" action="/index.php">
+                    <input type="text" name="SheetCode" value="<?= $sheet['SheetCode'] ?>" style="display: none;">
                     <div class="row">
                         <div class="col-lg-12">
-                            <select class="form-control">
+                            <select class="form-control" name="status">
                                 <option>Przyjęcie</option>
                                 <option>Wydanie zewnętrzne</option>
                                 <option>Wydanie wewnętrzne</option>
@@ -110,12 +111,12 @@
                     </div>
                     <div class="row" style="margin: 5px -15px 5px -15px">
                         <div class="col-lg-12">
-                            <input type="number" class="form-control" placeholder="Ilość">
+                            <input type="number" name="quantity" class="form-control" placeholder="Ilość" required>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-12">
-                            <input type="text" class="form-control" placeholder="Powód">
+                            <input type="text" name="reason" class="form-control" placeholder="Powód">
                         </div>
                     </div>
                 </form>

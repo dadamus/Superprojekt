@@ -9,6 +9,7 @@
 class PlateWarehouseJob
 {
     CONST JOB_NEW = 'insert';
+    CONST JOB_CHANGE_QUANTITY = 'changeQuantity';
 
     /**
      * @param string $type
