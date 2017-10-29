@@ -131,7 +131,7 @@ function dragEndEvent(e, ui) {
 function calculate()
 {
 	var area = 0;
-	var area2 = 0
+	var area2 = 0;
 	for (var p = 0; p < dots_position.length; p++)
 	{
 		var next = 0;
@@ -147,9 +147,11 @@ function calculate()
 		area2 += dots_position[p].pos_y * (dots_position[next].pos_x - dots_position[prev].pos_x);
 
 	}
-    //
+
 	area = Math.abs(area);
-	return (area * imageSize.dpi);
+	area = area / 2;
+
+	return area / imageSize.dpi;
 }
 
 function drawConnections() {

@@ -257,6 +257,10 @@
                     $mb = 3;
                     include dirname(__FILE__) . '/wz.php';
                     break;
+                case 40:
+                    $mb = 3;
+                    include __DIR__ . '/materialCard.php';
+                    break;
                 case 200: //Calendar
                     calendar_body();
                     $active = 0;

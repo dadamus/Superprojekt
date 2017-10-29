@@ -17,6 +17,7 @@ RewriteRule ^detail/(.+)/$ /index.php?site=14&did=$1
 RewriteRule ^program/(.+)/$ /index.php?site=16&pid=$1
 RewriteRule ^wz/create/(.+)/$ /index.php?site=32&order_id=$1
 RewriteRule ^wz/(.+)/$ /engine/wz.php?wz_id=$1&action=view
+RewriteRule ^material/(.+)/$ /index.php?site=40&sheet_code=$1
 
 RewriteRule ^plateFrame/(.+)/multi/(.+)/$ /index.php?site=20&f=$1&multi=1&material=$2
 RewriteRule ^plateFrame/(.+)/$ /index.php?site=20&f=$1

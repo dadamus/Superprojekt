@@ -83,9 +83,10 @@ if (isset($_GET["multi"])) {
         WHERE
         id = $material
     ");
-    $materialQueryData= $materialQuery->fetch();
-    $sheetSize = explode("x", $materialQueryData["SheetSize"]);
-    $frameData["sheet_size_x"] = floatval($sheetSize[0]);
+    $materialQueryData = $materialQuery->fetch();
+    $sheetSize = explode("X", strtoupper($materialQueryData["SheetSize"]));
+    $frameData["sheet_size_x"] = (float)$sheetSize[0];
+    $frameData["sheet_size_y"] = (float)str_replace(' ', '', $sheetSize[1]);
 }
 
 $bmpCutter = new bmpCutter($frameData["path"]);
@@ -160,9 +161,9 @@ if (strlen($frameData["points"]) > 0) {
     var init_dots_position = JSON.parse('<?=$dots?>');
 
     var imageSize = {
-        width: <?=$imageSize["width"]?>,
-        height: <?=$imageSize["height"]?>,
-        dpi: <?=($frameData["sheet_size_x"] / $imageSize["width"]) ?>
+        width: <?= $imageSize["width"] ?>,
+        height: <?= $imageSize["height"] ?>,
+        dpi: <?= (($imageSize["width"] * $imageSize["height"]) / ($frameData["sheet_size_x"] * $frameData["sheet_size_y"])) ?>
     }
 </script>
 <script type="text/javascript" src="/js/plateFrame/jcanvas.min.js"></script>

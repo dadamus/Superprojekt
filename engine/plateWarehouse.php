@@ -77,7 +77,7 @@ if ($a == 1) {
 
     $table = "";
     foreach ($data as $row) {
-        $table .= "<tr><td></td><td>" . $row['SheetCode'] . "</td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td><td></td></tr>";
+        $table .= "<tr><td></td><td>" . $row['SheetCode'] . "</td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td><td><a href='/material/" . $row['SheetCode']  . "/' target='_blank' class='btn btn-success material-card'>Karta</a></button></td></tr>";
     }
     die($table);
 } else if ($a == 2) { //Insert new plate
@@ -171,7 +171,7 @@ if ($a == 1) {
     $SqlBuilder->bindValue("SheetType", $_POST['SheetType'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("Price", $_POST['Price'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("Priority", $_POST['Priority'], PDO::PARAM_STR);
-    $SqlBuilder->bindValue("createDate", date("Y-m-d"), PDO::PARAM_STR);
+    $SqlBuilder->bindValue("createDate", date("Y-m-d H:i:s"), PDO::PARAM_STR);
     $SqlBuilder->bindValue("pdate", $_POST['pdate'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("ndp", $_POST['ndp'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("OwnerId", (int) $_POST["OwnerId"], PDO::PARAM_INT);
@@ -202,7 +202,7 @@ if ($a == 1) {
         'SkeletonFile' => '',
         'SkeletonData' => '',
         'MD5' => '',
-        'Price' => $_POST['Price'],
+        'Price' => '',
         'Priority' => $_POST['Priority'],
     ]);
 
