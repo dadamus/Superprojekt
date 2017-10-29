@@ -76,6 +76,8 @@ class MaterialCardController extends mainController
 
         $db->query('UPDATE plate_warehouse SET QtyAvailable = QtyAvailable ' . $action . $data['quantity'] . ' WHERE id = "' . $data['SheetId'] . '"');
 
+        SheetTrash::trash();
+
         return 'ok';
     }
 }
