@@ -465,4 +465,28 @@ class AutoEngineController
         $plateSync->syncAction($data);
         return "ok";
     }
+
+    //Pobiera zadania
+    public function GetJobs()
+    {
+        global $db;
+
+        $jobsQuery = $db->query("SELECT * FROM plate_warehouse_jobs WHERE done_at is null");
+        $jobs = $jobsQuery->fetchAll(PDO::FETCH_ASSOC);
+        return json_encode($jobs);
+    }
+
+    //Aktualizauje status zadań
+    public function SyncJobs()
+    {
+        global $db;
+
+        $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST["toSync"]));
+        $jobs = json_decode($input, true);
+
+        $toUpdateJobs = implode(',', $jobs);
+        $date = date("Y-m-d H:i:s");
+
+        $db->query("UPDATE plate_warehouse_jobs SET done_at = $date WHERE id in ($toUpdateJobs)");
+    }
 }

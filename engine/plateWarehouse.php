@@ -21,6 +21,9 @@ if ($a == 1) {
         WHERE SheetCode LIKE '%NEST%'
     ");
 
+    //Jeszcze trash jak jest 0 sztuk to trash
+    SheetTrash::trash();
+
     $type = $warehouseTypes[@$_GET["type"]];
 
     //FILTR

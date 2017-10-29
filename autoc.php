@@ -6,6 +6,9 @@ require_once dirname(__FILE__) . '/aengine/AutoEngineController.php';
 
 $Material = new Material();
 
+if (!file_exists($data_src . "temp")) {
+    mkdir($data_src . "temp", 0777, true);
+}
 $scan = scandir($data_src . "temp");
 $files = array();
 

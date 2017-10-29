@@ -28,7 +28,9 @@ class router
 			"material_sync_error" => "SyncFromMDBMaterialError",
             "multipart_plate_costing_details" => "UpdateMultipartPlateCostingDetails",
             "multipart_plate_costing" => "MultipartPlateCosting",
-            "plate_production_sync" => "PlateProductionSync"
+            "plate_production_sync" => "PlateProductionSync",
+            "plate_warehouse_get_jobs" => "GetJobs",
+            "plate_warehouse_sync_jobs" => "SyncJobs"
         ];
     }
 }
