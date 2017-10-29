@@ -487,6 +487,6 @@ class AutoEngineController
         $toUpdateJobs = implode(',', $jobs);
         $date = date("Y-m-d H:i:s");
 
-        $db->query("UPDATE plate_warehouse_jobs SET done_at = $date WHERE id in ($toUpdateJobs)");
+        $db->query("UPDATE plate_warehouse_jobs SET done_at = '$date' WHERE id IN ($toUpdateJobs)");
     }
 }
