@@ -99,7 +99,7 @@ if ($a == 1) {
     }
 
     $SheetCode = strtoupper($sc);
-    $date = date("Y-m-d H:i:s");
+    $date = date("Y-m-d");
 
     $densityQuery = $db->prepare("
         SELECT
