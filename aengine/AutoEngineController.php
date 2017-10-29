@@ -281,7 +281,7 @@ class AutoEngineController
     {
         global $db;
 
-        $plates = json_decode($_POST['toSync'], true);
+        $plates = $_POST['toSync'];
 
         $where = null;
 
