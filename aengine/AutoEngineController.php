@@ -285,6 +285,8 @@ class AutoEngineController
 
         $where = null;
 
+        var_dump($plates);die;
+
         foreach ($plates as $SheetCode) {
             if ($where !== null) {
                 $where .= ", ";
