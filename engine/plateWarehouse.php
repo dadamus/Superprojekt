@@ -103,7 +103,7 @@ if ($a == 1) {
 
     $densityQuery = $db->prepare("
         SELECT
-        m.cubis as density
+        m.cubic as density
         FROM T_material t
         LEFT JOIN material m ON m.name = t.MaterialTypeName
         WHERE 
