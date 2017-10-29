@@ -50,16 +50,13 @@ class MaterialCardController extends mainController
 
         $qtyData = $qtyQuery->fetch();
 
-        PlateWarehouseJob::NewJob(PlateWarehouseJob::JOB_CHANGE_QUANTITY, $data['SheetId'], [
-            'quantity' => (int)$qtyData['QtyAvailable'] + (int)$data['quantity'],
-            'type' => $data['status']
-        ]);
-
         $action = '+';
+        $toSave = (int)$qtyData['QtyAvailable'] + (int)$data['quantity'];
         switch ($data['status']) {
             case 0: //Przyjęcie
             case 3: //Korekta dodająca
                 $action = '+';
+            $toSave = (int)$qtyData['QtyAvailable'] + (int)$data['quantity'];
                 break;
             case 1: //Wydanie zewnętrzne
             case 2: //Wydanie wewnętrzne
@@ -67,8 +64,15 @@ class MaterialCardController extends mainController
             case 5: //Zagubiona
             case 6: //Złomowanie
                 $action = '-';
+            $toSave = (int)$qtyData['QtyAvailable'] - (int)$data['quantity'];
                 break;
         }
+
+        PlateWarehouseJob::NewJob(PlateWarehouseJob::JOB_CHANGE_QUANTITY, $data['SheetId'], [
+            'quantity' => $toSave,
+            'type' => $data['status']
+        ]);
+
 
         $db->query('UPDATE plate_warehouse SET QtyAvailable = QtyAvailable ' . $action . $data['quantity'] . ' WHERE id = "' . $data['SheetId'] . '"');
 
