@@ -19,11 +19,18 @@ if (!is_null($action)) {
 $wzController = new WZController();
 
 /** @var int $orderId */
-$orderId = $_GET['order_id'];
+$orderId = 0;
+
+if (isset($_GET['order_id'])) {
+    $orderId = $_GET['order_id'];
+}
 
 switch ($action) {
-    case 'create':
-        echo '1';
+    case 'view':
+        echo $wzController->viewAction($_GET['wz_id']);
+        break;
+    case 'generate':
+        echo $wzController->generateAction($_POST);
         break;
     default:
         echo $wzController->indexAction($orderId);

@@ -28,6 +28,7 @@ $orders = $data['orders'];
                         <th>Deadline</th>
                         <th>Priorytet</th>
                         <th>Data utworzenia</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -67,6 +68,11 @@ $orders = $data['orders'];
                             ?>
                             <td><span class="label label-<?= $status ?>"><?= $text ?></span></td>
                             <td><?= $order['created_at'] ?></td>
+                            <td>
+                                <a href="/order/<?= $order['id'] ?>/">
+                                    <i class="fa fa-sign-in fa-2x"></i>
+                                </a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -77,7 +83,7 @@ $orders = $data['orders'];
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#orders').DataTable();
     });
 </script>

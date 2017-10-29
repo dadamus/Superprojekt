@@ -147,8 +147,8 @@ function calculate()
 		area2 += dots_position[p].pos_y * (dots_position[next].pos_x - dots_position[prev].pos_x);
 
 	}
-
-	area = Math.abs(area) / 2;
+    //
+	area = Math.abs(area);
 	return (area * imageSize.dpi);
 }
 

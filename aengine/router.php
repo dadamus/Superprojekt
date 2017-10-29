@@ -23,6 +23,7 @@ class router
 			"plate_warehouse_sync_respond" => "SetSyncedAction",
 			"plate_warehouse_sync_new" => "SyncFromMDBAction",
 			"plate_warehouse_sync_error" => "SyncFromMDBError",
+            "plate_warehouse_sync_delete" => "SyncDeleteMDB",
 			"material_sync_new" => "SyncFromMDBMaterialAction",
 			"material_sync_error" => "SyncFromMDBMaterialError",
             "multipart_plate_costing_details" => "UpdateMultipartPlateCostingDetails",

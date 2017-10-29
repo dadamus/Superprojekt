@@ -24,8 +24,9 @@ class globalTools
      */
     public static function calculate_second(string $time): int
     {
-        $date = date_parse($time);
-        return $date["hour"] * 3600 + $date["minute"] * 60 + $date["second"];
+        $date = explode(':', $time);
+
+        return ($date[0] * 3600) + ($date[1] * 60) + $date[2];
     }
 
     /**

@@ -8,14 +8,19 @@
 
 $clientData = $data['clientData'];
 $address = explode(',', $clientData['address']);
-if (strlen($address[0]) > 1 || strlen($address[1]) > 1) {
-    $clientData['address'] = $address;
+if (count($address) > 1) {
+    if (strlen($address[0]) > 1 || strlen($address[1]) > 1) {
+        $clientData['address'] = $address;
+    } else {
+        $clientData['address'] = [null, null];
+    }
 } else {
     $clientData['address'] = [null, null];
 }
-?>
 
-<form class="form" id="wz-form">
+$defaultSeller = $data['defaultSeller'];
+?>
+<form class="form" id="wz-form" method="POST" action="/engine/wz.php?action=generate">
     <div class="row">
         <div class="col-md-6">
             <div class="portlet box blue-dark">
@@ -27,16 +32,17 @@ if (strlen($address[0]) > 1 || strlen($address[1]) > 1) {
                 <div class="portlet-body">
                     <div class="row">
                         <div class="form-group col-md-12">
-                            <input class="form-control" name="seller_name" placeholder="Nazwa"/>
+                            <input type="text" name="seller_default_id" data-default-id="<?= $defaultSeller['id'] ?>" value="<?= $defaultSeller['id'] ?>" style="display: none">
+                            <input class="form-control seller" name="seller_name" placeholder="Nazwa" value="<?= $defaultSeller['address_name'] ?>"/>
                         </div>
                         <div class="form-group col-md-12">
-                            <input class="form-control" name="seller_address1" placeholder="Adres"/>
+                            <input class="form-control seller" name="seller_address1" placeholder="Adres" value="<?= $defaultSeller['address1'] ?>"/>
                         </div>
                         <div class="form-group col-md-12">
-                            <input class="form-control" name="seller_address2" placeholder="Adres"/>
+                            <input class="form-control seller" name="seller_address2" placeholder="Adres" value="<?= $defaultSeller['address2'] ?>"/>
                         </div>
                         <div class="form-group col-md-12">
-                            <input class="form-control" name="seller_nip" placeholder="Nip"/>
+                            <input class="form-control seller" name="seller_nip" placeholder="Nip" value="<?= $defaultSeller['nip'] ?>"/>
                         </div>
                     </div>
                 </div>
@@ -85,16 +91,16 @@ if (strlen($address[0]) > 1 || strlen($address[1]) > 1) {
                         <thead>
                         <tr>
                             <th>
-                                <input type="checkbox" class="col-enabled[]" checked value="1"> Kod
+                                <input type="checkbox" name="col-enabled[]" class="col-enabled[]" checked value="code"> Kod
                             </th>
                             <th>
-                                <input type="checkbox" class="col-enabled[]" checked value="2"> Nazwa
+                                <input type="checkbox" name="col-enabled[]" class="col-enabled[]"  checked value="name"> Nazwa
                             </th>
                             <th>
-                                <input type="checkbox" class="col-enabled[]" checked value="3"> Cena [zł]
+                                <input type="checkbox" name="col-enabled[]" class="col-enabled[]"  checked value="price"> Cena [zł]
                             </th>
                             <th>
-                                <input type="checkbox" class="col-enabled[]" checked value="4"> Ilość
+                                <input type="checkbox" name="col-enabled[]" class="col-enabled[]" checked value="quantity"> Ilość
                             </th>
                             <th width="10%"></th>
                         </tr>
@@ -103,7 +109,9 @@ if (strlen($address[0]) > 1 || strlen($address[1]) > 1) {
                         <?php foreach ($data['orderItems'] as $item): ?>
                             <tr class="zwitem hidden" data-oitem-id="<?= $item['oitem_id'] ?>">
                                 <td>
-                                    <input type="checkbox" name="oitems[]" value="<?= $item['oitem_id'] ?>" style="display: none"/>
+                                    <input type="checkbox" name="oitems[]" value="<?= $item['oitem_id'] ?>"
+                                           style="display: none"/>
+                                    <input type="text" style="display: none" name="oitem-code-<?= $item['oitem_id'] ?>" value="<?= $item['src'] ?>"/>
                                     <?= $item['src'] ?>
                                 </td>
                                 <td>
@@ -126,63 +134,63 @@ if (strlen($address[0]) > 1 || strlen($address[1]) > 1) {
                         <?php endforeach; ?>
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="portlet box green-dark">
-                <div class="portlet-title">
-                    <div class="caption">
-                        Twoary zamówienie
+                    <div class="row">
+                        <div class="col-lg-2 pull-right">
+                            <button type="submit" class="btn btn-success">Generuj</button>
+                        </div>
                     </div>
                 </div>
-                <div class="portlet-body">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                        <tr>
-                            <th>Serial</th>
-                            <th>Kod</th>
-                            <th>Cena [zł]</th>
-                            <th>Na magazynie</th>
-                            <th width="10%">
-                                <a class="btn btn-info btn-sm" id="show-all">Wszystkie</a>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($data['orderItems'] as $item): ?>
-                            <tr class="oitem" data-oitem-id="<?= $item['oitem_id'] ?>">
-                                <td>
-                                    <?= $item['code'] ?>
-                                </td>
-                                <td>
-                                    <?= $item['src'] ?>
-                                </td>
-                                <td>
-                                    <?= $item['price'] ?>
-                                </td>
-                                <td>
-                                    <?= $item['stored'] ?>
-                                </td>
-                                <td>
-                                    <a class="btn btn-success choose-item">Dodaj</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-2 pull-right">
-            <button type="submit" class="btn btn-success">Zapisz</button>
         </div>
     </div>
 </form>
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet box green-dark">
+            <div class="portlet-title">
+                <div class="caption">
+                    Twoary zamówienie
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>Serial</th>
+                        <th>Kod</th>
+                        <th>Cena [zł]</th>
+                        <th>Na magazynie</th>
+                        <th width="10%">
+                            <a class="btn btn-info btn-sm" id="show-all">Wszystkie</a>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($data['orderItems'] as $item): ?>
+                        <tr class="oitem" data-oitem-id="<?= $item['oitem_id'] ?>">
+                            <td>
+                                <?= $item['code'] ?>
+                            </td>
+                            <td>
+                                <?= $item['src'] ?>
+                            </td>
+                            <td>
+                                <?= $item['price'] ?>
+                            </td>
+                            <td>
+                                <?= $item['stored'] ?>
+                            </td>
+                            <td>
+                                <a class="btn btn-success choose-item">Dodaj</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
     let oitems = [];
@@ -224,18 +232,24 @@ if (strlen($address[0]) > 1 || strlen($address[1]) > 1) {
         });
     });
 
-    $('#wz-form').on('submit', function(e) {
+    $('input.seller').on('change', function() {
+        $('input[name="seller_default_id"]').val(0);
+    });
+
+    $('#wz-form').on('submit', function (e) {
         e.preventDefault();
 
         let data = $(this).serialize();
 
         App.blockUI();
         $.ajax({
-            url: '/engine/wz.php?action=create',
+            url: $(this).attr('action'),
             method: 'POST',
             data: data
         }).always(function () {
             App.unblockUI();
+        }).done(function(response) {
+            location.href = '/wz/' + response + "/";
         });
     });
 </script>

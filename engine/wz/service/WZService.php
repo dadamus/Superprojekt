@@ -6,6 +6,8 @@
  * Time: 17:24
  */
 
+require_once __DIR__ . '/../model/WZObject.php';
+
 /**
  * Class WZService
  */
@@ -38,6 +40,31 @@ class WZService
         }
 
         return $orderData;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaultSeller(): array
+    {
+        global $db;
+
+        $addressQuery = $db->prepare('
+            SELECT
+            a.id,
+            a.address_name,
+            a.address1,
+            a.address2,
+            a.nip
+            FROM
+            settings s
+            LEFT JOIN wz_address a ON a.id = s.value
+            WHERE 
+            s.name = "wz_seller_address_id"
+        ');
+        $addressQuery->execute();
+
+        return $addressQuery->fetch();
     }
 
     /**
@@ -107,5 +134,13 @@ class WZService
             SELECT
             
         ');
+    }
+
+    /**
+     * @param WZObject $wz
+     */
+    public function saveWz(WZObject $wz)
+    {
+
     }
 }
