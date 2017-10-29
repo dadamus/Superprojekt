@@ -128,33 +128,33 @@ if ($a == 1) {
     $cena_zl_kg = 0;
     $roznica_wagi = 0;
 
-    $waga_arkusz = floatval($_POST["Weight"]) / intval($_POST['QtyAvailable']);
+    $waga_arkusz = (float)$_POST["Weight"] / (int)$_POST['QtyAvailable'];
     $waga_program =
-        floatval($_POST['Width'])
-        * floatval($_POST['Height'])
-        * floatval($_POST["Thickness"])
+        (float)$_POST['Width']
+        * (float)$_POST['Height']
+        * (float)$_POST["Thickness"]
         * $density
         / 1000;
     $powierzchnia_ramki =
-        (45 * floatval($_POST['Width'])) +
-        (30 * (floatval($_POST['Height']) - 30));
+        (45 * (float)$_POST['Width']) +
+        (30 * (float)$_POST['Height'] - 30);
     $cena_ramka =
         $powierzchnia_ramki
-        / floatval($_POST['Width'])
-        * floatval($_POST['Height'])
-        * floatval($_POST['Price']);
-    $koszty = floatval($_POST["AdditionalPrice"]) / intval($_POST['QtyAvailable']);
+        / (float)($_POST['Width'])
+        * (float)($_POST['Height'])
+        * (float)($_POST['Price']);
+    $koszty = (float)$_POST["AdditionalPrice"] / (int)$_POST['QtyAvailable'];
     $roznica_wagi = ($waga_arkusz - $waga_program) / $waga_program;
 
     if ($cpm == 1) {
         $cena_baza =
-            floatval($_POST['Price'])
-            * floatval($_POST['Width'])
-            / intval($_POST['QtyAvailable']);
+            (float)$_POST['Price']
+            * (float)$_POST['Width']
+            / (int)$_POST['QtyAvailable'];
         $arkusz_aktualna = $cena_baza + $cena_ramka + $koszty;
     } else if ($cpm == 2) {
         $arkusz_aktualna =
-            floatval($_POST['Price'])
+            (float)$_POST['Price']
             + $cena_ramka
             + $koszty;
         $cena_zl_kg = $arkusz_aktualna / $waga_program;
@@ -185,8 +185,28 @@ if ($a == 1) {
     $SqlBuilder->bindValue("sheet_weight", $waga_arkusz, PDO::PARAM_STR);
     $SqlBuilder->bindValue("difference_weight", $roznica_wagi, PDO::PARAM_STR);
     $SqlBuilder->bindValue("sheet_actual_price", $arkusz_aktualna, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("synced", 1, PDO::PARAM_STR);
 
-    die($db->lastInsertId());
+    $id = $db->lastInsertId();
+
+    PlateWarehouseJob::NewJob(PlateWarehouseJob::JOB_NEW, $id, [
+        'SheetCode' => $SheetCode,
+        'MaterialName' => $_POST["MaterialTypeName"],
+        'QtyAvailable'=> $_POST['QtyAvailable'],
+        'GrainDirection' => $_POST['GrainDirection'],
+        'Width' => $_POST['Width'],
+        'Height' => $_POST['Height'],
+        'SpecialInfo' => $_POST['SpecialInfo'],
+        'Comment' => '',
+        'SheetType' => $_POST['SheetType'],
+        'SkeletonFile' => '',
+        'SkeletonData' => '',
+        'MD5' => '',
+        'Price' => $_POST['Price'],
+        'Priority' => $_POST['Priority'],
+    ]);
+
+    die($id);
 }
 ?>
 
@@ -276,8 +296,8 @@ if ($a == 1) {
                             id="tab' . $id . '-table">
                                 <thead>
                                     <tr>
-                                        <th>
-                                            <div class="btn-group">
+                                        <th style="width: 100px">
+                                            <div class="btn-group" style="position: relative; top: 0px;">
                                                 <a class="btn btn-sm btn-default">Akcje</a>
                                             </div>
                                         </th>
@@ -377,12 +397,33 @@ if ($a == 1) {
                                 <tr>
                                     <td>Blacha</td>
                                     <td>
-                                        <select name="MaterialTypeName" class="form-control"><?php
-                                            $mtn = $db->query("SELECT `MaterialName` FROM `T_material` ORDER BY MaterialName DESC");
-                                            foreach ($mtn as $row) {
-                                                echo '<option>' . $row["MaterialName"] . '</option>';
-                                            }
-                                            ?></select>
+                                        <?php
+                                        $mtnq = $db->prepare("SELECT `MaterialName`, `MaterialTypeName` FROM `T_material` ORDER BY MaterialTypeName DESC");
+                                        $mtnq->execute();
+
+                                        $mtn = $mtnq->fetchAll(PDO::FETCH_ASSOC);
+                                        ?>
+                                        <select name="MaterialType" class="form-control">
+                                            <?php $lastOption = null; ?>
+                                            <option></option>
+                                            <?php foreach ($mtn as $row): ?>
+                                                <?php
+                                                if ($lastOption === $row["MaterialTypeName"]) {
+                                                    continue;
+                                                }
+
+                                                $lastOption = $row["MaterialTypeName"];
+                                                ?>
+                                                <option><?= $row["MaterialTypeName"] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <select name="MaterialTypeName" class="form-control">
+                                            <option data-type=""></option>
+                                            <?php foreach ($mtn as $row): ?>
+                                                <option data-type="<?= $row["MaterialTypeName"] ?>"
+                                                        hidden><?= $row["MaterialName"] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>

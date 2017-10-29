@@ -105,6 +105,16 @@ function SheetCodeGenerator() {
 }
 
 $(document).ready(function () {
+    $('select[name="MaterialType"]').on('change', function () {
+        var value = $(this).val();
+
+        var $input = $('select[name="MaterialTypeName"]');
+        $input.find('option[data-type="' + value + '"]').prop('hidden', false);
+        $input.find('option[data-type!="' + value + '"]').prop('hidden', true);
+
+        $input.find('option:first').prop('hidden', false).prop('selected', true);
+    });
+
     $(".bs-select").selectpicker({iconBase: "fa", tickIcon: "fa-check"});
 
     $(".date-picker").datetimepicker({
@@ -194,6 +204,12 @@ $(document).ready(function () {
 
         if (sheet_code_ready == false) {
             $sheetCodeInput.parent().addClass("has-error");
+            return false;
+        }
+
+        if ($('select[name="MaterialTypeName"]').val() == '')
+        {
+            $('select[name="MaterialTypeName"]').parent().addClass("has-error");
             return false;
         }
 
