@@ -120,7 +120,7 @@ if ($a == 1) {
      * 1 - zl/kg
      * 2 - zl/szt netto
     */
-    $cpm = intval($_GET['cpm']);
+    $cpm = 1;
 
     $cena_ramka = 0;
     $koszty = 0;
@@ -172,7 +172,7 @@ if ($a == 1) {
     $SqlBuilder->bindValue("SheetType", $_POST['SheetType'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("Price", $_POST['Price'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("Priority", $_POST['Priority'], PDO::PARAM_STR);
-    $SqlBuilder->bindValue("date", $date, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("createDate", $date, PDO::PARAM_STR);
     $SqlBuilder->bindValue("pdate", $_POST['pdate'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("ndp", $_POST['ndp'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("OwnerId", $_POST["OwnerId"], PDO::PARAM_INT);
@@ -186,6 +186,7 @@ if ($a == 1) {
     $SqlBuilder->bindValue("difference_weight", $roznica_wagi, PDO::PARAM_STR);
     $SqlBuilder->bindValue("sheet_actual_price", $arkusz_aktualna, PDO::PARAM_STR);
     $SqlBuilder->bindValue("synced", 1, PDO::PARAM_STR);
+    $SqlBuilder->flush();
 
     $id = $db->lastInsertId();
 
