@@ -99,7 +99,6 @@ if ($a == 1) {
     }
 
     $SheetCode = strtoupper($sc);
-    $date = date("Y-m-d");
 
     $densityQuery = $db->prepare("
         SELECT
@@ -172,7 +171,7 @@ if ($a == 1) {
     $SqlBuilder->bindValue("SheetType", $_POST['SheetType'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("Price", $_POST['Price'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("Priority", $_POST['Priority'], PDO::PARAM_STR);
-    $SqlBuilder->bindValue("createDate", $date, PDO::PARAM_STR);
+    $SqlBuilder->bindValue("createDate", date("Y-m-d"), PDO::PARAM_STR);
     $SqlBuilder->bindValue("pdate", $_POST['pdate'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("ndp", $_POST['ndp'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("OwnerId", $_POST["OwnerId"], PDO::PARAM_INT);
@@ -528,7 +527,7 @@ if ($a == 1) {
                                         <div class="input-group">
                                             <input class="form-control form-control-inline input-medium date-picker"
                                                    size="16" id="newSheetDate" type="text" name="pdate"
-                                                   data-date-format="dd-mm-yyyy" value="">
+                                                   data-date-format="yyyy-mm-dd" value="">
                                         </div>
                                     </td>
                                 </tr>
