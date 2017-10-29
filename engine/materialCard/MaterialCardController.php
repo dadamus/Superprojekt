@@ -45,9 +45,27 @@ class MaterialCardController extends mainController
     {
         global $db;
 
-        PlateWarehouseJob::NewJob(PlateWarehouseJob::JOB_CHANGE_QUANTITY, $data['SheetCode'], [
-            'quantity' => $data['quantity']
+        PlateWarehouseJob::NewJob(PlateWarehouseJob::JOB_CHANGE_QUANTITY, $data['SheetId'], [
+            'quantity' => $data['quantity'],
+            'type' => $data['status']
         ]);
+
+        $action = '+';
+        switch ($data['status']) {
+            case 0; //Przyjęcie
+            case 3: //Korekta dodająca
+                $action = '+';
+                break;
+            case 1: //Wydanie zewnętrzne
+            case 2: //Wydanie wewnętrzne
+            case 4: //Korekta odejmująca
+            case 5: //Zagubiona
+            case 6: //Złomowanie
+                $action = '-';
+                break;
+        }
+
+        $db->query('UPDATE plate_warehouse SET QtyAvailable = QtyAvailable ' . $action . $data['quantity'] . ' WHERE id = "' . $data['SheetId'] . '"');
 
         return 'ok';
     }

@@ -94,18 +94,18 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-lg-12">
-                <form id="release-form" action="/index.php">
-                    <input type="text" name="SheetCode" value="<?= $sheet['SheetCode'] ?>" style="display: none;">
+                <form id="release-form" action="/engine/materialCard.php?action=release">
+                    <input type="text" name="SheetId" value="<?= $sheet['id'] ?>" style="display: none;">
                     <div class="row">
                         <div class="col-lg-12">
                             <select class="form-control" name="status">
-                                <option>Przyjęcie</option>
-                                <option>Wydanie zewnętrzne</option>
-                                <option>Wydanie wewnętrzne</option>
-                                <option>Korekta dodająca</option>
-                                <option>Korekta odejmująca</option>
-                                <option>Zagubiona</option>
-                                <option>Złomowanie</option>
+                                <option value="0">Przyjęcie</option>
+                                <option value="1">Wydanie zewnętrzne</option>
+                                <option value="2">Wydanie wewnętrzne</option>
+                                <option value="3">Korekta dodająca</option>
+                                <option value="4">Korekta odejmująca</option>
+                                <option value="5">Zagubiona</option>
+                                <option value="6">Złomowanie</option>
                             </select>
                         </div>
                     </div>
@@ -125,6 +125,32 @@
     </div>
     <div class="modal-footer">
         <button type="button" data-dismiss="modal" class="btn btn-outline dark">Zamknij</button>
-        <button type="button" class="btn green">Zapisz</button>
+        <button type="button" class="submit-release-form btn green">Zapisz</button>
     </div>
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var $form = $("#release-form");
+        $('.submit-release-form').on('click', function (e) {
+            e.preventDefault();
+            $form.submit();
+        });
+
+        $form.on('submit', function (e) {
+            e.preventDefault();
+
+            $("#release-modal").modal('hide');
+            App.blockUI();
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: $(this).serialize()
+            }).done(function (response) {
+                toastr.success("Zapisałem!");
+            }).always(function() {
+                App.unblockUI();
+            });
+        });
+    });
+</script>
