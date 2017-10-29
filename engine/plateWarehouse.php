@@ -174,7 +174,7 @@ if ($a == 1) {
     $SqlBuilder->bindValue("createDate", date("Y-m-d"), PDO::PARAM_STR);
     $SqlBuilder->bindValue("pdate", $_POST['pdate'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("ndp", $_POST['ndp'], PDO::PARAM_STR);
-    $SqlBuilder->bindValue("OwnerId", $_POST["OwnerId"], PDO::PARAM_INT);
+    $SqlBuilder->bindValue("OwnerId", (int) $_POST["OwnerId"], PDO::PARAM_INT);
     $SqlBuilder->bindValue("UserID", $_SESSION["login"], PDO::PARAM_INT);
 
     $SqlBuilder->bindValue("Price_kg", $cena_zl_kg, PDO::PARAM_STR);
