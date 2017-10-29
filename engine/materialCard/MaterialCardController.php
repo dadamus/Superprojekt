@@ -52,7 +52,7 @@ class MaterialCardController extends mainController
 
         $action = '+';
         switch ($data['status']) {
-            case 0; //Przyjęcie
+            case 0: //Przyjęcie
             case 3: //Korekta dodająca
                 $action = '+';
                 break;
