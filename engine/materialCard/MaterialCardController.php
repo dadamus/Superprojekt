@@ -45,8 +45,13 @@ class MaterialCardController extends mainController
     {
         global $db;
 
+        $qtyQuery = $db->prepare('SELECT QtyAvailable FROM plate_warehouse WHERE id = "' . $data['SheetId'] . '"');
+        $qtyQuery->execute();
+
+        $qtyData = $qtyQuery->fetch();
+
         PlateWarehouseJob::NewJob(PlateWarehouseJob::JOB_CHANGE_QUANTITY, $data['SheetId'], [
-            'quantity' => $data['quantity'],
+            'quantity' => (int)$qtyData['QtyAvailable'] + (int)$data['quantity'],
             'type' => $data['status']
         ]);
 
