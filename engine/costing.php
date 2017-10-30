@@ -3,7 +3,8 @@
 require_once dirname(__FILE__) . '/class/material.php';
 $material = new Material();
 
-class Costing {
+class Costing
+{
 
     private $_name = array(1 => "Blachy", 2 => "Profile"); // STRING Name
     private $_url = array(1 => "plate", 2 => "profile"); // URL
@@ -11,7 +12,8 @@ class Costing {
     public $name;
     public $url;
 
-    public function __construct($int) { // GET TYPE
+    public function __construct($int)
+    { // GET TYPE
         $this->type = $int;
         $this->name = $this->_name[$int];
         $this->url = $this->_url[$int];
@@ -31,12 +33,13 @@ $_SESSION["costingID"] = $costing->type;
     <div class="row">
         <div class="col-lg-8" style="margin-left: 1%;">
             <div class="portlet">
-                <div class="portlet-title"> <i class="icon-search"></i>
+                <div class="portlet-title"><i class="icon-search"></i>
                     <h3>Wyszukaj firmę</h3>
                 </div>
                 <div class="portlet-body">
                     <form id="sform">
-                        <input type="search" class="form-control" placeholder="ID lub nazwa" id="search-input" name="scontent">
+                        <input type="search" class="form-control" placeholder="ID lub nazwa" id="search-input"
+                               name="scontent">
                     </form>
                 </div>
             </div>
@@ -48,14 +51,18 @@ $_SESSION["costingID"] = $costing->type;
                 <div class="portlet-body flip-scroll">
                     <table class="table table-bordered table-striped table-condensed flip-content">
                         <thead>
-                            <tr>
-                                <td>ID</td>
-                                <td>Nazwa</td>
-                                <td>Typ</td>
-                            </tr>
+                        <tr>
+                            <td>ID</td>
+                            <td>Nazwa</td>
+                            <td>Typ</td>
+                        </tr>
                         </thead>
                         <tbody id="clist">
-                            <tr><td>Brak wyników</td><td></td><td></td></tr>
+                        <tr>
+                            <td>Brak wyników</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -72,7 +79,8 @@ $_SESSION["costingID"] = $costing->type;
                         <span class="caption-subject font-dark bold uppercase">Projekty</span>
                     </div>
                     <div class="actions">
-                        <a href="#" id="aClientsList" data-toggle="modal" class="btn btn-info"><i class="fa fa-mail-reply"></i> Lista klientów</a>
+                        <a href="#" id="aClientsList" data-toggle="modal" class="btn btn-info"><i
+                                    class="fa fa-mail-reply"></i> Lista klientów</a>
                     </div>
                 </div>
                 <div class="portlet-body" id="pcontent"></div>
@@ -82,7 +90,7 @@ $_SESSION["costingID"] = $costing->type;
 </div>
 <div class="row" id="cDetails" style="display: none;">
     <div class="portlet">
-        <div class="portlet-title"> 
+        <div class="portlet-title">
             <div class="caption">
                 <div style="float: left">Detele</div>
             </div>
@@ -98,10 +106,13 @@ $_SESSION["costingID"] = $costing->type;
                             <div class="caption">Menu</div>
                         </div>
                         <div class="portlet-body">
-                            <p><a href="#" id="aProjectsList" data-toggle="modal" class="btn btn-info"><i class="fa fa-mail-reply"></i> Lista projektow</a></p>
-                            <a href="#" id="addToCosting" data-backdrop="false" data-target="#addToCostingModal" data-toggle="modal" class="btn btn-info">Auto wycena</a>
+                            <p><a href="#" id="aProjectsList" data-toggle="modal" class="btn btn-info"><i
+                                            class="fa fa-mail-reply"></i> Lista projektow</a></p>
+                            <a href="#" id="addToCosting" data-backdrop="false" data-target="#addToCostingModal"
+                               data-toggle="modal" class="btn btn-info">Auto wycena</a>
                             <?php if ($costing->type != 2): ?>
-                            <a href="#" style="margin-top: 10px;" id="addToMultiCosting" data-backdrop="false" data-target="#addToMultiCostingModal" data-toggle="modal" class="btn btn-success">MultiPart</a>
+                                <a href="#" style="margin-top: 10px;" id="addToMultiCosting" data-backdrop="false"
+                                   data-target="#addToMultiCostingModal" data-toggle="modal" class="btn btn-success">MultiPart</a>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -122,36 +133,37 @@ $_SESSION["costingID"] = $costing->type;
                                 <div id="accordion1" class="panel-group">
                                     <div class="panel">
                                         <div class="panel-heading">
-                                            <a href="#collapseOneTwo" data-toggle="collapse" class="accordion-toggle collapsed">Opcje statusów</a>
+                                            <a href="#collapseOneTwo" data-toggle="collapse"
+                                               class="accordion-toggle collapsed">Opcje statusów</a>
                                         </div>
                                         <div class="panel-collapse collapse" id="collapseOneTwo" style="height: 0px;">
                                             <div class="panel-body">
                                                 <table class="table">
                                                     <thead>
-                                                        <tr>
-                                                            <?php
-                                                            $style = 'style="width: 25%; text-align: center;"';
-                                                            for ($i = 0; $i < count($STATUS_ALLOWED); $i++) {
-                                                                echo '<td ' . $style . '><a href = "javascript:;" id="' . $STATUS_ALLOWED[$i] . '_sid"><i class = "' . $STATUS_ICONS[$STATUS_ALLOWED[$i]] . '"></i></a></td>';
-                                                            }
-                                                            ?>
-                                                        </tr>
+                                                    <tr>
+                                                        <?php
+                                                        $style = 'style="width: 25%; text-align: center;"';
+                                                        for ($i = 0; $i < count($STATUS_ALLOWED); $i++) {
+                                                            echo '<td ' . $style . '><a href = "javascript:;" id="' . $STATUS_ALLOWED[$i] . '_sid"><i class = "' . $STATUS_ICONS[$STATUS_ALLOWED[$i]] . '"></i></a></td>';
+                                                        }
+                                                        ?>
+                                                    </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <?php
-                                                            for ($i = 0; $i < count($STATUS_ALLOWED); $i++) {
-                                                                echo '<td ' . $style . '><a class="btn btn-small btn-success sa" href="javascript:;" id="' . $STATUS_ALLOWED[$i] . '_asid"><i class="fa fa-check"></i></a></td>';
-                                                            }
-                                                            ?>
-                                                        </tr>
-                                                        <tr>
-                                                            <?php
-                                                            for ($i = 0; $i < count($STATUS_ALLOWED); $i++) {
-                                                                echo '<td ' . $style . '><a class="btn btn-danger btn-small sd" href="javascript:;" id="' . $STATUS_ALLOWED[$i] . '_rsid"><i class="fa fa-remove"></i></a></td>';
-                                                            }
-                                                            ?>
-                                                        </tr>
+                                                    <tr>
+                                                        <?php
+                                                        for ($i = 0; $i < count($STATUS_ALLOWED); $i++) {
+                                                            echo '<td ' . $style . '><a class="btn btn-small btn-success sa" href="javascript:;" id="' . $STATUS_ALLOWED[$i] . '_asid"><i class="fa fa-check"></i></a></td>';
+                                                        }
+                                                        ?>
+                                                    </tr>
+                                                    <tr>
+                                                        <?php
+                                                        for ($i = 0; $i < count($STATUS_ALLOWED); $i++) {
+                                                            echo '<td ' . $style . '><a class="btn btn-danger btn-small sd" href="javascript:;" id="' . $STATUS_ALLOWED[$i] . '_rsid"><i class="fa fa-remove"></i></a></td>';
+                                                        }
+                                                        ?>
+                                                    </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -159,21 +171,23 @@ $_SESSION["costingID"] = $costing->type;
                                     </div>
                                     <div class="panel">
                                         <div class="panel-heading" style="border: yellowgreen solid 1px;">
-                                            <a href="#collapseTwo" data-toggle="collapse" class="accordion-toggle collapsed">Kolejka do wyceny</a>
+                                            <a href="#collapseTwo" data-toggle="collapse"
+                                               class="accordion-toggle collapsed">Kolejka do wyceny</a>
                                         </div>
                                         <div class="panel-collapse collapse" id="collapseTwo">
                                             <div class="panel-body">
-                                                <table class="display" id="CTD_TABLE" style="overflow-y: auto; display:block;">
+                                                <table class="display" id="CTD_TABLE"
+                                                       style="overflow-y: auto; display:block;">
                                                     <thead>
-                                                        <tr>
-                                                            <th>Nr</th>
-                                                            <th>Nazwa</th>
-                                                            <th>Kod</th>
-                                                            <th>Blacha</th>
-                                                            <th>Sztuk</th>
-                                                            <th>Atrybut</th>
-                                                            <th></th>
-                                                        </tr>
+                                                    <tr>
+                                                        <th>Nr</th>
+                                                        <th>Nazwa</th>
+                                                        <th>Kod</th>
+                                                        <th>Blacha</th>
+                                                        <th>Sztuk</th>
+                                                        <th>Atrybut</th>
+                                                        <th></th>
+                                                    </tr>
                                                     </thead>
                                                     <tbody id="CTD_CONTENT">
 
@@ -184,22 +198,27 @@ $_SESSION["costingID"] = $costing->type;
                                     </div>
                                     <div class="panel">
                                         <div class="panel-heading" style="border: orange solid 1px;">
-                                            <a href="#collapseThree" data-toggle="collapse" class="accordion-toggle collapsed">Wycenione</a>
+                                            <a href="#collapseThree" data-toggle="collapse"
+                                               class="accordion-toggle collapsed">Wycenione</a>
                                         </div>
                                         <div class="panel-collapse collapse" id="collapseThree">
                                             <div class="panel-body">
                                                 <table class="display" id="PTD_TABLE" style="overflow-y: auto;">
                                                     <thead>
-                                                        <tr>
-                                                            <th style="width: 120px;"><a class="btn btn-primary" data-toggle="modal" id="BATO" href="#addToOrder"> Dodaj zamówienie</a></td>
-                                                            <th>Nr</th>
-                                                            <th>Nazwa</th>
-                                                            <th>Kod</th>
-                                                            <th>Blacha</th>
-                                                            <th>Sztuk</th>
-                                                            <th>Atrybut</th>
-                                                            <th>Cena</th>
-                                                        </tr>
+                                                    <tr>
+                                                        <th style="width: 120px;"><a class="btn btn-primary"
+                                                                                     data-toggle="modal" id="BATO"
+                                                                                     href="#addToOrder"> Dodaj
+                                                                zamówienie</a>
+                                                        </td>
+                                                        <th>Nr</th>
+                                                        <th>Nazwa</th>
+                                                        <th>Kod</th>
+                                                        <th>Blacha</th>
+                                                        <th>Sztuk</th>
+                                                        <th>Atrybut</th>
+                                                        <th>Cena</th>
+                                                    </tr>
                                                     </thead>
                                                     <tbody id="PTD_CONTENT">
 
@@ -210,21 +229,22 @@ $_SESSION["costingID"] = $costing->type;
                                     </div>
                                     <div class="panel">
                                         <div class="panel-heading" style="border: silver solid 1px;">
-                                            <a href="#collapseFour" data-toggle="collapse" class="accordion-toggle collapsed">Historia</a>
+                                            <a href="#collapseFour" data-toggle="collapse"
+                                               class="accordion-toggle collapsed">Historia</a>
                                         </div>
                                         <div class="panel-collapse collapse" id="collapseFour">
                                             <div class="panel-body">
                                                 <table class="display" style="overflow-y: auto;" id="HT_TABLE">
                                                     <thead>
-                                                        <tr>
-                                                            <th>Nr</th>
-                                                            <th>Nazwa</th>
-                                                            <th>Kod</th>
-                                                            <th>Blacha</th>
-                                                            <th>Sztuk</th>
-                                                            <th>Atrybut</th>
-                                                            <th>Cena</th>
-                                                        </tr>
+                                                    <tr>
+                                                        <th>Nr</th>
+                                                        <th>Nazwa</th>
+                                                        <th>Kod</th>
+                                                        <th>Blacha</th>
+                                                        <th>Sztuk</th>
+                                                        <th>Atrybut</th>
+                                                        <th>Cena</th>
+                                                    </tr>
                                                     </thead>
                                                     <tbody id="HT_CONTENT">
 
@@ -235,11 +255,15 @@ $_SESSION["costingID"] = $costing->type;
                                     </div>
                                 </div>
                             </div>
-                            <div style="display: none;" aria-hidden="true" aria-labelledby="myModalLabel2" role="dialog" tabindex="-1" class="modal fade modal-scroll modal-overflow" id="addToMultiCostingModal">
+                            <div style="display: none;" aria-hidden="true" aria-labelledby="myModalLabel2" role="dialog"
+                                 tabindex="-1" class="modal fade modal-scroll modal-overflow"
+                                 id="addToMultiCostingModal">
                                 <div class="modal-content">
                                     <form action="?" id="multiGetNumberForm" method="POST">
                                         <div class="modal-header">
-                                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">x</button>
+                                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+                                                x
+                                            </button>
                                             <h4>Multipart</h4>
                                         </div>
                                         <div class="modal-body" id="multi-wrapper">
@@ -248,11 +272,14 @@ $_SESSION["costingID"] = $costing->type;
                                     </form>
                                 </div>
                             </div>
-                            <div style="display: none;" aria-hidden="true" aria-labelledby="myModalLabel3" role="dialog" tabindex="-1" class="modal fade modal-scroll" id="createMWPMultipartModal">
+                            <div style="display: none;" aria-hidden="true" aria-labelledby="myModalLabel3" role="dialog"
+                                 tabindex="-1" class="modal fade modal-scroll" id="createMWPMultipartModal">
                                 <div class="modal-content">
                                     <form action="?" id="multiMPWCreate" method="POST">
                                         <div class="modal-header">
-                                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">x</button>
+                                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+                                                x
+                                            </button>
                                             <h4>Multipart</h4>
                                         </div>
                                         <div class="modal-body" id="multi-mpw-wrapper">
@@ -261,18 +288,22 @@ $_SESSION["costingID"] = $costing->type;
                                     </form>
                                 </div>
                             </div>
-                            <div style="display: none;" aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal fade modal-scroll modal-overflow" id="addToCostingModal">
+                            <div style="display: none;" aria-hidden="true" aria-labelledby="myModalLabel" role="dialog"
+                                 tabindex="-1" class="modal fade modal-scroll modal-overflow" id="addToCostingModal">
                                 <div class="modal-content">
                                     <form action="?" id="ATCFORM" method="POST">
                                         <div class="modal-header">
-                                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">x</button>
+                                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">
+                                                x
+                                            </button>
                                             <h4 id="myModalLabel" class="modal-title">Wycena</h4>
                                         </div>
                                         <div class="modal-body" id="costing-wrapper">
                                             <div style="text-align: center"><p>Wybierz detale...</p></div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button data-dismiss="modal" class="btn btn-default" type="button">Zamknij</button>
+                                            <button data-dismiss="modal" class="btn btn-default" type="button">Zamknij
+                                            </button>
                                             <button class="btn btn-primary" type="submit">Zapisz</button>
                                         </div>
                                     </form>
@@ -305,17 +336,18 @@ $_SESSION["costingID"] = $costing->type;
                                             </div>
                                         </div>
                                         <div class="portlet-body">
-                                            <table class="display" id="OTD_TABLE" style="overflow-y: auto; text-align: center; width: 100%;">
+                                            <table class="display" id="OTD_TABLE"
+                                                   style="overflow-y: auto; text-align: center; width: 100%;">
                                                 <thead>
-                                                    <tr>
-                                                        <td>Nr</td>
-                                                        <td>Nazwa</td>
-                                                        <td>Detali</td>
-                                                        <td>Suma</td>
-                                                        <td>Status</td>
-                                                        <td>Data utworzenia</td>
-                                                        <td></td>
-                                                    </tr>
+                                                <tr>
+                                                    <td>Nr</td>
+                                                    <td>Nazwa</td>
+                                                    <td>Detali</td>
+                                                    <td>Suma</td>
+                                                    <td>Status</td>
+                                                    <td>Data utworzenia</td>
+                                                    <td></td>
+                                                </tr>
                                                 </thead>
                                                 <tbody id="OTD_CONTENT">
 
@@ -345,7 +377,8 @@ $_SESSION["costingID"] = $costing->type;
                     <div class="form-group">
                         <label class="control-label col-md-3">Data</label>
                         <div class="col-md-8">
-                            <input class="form-control date-picker" name="odate" size="16" type="text" value="<?php echo date("Y-m-d"); ?>" data-date-format="yyyy-mm-dd"/>
+                            <input class="form-control date-picker" name="odate" size="16" type="text"
+                                   value="<?php echo date("Y-m-d"); ?>" data-date-format="yyyy-mm-dd"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -376,7 +409,8 @@ $_SESSION["costingID"] = $costing->type;
     </div>
 </div>
 
-<div id="orderInfo" class="modal container modal-scroll modal-overflow fade" tabindex="-1" data-focus-on="input:first" aria-hidden="true">
+<div id="orderInfo" class="modal container modal-scroll modal-overflow fade" tabindex="-1" data-focus-on="input:first"
+     aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
         <h4 class="modal-title">Zamówienie</h4>
@@ -390,16 +424,16 @@ $_SESSION["costingID"] = $costing->type;
     <div class="modal-body" id="orderInfoContent">
         <table class="display" id="OTDM_TABLE" style="overflow-y: auto;">
             <thead>
-                <tr>
-                    <th>Nr</th>
-                    <th>Nazwa</th>
-                    <th>Kod</th>
-                    <th>Blacha</th>
-                    <th>Sztuk</th>
-                    <th>Atrybut</th>
-                    <th>Cena</th>
-                    <th></th>
-                </tr>
+            <tr>
+                <th>Nr</th>
+                <th>Nazwa</th>
+                <th>Kod</th>
+                <th>Blacha</th>
+                <th>Sztuk</th>
+                <th>Atrybut</th>
+                <th>Cena</th>
+                <th></th>
+            </tr>
             </thead>
             <tbody id="OTDM_CONTENT">
 
@@ -418,6 +452,7 @@ $_SESSION["costingID"] = $costing->type;
     var ajax_gif = '<div style="text-align: center"><img src="<?php echo $site_path; ?>/img/lg.GIF" alt="Loading"/></div>';
     var server_name = "<?php echo $_SERVER["SERVER_NAME"]; ?>";
     var ctype = <?php echo $costing->type; ?>;
+
     function search() {
         if ($("#sform input").val() !== "") {
             $.ajax({
@@ -429,6 +464,7 @@ $_SESSION["costingID"] = $costing->type;
             });
         }
     }
+
     function pList(_id) {
         var _name = _id.split("_")[1];
         $("#cClients").fadeOut("fast");
@@ -444,7 +480,9 @@ $_SESSION["costingID"] = $costing->type;
             });
         });
     }
+
     var first = true;
+
     function dList(id) {
         var _id = parseInt(id);
         var _name = id;
@@ -528,15 +566,19 @@ $_SESSION["costingID"] = $costing->type;
             first = false;
         }
     }
+
     //Add to costing list
     function addToCosting() {
         if (selected.length > 0 || costEdit == true) {
             var clMaterial = new Array();
-<?php
-for ($i = 1; $i <= count($material->name); $i++) {
-    echo 'clMaterial[' . $i . '] = "' . $material->name[$i] . '";';
-}
-?>
+            <?php
+            for ($i = 1; $i <= count($material->name); $i++) {
+                if (!isset($material->name[$i])) {
+                    continue;
+                }
+                echo 'clMaterial[' . $i . '] = "' . $material->name[$i] . '";';
+            }
+            ?>
             var actionID = "2";
             if (costEdit == true) {
                 actionID = "4";
@@ -553,11 +595,11 @@ for ($i = 1; $i <= count($material->name); $i++) {
                 text = text + '<tr><td>Grubość</td><td><input type="text" class="form-control" name="thickness" id="cthickness"/></td></tr>';
                 text = text + '<tr><td>Sztuk</td><td><input type="number" class="form-control" name="pieces" id="cpieces"/></td></tr>';
                 text = text + '<tr><td>Wersja</td><td><select class="form-control" name="version" id="pversioni"></select></td></tr>';
-<?php
-if ($costing->type == 2) {
-    echo 'text = text + \'<tr><td>Promień</td><td><select class="form-control" name="radius" id="radiuslist"></select></td></tr>\';';
-}
-?>
+                <?php
+                if ($costing->type == 2) {
+                    echo 'text = text + \'<tr><td>Promień</td><td><select class="form-control" name="radius" id="radiuslist"></select></td></tr>\';';
+                }
+                ?>
                 text = text + '<tr><td>B</td><td><input type="checkbox" name="cba[]" value="1" id="c1" class="form-control"></td></tr>\n\
 <tr><td>P</td><td><input type="checkbox" name="cba[]" value="4" class="form-control" id="c4"></td></tr>\n\
 <tr><td>Z</td><td><input type="checkbox" name="cba[]" value="5" class="form-control" id="c5"></td></tr>\n\
@@ -646,11 +688,11 @@ if ($costing->type == 2) {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         }
-<?php
-if (@$_GET["plist"] != null) {
-    echo 'pList(Cookies.get("plClientName"));dList(Cookies.get("plProjectName"));';
-}
-?>
+        <?php
+        if (@$_GET["plist"] != null) {
+            echo 'pList(Cookies.get("plClientName"));dList(Cookies.get("plProjectName"));';
+        }
+        ?>
         $("#clist").on("click", "tr", function () {
             var _id = $(this).attr("id");
             Cookies.set("cname", $(this).children("._fname").html());
@@ -949,11 +991,11 @@ if (@$_GET["plist"] != null) {
             window.location.href = "<?php echo $site_path; ?>/view/601/" + nr + "/auto_costing";
         });
 
-		//Priced auto plate item click
-		$("#PTD_CONTENT").on("click", ".pspc", function () {
-			var nr = parseInt($(this).parent().attr("id"));
-			window.location.href = "<?php echo $site_path; ?>/view/602/" + nr + "/auto_costing";
-		});
+        //Priced auto plate item click
+        $("#PTD_CONTENT").on("click", ".pspc", function () {
+            var nr = parseInt($(this).parent().attr("id"));
+            window.location.href = "<?php echo $site_path; ?>/view/602/" + nr + "/auto_costing";
+        });
 
         //To production button
         $(".bAddToProduction").on("click", function () {
