@@ -32,6 +32,7 @@ function getPrograms()
       p.`cut`,
       p.`position`,
       cq.sheet_count as quantity,
+      cq.parent_synced,
       p.new_cutting_queue_id
       FROM `programs` p
       LEFT JOIN cutting_queue cq ON cq.id = p.new_cutting_queue_id
@@ -50,6 +51,29 @@ function getPrograms()
                 foreach ($mpwa as $name => $value) {
                     $pieces += $value;
                 }
+            }
+        }
+
+        // ------ Tutaj update parentu odpadu
+
+        if ($program['parent_synced'] === 0) {
+            //Najpierw detale bo to do nich jest blacha przypisana
+            $detailWasteQuery = $db->prepare("SELECT id, plate_warehouse_id FROM cutting_queue_details WHERE cutting_queue_list_id = :listId");
+            $detailWasteQuery->bindValue(':listId', $program['new_cutting_queue_id'], PDO::PARAM_INT);
+            $detailWasteQuery->execute();
+
+            $detailsCount = 0;
+            $syncedCount = 0;
+            while($row = $detailWasteQuery->fetch())
+            {
+                $details++;
+
+            }
+
+            if ($detailsCount === $syncedCount) {
+                $queueUpdateQuery = $db->prepare("UPDATE cutting_queue SET parent_synced = 1 WHERE id = :queueId");
+                $queueUpdateQuery->bindValue(":queueId", $program['new_cutting_queue_id'], PDO::PARAM_INT);
+                $queueUpdateQuery->execute();
             }
         }
 
