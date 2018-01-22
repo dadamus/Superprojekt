@@ -90,7 +90,7 @@ class PlateSyncController
             $this->getImg($plateData['id'], $programId, $sheetNumber);
 
             //Ustawie parenta blachy
-            $this->setPlateChildren($materialId, $sheetName);
+            $this->setPlateChildren($plateData['id'], $sheetName);
         }
     }
 
@@ -119,6 +119,9 @@ class PlateSyncController
                 break;
             }
 
+            $plateUpdateQuery = new sqlBuilder(sqlBuilder::UPDATE, 'plate_warehouse');
+            $plateUpdateQuery->bindValue('parentId', $materialId, PDO::PARAM_INT);
+            $plateUpdateQuery->flush();
         } while (count($data) === 0);
     }
 
