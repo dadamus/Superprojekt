@@ -54,9 +54,9 @@ class PlateSyncController
             $cuttingQueueId = $db->lastInsertId();
 
             //Robimy dziwne foldery dla podprogramow zeby statusy im mozna bylo zmieniac
-            for($s = 0; $s < $sheetCount; $s++) {
+            for ($s = 0; $s < $sheetCount; $s++) {
                 $programListQuery = new sqlBuilder(sqlBuilder::INSERT, 'cutting_queue_list');
-                $programListQuery->bindValue('lp', $s+1, PDO::PARAM_INT);
+                $programListQuery->bindValue('lp', $s + 1, PDO::PARAM_INT);
                 $programListQuery->bindValue('cutting_queue_id', $cuttingQueueId, PDO::PARAM_INT);
                 $programListQuery->bindValue('state', 0, PDO::PARAM_INT);
                 $programListQuery->flush();
@@ -87,9 +87,39 @@ class PlateSyncController
             $programQuery->flush();
 
             $programId = $db->lastInsertId();
-
             $this->getImg($plateData['id'], $programId, $sheetNumber);
+
+            //Ustawie parenta blachy
+            $this->setPlateChildren($materialId, $sheetName);
         }
+    }
+
+
+    /**
+     * @param int $materialId
+     * @param string $programName
+     */
+    private function setPlateChildren(int $materialId, string $programName): void
+    {
+        $try = 0;
+        do {
+            $try++;
+
+            $plateQuery = new sqlBuilder(sqlBuilder::SELECT, 'plate_warehouse');
+            $plateQuery->addBind('id');
+            $plateQuery->addBind('SheetCode');
+            $plateQuery->addCondition('SheetCode like "%' . $programName . '%"');
+            $data = $plateQuery->getData();
+
+            if (count($data) === 0) {
+                if ($try <= 3) {
+                    sleep(1);
+                    continue;
+                }
+                break;
+            }
+
+        } while (count($data) === 0);
     }
 
     /**
