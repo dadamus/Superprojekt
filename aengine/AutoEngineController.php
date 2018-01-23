@@ -462,12 +462,14 @@ class AutoEngineController
         $data = json_decode($_POST["data"], true);
 
         $plateSync = new PlateSyncController();
+        $logi = fopen(__DIR__ . '/../logicsharp.log', 'rw');
+        fwrite($logi, date("Y-m-d H:i:s") . ":\n Akcja synchronizacja!\n");
         try {
             $plateSync->syncAction($data);
         } catch (\Exception $ex) {
-            $logi = fopen(__DIR__ . '/../logicsharp.log', 'rw');
-            fwrite($logi, date("Y-m-d H:i:s") . ":\n" . $ex->getMessage() . "\n" . $ex->getTraceAsString());
+            fwrite($logi, date("Y-m-d H:i:s") . ":\n" . $ex->getMessage() . "\n" . $ex->getTraceAsString() . "\n");
         }
+        fclose($logi);
         return "ok";
     }
 
