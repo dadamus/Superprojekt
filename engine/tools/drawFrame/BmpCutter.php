@@ -10,7 +10,7 @@ class bmpCutter
 {
     private $image;
     private $position;
-    private $scale;
+    private $scale = 1;
 
     private $maxWidth;
     private $realWidth;
@@ -351,7 +351,7 @@ class bmpCutter
 
     public function getScale()
     {
-        return $this->scale;
+        return ( $this->scale != 0 ? $this->scale : 1);
     }
 
     /**
