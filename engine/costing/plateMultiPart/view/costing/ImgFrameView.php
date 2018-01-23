@@ -81,7 +81,13 @@ $breakLoop = false;
                     </div>
 
                     <div id="wynik" style="position: fixed; top: 250px; left: 40px;">
-                        Pole: 0
+                        Pole: 0<br/>
+                    </div>
+
+                    <div>
+                        SheetSizeX: <?= $materialData->getSheetSizeX() ?><br/>
+                        ImageWidth: <?=$imageSize["width"] ?><br/>
+                        Scale: <?= $bmpCutter->getScale() ?><br/>
                     </div>
 
                     <script type="text/javascript">

@@ -202,7 +202,7 @@ if ($a == 1) {
         'SkeletonFile' => '',
         'SkeletonData' => '',
         'MD5' => '',
-        'Price' => '',
+        'Price' => 0,
         'Priority' => $_POST['Priority'],
     ]);
 
