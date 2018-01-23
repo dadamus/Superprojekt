@@ -101,6 +101,8 @@ class PlateSyncController
      */
     private function setPlateChildren(int $materialId, string $programName)
     {
+        global $db;
+
         $try = 0;
         do {
             $try++;
@@ -119,9 +121,10 @@ class PlateSyncController
                 break;
             }
 
-            $plateUpdateQuery = new sqlBuilder(sqlBuilder::UPDATE, 'plate_warehouse');
-            $plateUpdateQuery->bindValue('parentId', $materialId, PDO::PARAM_INT);
-            $plateUpdateQuery->flush();
+            $rowData = reset($data);
+
+            $updateQuery = $db->prepare("UPDATE plate_warehouse SET parentId = $materialId WHERE id = '" . $rowData['id'] . "'");
+            $updateQuery->execute();
         } while (count($data) === 0);
     }
 
