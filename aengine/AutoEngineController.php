@@ -70,7 +70,9 @@ class AutoEngineController
             $did = null;
 
             $ne = explode("-", $_name);
-            $did = $ne[2];
+            if (isset( $ne[2])) {
+                $did = $ne[2];
+            }
 
             /* $qmpw = $db->query("SELECT `did` FROM `mpw` WHERE `code` = '$_name'");
               if ($mpw = $qmpw->fetch()) {
