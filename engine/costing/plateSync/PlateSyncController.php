@@ -15,7 +15,7 @@ class PlateSyncController
      * @param array $data
      * @throws Exception
      */
-    public function syncAction(array $data): void
+    public function syncAction(array $data)
     {
         global $db;
 
