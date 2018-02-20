@@ -71,6 +71,8 @@ if ($action == 1) {
         $order_status[2] = '<i class="fa fa-cubes"></i>';
         $order_status[3] = '<i class="fa fa-puzzle-piece"></i>';
         $order_status[4] = '<i class="fa fa-industry"></i>';
+        $order_status[5] = '<i class="fa fa-pause"></i>';
+        $order_status[6] = '<i class="fa fa-map-signs"></i>';
 
         $table .= "<tr style=\"cursor: pointer \" class=\"o_click\" id=\"" . $order['id'] . "_oi\">"
             . "<td>" . $order['id'] . "</td>"
