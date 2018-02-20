@@ -4,6 +4,123 @@ require_once dirname(__FILE__) . "/../protect.php";
 require_once dirname(__FILE__) . "/../../config.php";
 require_once dirname(__FILE__) . "/../imap.php";
 
+/**
+ * Każdy program dopiero, gdy otrzymuje status Zatwierdzony, wykonuje operacje i wrzuca dane, które są poniżej:
+
+- Zmienne dodatkowe *z licznika kartf
+- $1 - wpisane ile detali wycięto poprawnie
+- $2 - szt *poszczególnych detali na arkuszu (niezmienna dla usera)
+- $3 - wpisane ile traktować jako złom
+- Wyliczanie pobranego odpadu (jeśli przypisany jakiś odpad)
+- $surface = $X * $Y blachy [programowe wymiary pobrane z xml lub po s_code]
+- $weight_mm = $th * $density - ile [g] waży 1mm^2.
+
+- $detail_sur = <AreaWithHoles>
+- $detail_weight = $detail_sur * $weight_mm -> ile waży 1 detal
+- $details_cutted  = $detail_weight * $1 / 1000 -> ile kg wycięto poprawnie
+- $details_remnant = $detail_weight * $3 / 1000 -> ile kg pójdzie na złom
+
+Zapisujemy dane do mysql, żeby można było je w razie czego cofnąć i dodatkowo:
+
+- Sumujemy ze wszystkich detali wycięcia + złom i odejmujemy z blachy (nowy SheetCode)
+- $details_all_cutted  = SUM([$]details_cutted)  -> suma kg ze wszystkich wyciętych
+- $details_all_remnant = SUM([$]details_remnant) -> suma kg ze wszystkich odpadków
+
+Po SheetCode [tym nowym - przypisanym do programu] wyciągamy wagę aktualną i wykonujemy operację:
+
+- waga_aktualna = $waga_aktualna - (($details_all_cutted + details_all_remnant) / @Qty_arkusza)
+- Zapisujemy info, żeby przy blasze było wiadomo, z którego programu poszło i można było to cofnąć.
+ */
+
+class CuttingQueueDetailsCalculated
+{
+    /**
+     * @var float
+     */
+    private $detailsCutted;
+
+    /**
+     * @var float
+     */
+    private $detailsRemnant;
+
+    /**
+     * CuttingQueueDetailsCalculated constructor.
+     * @param float $detailsCutted
+     * @param float $detailsRemnant
+     */
+    public function __construct(float $detailsCutted, float $detailsRemnant)
+    {
+        $this->detailsCutted = $detailsCutted;
+        $this->detailsRemnant = $detailsRemnant;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDetailsCutted(): float
+    {
+        return $this->detailsCutted;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDetailsRemnant(): float
+    {
+        return $this->detailsRemnant;
+    }
+}
+
+/**
+ * @param int $cuttingQueueDetailId
+ * @return CuttingQueueDetailsCalculated
+ */
+function calculatePlateDetailsWaste(int $cuttingQueueDetailId): CuttingQueueDetailsCalculated
+{
+    global $db;
+
+    $detailDataQuery = $db->prepare("
+        SELECT 
+        d.cutting,
+        d.quantity,
+        d.RectangleAreaW,
+        d.plate_warehouse_id,
+        pw.Width,
+        pw.Height,
+        tm.Thickness,
+        m.cubic as density
+        FROM 
+        cutting_queue_details d 
+        LEFT JOIN plate_warehouse pw ON pw.id = d.plate_warehouse_id
+        LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
+        LEFT JOIN material m ON m.name = tm.MaterialTypeName
+        WHERE
+        d.id = :did
+    ");
+    $detailDataQuery->bindValue(':did', $cuttingQueueDetailId, PDO::PARAM_INT);
+    $detailDataQuery->execute();
+
+    $detailData = $detailDataQuery->fetch();
+
+    $surface = (float)$detailData['Width'] * (float)$detailData['Height'];
+    $weightMM = (float)$detailData['Thickness'] * (float)$detailData['density'];
+
+    $detailSurface = $detailData['RectangleAreaW'];
+    $detailWeight = $detailSurface * $weightMM;
+    $detailsCutted = $detailWeight * $detailData['cutting'] / 1000;
+    $detailsRemnant = $detailWeight * ($detailData['quantity'] - $detailData['cutting']) / 1000;
+
+    $sqlInserter = new sqlBuilder(sqlBuilder::INSERT, 'details_cutted_report');
+    $sqlInserter->bindValue('cutting_queue_detail_id', $cuttingQueueDetailId, PDO::PARAM_INT);
+    $sqlInserter->bindValue('details_cutted', $detailsCutted, PDO::PARAM_STR);
+    $sqlInserter->bindValue('details_remnant', $detailsRemnant, PDO::PARAM_STR);
+    $sqlInserter->bindValue('created_at', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+    $sqlInserter->flush();
+
+    return new CuttingQueueDetailsCalculated($detailsCutted, $detailsRemnant);
+}
+
 $listStatus = [
     0 => 'Oczekuje',
     1 => 'w trakcje',
@@ -89,7 +206,7 @@ if ($action == 1) { //Imap check messages
     $listItemQuery = $db->prepare('
         SELECT
         d.id as queue_detail_id,
-        d.qantity,
+        d.quantity,
         d.cutting,
         l.state,
         l.id as list_id,
@@ -131,6 +248,10 @@ if ($action == 1) { //Imap check messages
     $oldState = $oldStateData['state'];
 
     $details = explode(',', $_POST['details']);
+
+    /** @var CuttingQueueDetailsCalculated[] $calculatedDetails */
+    $calculatedDetails = [];
+
     foreach ($details as $detailId) {
         $oitemDataQuery = $db->prepare('
             SELECT
@@ -165,6 +286,8 @@ if ($action == 1) { //Imap check messages
             $oitemUpdate->bindValue('dct', $oitemData['dct'], PDO::PARAM_INT);
             $oitemUpdate->bindValue('stored', $oitemData['stored'], PDO::PARAM_INT);
             $oitemUpdate->flush();
+
+            $calculatedDetails[] = calculatePlateDetailsWaste($detailId);
         }
 
         if ($oldState == 3) {
@@ -177,6 +300,58 @@ if ($action == 1) { //Imap check messages
             $oitemUpdate->bindValue('stored', $oitemData['stored'], PDO::PARAM_INT);
             $oitemUpdate->flush();
         }
+    }
+
+    /*
+        Po SheetCode [tym nowym - przypisanym do programu] wyciągamy wagę aktualną i wykonujemy operację:
+
+        - waga_aktualna = $waga_aktualna - (($details_all_cutted + details_all_remnant) / @Qty_arkusza)
+        - Zapisujemy info, żeby przy blasze było wiadomo, z którego programu poszło i można było to cofnąć.
+     */
+    if ($newState == 3)
+    {
+        $globalCutted = 0;
+        $globalRemnant = 0;
+
+        foreach ($calculatedDetails as $calculatedDetail)
+        {
+            $globalCutted += $calculatedDetail->getDetailsCutted();
+            $globalRemnant += $calculatedDetail->getDetailsRemnant();
+        }
+
+        $firstDetailId = reset($details);
+        $warehouseQuery = $db->prepare('
+        SELECT
+        pw.Width,
+        pw.Height,
+        tm.Thickness,
+        pw.QtyAvailable,
+        m.cubic as density,
+        pw.actual_weight,
+        plate_warehouse.id
+        FROM 
+        cutting_queue_details d 
+        LEFT JOIN plate_warehouse pw ON pw.id = d.plate_warehouse_id
+        LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
+        LEFT JOIN material m ON m.name = tm.MaterialTypeName
+        ');
+        $warehouseQuery->bindValue(':did', $firstDetailId, PDO::PARAM_INT);
+        $warehouseQuery->execute();
+
+        $warehouseData = $warehouseQuery->fetch();
+        $actualWeight = $warehouseData['actual_weight'];
+
+        if ($actualWeight == 0)
+        {
+            $actualWeight = $warehouseData['Width'] * $warehouseData['Height'] * $warehouseData['Thickness'] * $warehouseData['density'] * $warehouseData['QtyAvailable'];
+        }
+
+        $actualWeight = $actualWeight - (($globalCutted - $globalRemnant) / $warehouseData['QtyAvailable']);
+
+        $insert = new sqlBuilder(sqlBuilder::UPDATE, 'plate_warehouse');
+        $insert->bindValue('actual_weight', $actualWeight, PDO::PARAM_STR);
+        $insert->addCondition('id = ' . $warehouseData['id']);
+        $insert->flush();
     }
 
     $stateUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'cutting_queue_list');

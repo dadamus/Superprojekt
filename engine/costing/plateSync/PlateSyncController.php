@@ -13,8 +13,9 @@ class PlateSyncController
 {
     /**
      * @param array $data
+     * @throws Exception
      */
-    public function syncAction(array $data)
+    public function syncAction(array $data): void
     {
         global $db;
 
@@ -73,7 +74,7 @@ class PlateSyncController
                     $detailQuery = new sqlBuilder(sqlBuilder::INSERT, 'cutting_queue_details');
                     $detailQuery->bindValue('cutting_queue_list_id', $listId, PDO::PARAM_INT);
                     $detailQuery->bindValue('oitem_id', $oitemId, PDO::PARAM_INT);
-                    $detailQuery->bindValue('qantity', $quantity, PDO::PARAM_INT);
+                    $detailQuery->bindValue('quantity', $quantity, PDO::PARAM_INT);
                     $detailQuery->bindValue('plate_warehouse_id', $plateData['id'], PDO::PARAM_INT);
                     $detailQuery->bindValue('LaserMatName', $program['LaserMatName'], PDO::PARAM_STR);
                     $detailQuery->bindValue('RectangleAreaW', $RectangleAreaW, PDO::PARAM_STR);
@@ -99,7 +100,7 @@ class PlateSyncController
      * @param int $materialId
      * @param string $programName
      */
-    private function setPlateChildren(int $materialId, string $programName)
+    private function setPlateChildren(int $materialId, string $programName): void
     {
         global $db;
 
@@ -169,7 +170,7 @@ class PlateSyncController
      * @return null|int
      * @throws Exception
      */
-    private function getOItemIdByDetailName(string $detailName)
+    private function getOItemIdByDetailName(string $detailName): ?int
     {
         global $db;
 

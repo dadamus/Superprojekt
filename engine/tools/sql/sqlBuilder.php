@@ -31,7 +31,7 @@ class sqlBuilder
      * @param string $type
      * @param string $table
      */
-    public function __construct($type = "SELECT", $table = null)
+    public function __construct($type = self::INSERT, $table = null)
     {
         switch ($type) {
             case "INSERT":

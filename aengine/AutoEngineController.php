@@ -35,7 +35,7 @@ class AutoEngineController
      */
     protected function performAction(string $actionName)
     {
-        if (is_null($actionName)) {
+        if ($actionName === null) {
             echo "Brak akcji!";
             return false;
         }
@@ -457,7 +457,7 @@ class AutoEngineController
 
     private function PlateProductionSync()
     {
-        require_once dirname(__DIR__) . "/engine/costing/plateSync/plateSyncController.php";
+        require_once dirname(__DIR__) . "/engine/costing/plateSync/PlateSyncController.php";
 
         $data = json_decode($_POST["data"], true);
 
@@ -476,7 +476,7 @@ class AutoEngineController
         return json_encode($jobs);
     }
 
-    //Aktualizauje status zadań
+    //Aktualizauje status zadańx
     public function SyncJobs()
     {
         global $db;

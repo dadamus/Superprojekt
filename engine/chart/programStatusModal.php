@@ -41,12 +41,12 @@ $maxState = count($listStatus) - 1;
                             </td>
                             <td>
                                 <input type="number" name="detail_<?= $detail['queue_detail_id'] ?>"
-                                       value="<?= ($detail['state'] == 2 ? $detail['cutting'] : $detail['qantity']) ?>"
+                                       value="<?= ($detail['state'] == 2 ? $detail['cutting'] : $detail['quantity']) ?>"
                                        data-detail-id="<?= $detail['queue_detail_id'] ?>"
                                 class="form-control detail-count">
                             </td>
                             <td>
-                                <?= $detail['qantity'] ?>
+                                <?= $detail['quantity'] ?>
                             </td>
                             <td>
                                 <input type="number" class="form-control">

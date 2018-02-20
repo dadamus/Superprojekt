@@ -248,7 +248,7 @@ $status = getOrderStatus($order["status"])
 
                                                         $programsQuery = $db->prepare('
                                                           SELECT
-                                                          d.qantity,
+                                                          d.quantity,
                                                           q.sheet_count,
                                                           q.sheet_name,
                                                           q.created_at,
@@ -267,7 +267,7 @@ $status = getOrderStatus($order["status"])
                                                         $programs = [];
 
                                                         while ($program = $programsQuery->fetch()) {
-                                                            $pcr += $program["qantity"] * $program["sheet_count"];
+                                                            $pcr += $program["quantity"] * $program["sheet_count"];
                                                             $programs[] = $program;
                                                         }
 
@@ -386,7 +386,7 @@ $status = getOrderStatus($order["status"])
                                                                                         <?= $program['created_at'] ?>
                                                                                     </td>
                                                                                     <td>
-                                                                                        <?= $program['qantity'] ?>
+                                                                                        <?= $program['quantity'] ?>
                                                                                     </td>
                                                                                     <td>
                                                                                         <?= $program['sheet_count'] ?>

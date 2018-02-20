@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `cutting_queue_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cutting_queue_id` int(11) NOT NULL,
   `oitem_id` int(11) NOT NULL,
-  `qantity` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin2 AUTO_INCREMENT=1;
 
