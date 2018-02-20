@@ -154,7 +154,12 @@ class PlateSyncController
         $newName = $programId . '_' . date('Y_m_d_H_i_s') . '_' . rand() . '.bmp';
         $newPath = $uploadPath . $newName;
 
-        rename($filePath, $newPath);
+        if (file_exists($filePath)) {
+            rename($filePath, $newPath);
+        } else {
+            echo $filePath . ' nie istnieje!';
+        }
+
         $sqlBuilder = new sqlBuilder(sqlBuilder::INSERT, 'sheet_image');
         $sqlBuilder->bindValue('plate_warehouse_id', $sheetId, PDO::PARAM_INT);
         $sqlBuilder->bindValue('program_id', $programId, PDO::PARAM_INT);
