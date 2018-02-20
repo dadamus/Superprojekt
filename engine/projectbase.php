@@ -257,10 +257,10 @@ if ($action == 1) { //AJAX client list
                         <td>Nazwa projektu</td>
                         <td><input name="p_name_input" type="text" class="form-control" placeholder=""/></td>
                     </tr>
-                    <tr>
+                    <tr style="display: none;">
                         <td>Data utworzenia</td>
                         <td><input name="p_date_input" class="form-control date-picker" data-date-format="yyyy-mm-dd"
-                                   size="16" type="text" value=""/></td>
+                                   size="16" type="text" value="" hidden/></td>
                     </tr>
                 </table>
             </div>
