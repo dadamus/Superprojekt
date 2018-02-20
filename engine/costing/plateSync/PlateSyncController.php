@@ -100,7 +100,7 @@ class PlateSyncController
      * @param int $materialId
      * @param string $programName
      */
-    private function setPlateChildren(int $materialId, string $programName): void
+    private function setPlateChildren(int $materialId, string $programName)
     {
         global $db;
 
