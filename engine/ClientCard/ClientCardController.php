@@ -110,7 +110,7 @@ class ClientCardController extends mainController
         //Zamowienie
         $OrderSqlBuilder = new sqlBuilder(sqlBuilder::INSERT, "order");
         $OrderSqlBuilder->bindValue("cid", $clientId, PDO::PARAM_INT);
-        $OrderSqlBuilder->bindValue("on", "ZAM #" . $newTicketIdData["ticketId"], PDO::PARAM_STR);
+        $OrderSqlBuilder->bindValue("on", "ZAM #" . ($newTicketIdData["ticketId"] + 1), PDO::PARAM_STR);
         $OrderSqlBuilder->bindValue("des", "by ticket", PDO::PARAM_STR);
         $OrderSqlBuilder->bindValue("status", 1, PDO::PARAM_INT);
         $OrderSqlBuilder->bindValue("date", date("Y-m-d"), PDO::PARAM_STR);
