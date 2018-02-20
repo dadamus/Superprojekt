@@ -414,13 +414,15 @@ $mpwQuery = $db->prepare('
   tm.MaterialTypeName,
   cq.sheet_name,
   cq.sheet_count,
-  qd.LaserMatName
+  qd.LaserMatName,
+  pw2.SheetCode as ParentSheetCode
   FROM
   cutting_queue_details qd
   LEFT JOIN cutting_queue_list l ON l.id = qd.cutting_queue_list_id
   LEFT JOIN cutting_queue cq ON cq.id = l.cutting_queue_id
   LEFT JOIN plate_warehouse pw ON pw.id = qd.plate_warehouse_id
   LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
+  LEFT JOIN plate_warehouse pw2 ON pw2.id = pw.parentId
   WHERE
   cq.id = :cuttingQueueId
   LIMIT 1
@@ -460,6 +462,10 @@ $image = str_replace('/var/www/html', '', $program['image_src']);
     <tr>
         <td>SheetCode:</td>
         <td><?= $mpwData["SheetCode"] ?></td>
+    </tr>
+    <tr>
+        <td>ParentSheetCode:</td>
+        <td><?= $mpwData["ParentSheetCode"] ?></td>
     </tr>
     <tr>
         <td>Nazwa materiału:</td>

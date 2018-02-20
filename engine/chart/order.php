@@ -261,7 +261,7 @@ $status = getOrderStatus($order["status"])
                                                           d.oitem_id = :oitemId
                                                           AND p.status = 0
                                                         ');
-                                                        $programsQuery->bindValue(':oitemId', $oid, PDO::PARAM_INT);
+                                                        $programsQuery->bindValue(':oitemId', $oitem['oi_id'], PDO::PARAM_INT);
                                                         $programsQuery->execute();
 
                                                         $programs = [];
