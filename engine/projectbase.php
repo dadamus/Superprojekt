@@ -4,6 +4,18 @@ if (!empty($action)) {
     require_once '../config.php';
     require_once 'protect.php';
 }
+
+//EDYCJA
+if (isset($_POST['edit_p_id_input'])) {
+    $pidId = $_POST['edit_p_id_input'];
+    $name = $_POST['edit_p_name_input'];
+
+    $sqlUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'projects');
+    $sqlUpdate->bindValue('name', $name, PDO::PARAM_STR);
+    $sqlUpdate->addCondition('id = ' . $pidId);
+    $sqlUpdate->flush();
+}
+
 if ($action == 1) { //AJAX client list
     $content = $_POST['scontent'];
     if (is_numeric($content)) {
@@ -134,7 +146,8 @@ if ($action == 1) { //AJAX client list
     die(json_encode(
         [
             "startdate" => $project['startdate'],
-            "name" => $project['name']
+            "name" => $project['name'],
+            "id" => $pid
         ]
     ));
 }
@@ -271,6 +284,37 @@ if ($action == 1) { //AJAX client list
         </form>
     </div>
 </div>
+<div style="display: none;" aria-hidden="true" aria-labelledby="editModal" role="dialog" tabindex="-1"
+     class="modal fade modal-scroll modal-overflow" id="editModal">
+    <div class="modal-content">
+        <form action="?" id="projectEditForm" method="POST">
+            <div class="modal-header">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">x</button>
+                <h4 id="myModalLabel" class="modal-title">Edytuj dane</h4>
+            </div>
+            <div class="modal-body" id="costing-wrapper">
+                <div style="display: none">
+                    <input name="edit_p_id_input" type="text" class="form-control" placeholder=""/>
+                </div>
+                <table>
+                    <tr>
+                        <td>Nazwa projektu</td>
+                        <td><input name="edit_p_name_input" type="text" class="form-control" placeholder=""/></td>
+                    </tr>
+                    <tr style="display: none;">
+                        <td>Data utworzenia</td>
+                        <td><input name="p_date_input" class="form-control date-picker" data-date-format="yyyy-mm-dd"
+                                   size="16" type="text" value="" hidden/></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Zamknij</button>
+                <button class="btn btn-primary" type="submit">Zapisz</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script type="text/javascript">
     function search() {
@@ -315,11 +359,12 @@ if ($action == 1) { //AJAX client list
                 }).done(function (msg) {
                     let returns;
                     returns = JSON.parse(msg);
-                    $("input[name='p_name_input']").val(returns['name']);
-                    $("input[name=p_date_input]").val(returns['startdate']);
+                    $("input[name='edit_p_name_input']").val(returns['name']);
+                    $("input[name='edit_p_id_input']").val(returns['id']);
+                    //$("input[name=p_date_input]").val(returns['startdate']);
 
                     App.unblockUI();
-                    $("#addToCostingModal").modal("show")
+                    $("#editModal").modal("show")
                 });
             }
         });
