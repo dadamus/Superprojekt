@@ -2,71 +2,77 @@
 
 $xml = simplexml_load_file($data_src . "temp/TubeReport.xml");
 
-$oitem = array();
-$pname = "";
+class Data
+{
+    public $oitem = [];
+    public $pname = "";
 
-$material_name = "";
-$material_type = "";
-$thickness = 0;
-$pierceposition = 0;
-$pipelength = 0;
-$totallength = 0;
-$widthheightdiameter = "";
-$widthheight = "";
-$diameter = 0;
-$cpipecornerr = 0;
-$utilization = 0;
-$timestudy = 0; // in seconds
+    public $material_name = "";
+    public $material_type = "";
+    public $thickness = 0;
+    public $pierceposition = 0;
+    public $pipelength = 0;
+    public $totallength = 0;
+    public $widthheightdiameter = "";
+    public $widthheight = "";
+    public $diameter = 0;
+    public $cpipecornerr = 0;
+    public $utilization = 0;
+    public $timestudy = 0; // in seconds
+}
 
-function getTube($tube) {
-    if ($GLOBALS["pname"] == null) {
-        $GLOBALS["pname"] = substr($tube->Header->Name, 0, -4);
-        $GLOBALS["material_name"] = str_replace(" ", "", $tube->Header->{"Material-Name"});
-        $GLOBALS["material_type"] = str_replace(" ", "", $tube->Header->{"Material-Type"});
-        $GLOBALS["thickness"] = floatval(str_replace(" ", "", $tube->Header->Thickness));
-        $GLOBALS["pierceposition"] = floatval(str_replace(" ", "", $tube->Header->PiercePosition));
-        $GLOBALS["pipelength"] = floatval(str_replace(" ", "", $tube->Header->PipeLength));
-        $GLOBALS["widthheightdiameter"] = str_replace(" ", "", $tube->Header->WidthHeightDiameter);
-        $GLOBALS["widthheight"] = str_replace(" ", "", $tube->Header->WidthHeight);
-        $GLOBALS["diameter"] = str_replace(" ", "", $tube->Header->Diameter);
-        $GLOBALS["cpipecornerr"] = floatval(str_replace(" ", "", $tube->Header->CPipeCornerR));
-        
-        if ($GLOBALS["pname"][0] != "T") {
+$data = new Data();
+
+function getTube(Data $data, $tube)
+{
+    if ($data->pname == null) {
+        $data->pname = substr($tube->Header->Name, 0, -4);
+        $data->material_name = str_replace(" ", "", $tube->Header->{"Material-Name"});
+        $data->material_type = str_replace(" ", "", $tube->Header->{"Material-Type"});
+        $data->thickness = floatval(str_replace(" ", "", $tube->Header->Thickness));
+        $data->pierceposition = floatval(str_replace(" ", "", $tube->Header->PiercePosition));
+        $data->pipelength = floatval(str_replace(" ", "", $tube->Header->PipeLength));
+        $data->widthheightdiameter = str_replace(" ", "", $tube->Header->WidthHeightDiameter);
+        $data->widthheight = str_replace(" ", "", $tube->Header->WidthHeight);
+        $data->diameter = str_replace(" ", "", $tube->Header->Diameter);
+        $data->cpipecornerr = floatval(str_replace(" ", "", $tube->Header->CPipeCornerR));
+
+        if ($data->pname[0] != "T") {
             die("2");
         }
     }
 
-    $GLOBALS["totallength"] += floatval(str_replace(" ", "", $tube->Header->TotalLength));
-    $GLOBALS["utilization"] += floatval(str_replace(" ", "", $tube->Header->Utilization));
-    $GLOBALS["timestudy"] += _timeToSec(str_replace(" ", "", $tube->Header->TimeStudy));
-    
-    
+    $data->totallength += floatval(str_replace(" ", "", $tube->Header->TotalLength));
+    $data->utilization += floatval(str_replace(" ", "", $tube->Header->Utilization));
+    $data->timestudy += _timeToSec(str_replace(" ", "", $tube->Header->TimeStudy));
+
+
     $qty = str_replace(' ', '', $tube->Header->Qty);
     foreach ($tube->Part as $part) {
         $atributes = $part->attributes();
         $name = str_replace(' ', '', $atributes["Name"]);
-        if (@$GLOBALS["oitem"][$name] == 0) {
-            $GLOBALS["oitem"][$name] = $qty;
+        if (@$data->oitem[$name] == 0) {
+            $data->oitem[$name] = $qty;
         } else {
-            $GLOBALS["oitem"][$name] += $qty;
+            $data->oitem[$name] += $qty;
         }
     }
 }
 
 if ($xml->TubeReport->count() == null) {
     $ctubes = 1;
-    getTube($xml);
+    getTube($data, $xml);
 } else {
     $ctubes = count($xml->TubeReport);
     foreach ($xml->TubeReport as $tube) {
-        getTube($tube);
+        getTube($data, $tube);
     }
 }
 
 $mpwl = array();
 $jitems = array();
 
-foreach ($oitem as $key => $row) {
+foreach ($data->oitem as $key => $row) {
     $n = $key . ".shd";
     $qoitem = $db->query("SELECT `id`, `mpw` FROM `oitems` WHERE `code` = '$n'");
     $i = $qoitem->fetch();
@@ -84,22 +90,27 @@ $jeitems = json_encode($jitems);
 $date = date("Y-m-d H:i:s");
 
 $inputs = array();
-function addInput($name, $type) {
+function addInput($name, $type)
+{
     global $inputs;
     array_push($inputs, array("name" => $name, "type" => $type));
 }
-function getInputName($mark = "`", $prefix = "") {
+
+function getInputName($mark = "`", $prefix = "")
+{
     global $inputs;
     $return = "";
-    foreach($inputs as $input) {
-        $return .= $mark.$prefix.$input["name"].$mark.", ";
+    foreach ($inputs as $input) {
+        $return .= $mark . $prefix . $input["name"] . $mark . ", ";
     }
     return $return;
 }
-function bindInput($query) {
-    global $inputs;
-    foreach($inputs as $input) {
-        $query->bindValue(":".$input["name"], $GLOBALS[$input["name"]], $input["type"]);
+
+function bindInput($query)
+{
+    global $inputs, $data;
+    foreach ($inputs as $input) {
+        $query->bindValue(":" . $input["name"], $data->$input["name"], $input["type"]);
     }
 }
 
@@ -119,7 +130,7 @@ addInput("timestudy", PDO::PARAM_STR);
 $in = getInputName();
 $inp = getInputName("", ":");
 
-$qe = $db->prepare("INSERT INTO `programs` ($in `name`, `mpw`, `date`) VALUES ($inp '$pname', '$jeitems', '$date')");
+$qe = $db->prepare("INSERT INTO `programs` ($in `name`, `mpw`, `date`) VALUES ($inp '$data->pname', '$jeitems', '$date')");
 bindInput($qe);
 $qe->execute();
 
