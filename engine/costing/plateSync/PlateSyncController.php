@@ -175,7 +175,7 @@ class PlateSyncController
      * @return null|int
      * @throws Exception
      */
-    private function getOItemIdByDetailName(string $detailName): ?int
+    private function getOItemIdByDetailName(string $detailName)
     {
         global $db;
 
