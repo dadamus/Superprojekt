@@ -127,10 +127,16 @@ if ($action == 1) { //AJAX client list
 } else if ($action == 5) {
     $pid = $_GET["pid"];
 
-    $project_q = $db->prepare("SELECT `date`, `name` FROM `projects` WHERE `id` = :pid");
+    $project_q = $db->prepare("SELECT `date` as startdate, `name` FROM `projects` WHERE `id` = :pid");
     $project_q->bindValue(":pid", $pid, PDO::PARAM_INT);
     $project_q->execute();
     $project = $project_q->fetch();
+    die(json_encode(
+        [
+            "startdate" => $project['startdate'],
+            "name" => $project['name']
+        ]
+    ));
 }
 ?>
 
@@ -142,33 +148,38 @@ if ($action == 1) { //AJAX client list
 <div class="row">
     <div class="col-lg-3">
         <div class="widget">
-            <div class="widget-header"> <i class="icon-search"></i>
+            <div class="widget-header"><i class="icon-search"></i>
                 <h3>Wyszukaj firmę</h3>
             </div>
             <div class="widget-content">
                 <form id="sform">
-                    <input type="search" placeholder="ID lub nazwa" id="search-input" class="form-control" name="scontent">
+                    <input type="search" placeholder="ID lub nazwa" id="search-input" class="form-control"
+                           name="scontent">
                 </form>
             </div>
         </div>
     </div>
     <div class="col-lg-9">
         <div class="widget">
-            <div class="widget-header"> <i class="icon-book"></i>
+            <div class="widget-header"><i class="icon-book"></i>
                 <h3>Lista firmy</h3>
             </div>
             <div class="widget-content">
                 <table class="table table-striped">
                     <thead>
-                        <tr>
-                            <td>ID</td>
-                            <td>Nazwa</td>
-                            <td>Typ</td>
-                            <td></td>
-                        </tr>
+                    <tr>
+                        <td>ID</td>
+                        <td>Nazwa</td>
+                        <td>Typ</td>
+                        <td></td>
+                    </tr>
                     </thead>
                     <tbody id="clist">
-                        <tr><td>Brak wyników</td><td></td><td></td></tr>
+                    <tr>
+                        <td>Brak wyników</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -182,7 +193,8 @@ if ($action == 1) { //AJAX client list
             <div class="widget-content" style="text-align: center;">
                 <a href="#projectForm" data-toggle="modal" class="btn btn-info">Dodaj nowy</a>
                 <a href="#" id="aScan" data-toggle="modal" class="btn btn-info">Skanuj</a>
-                <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="projectForm" class="modal fade" style="display: none;">
+                <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="projectForm"
+                     class="modal fade" style="display: none;">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button aria-hidden="true" data-dismiss="modal" class="close" type="button">x</button>
@@ -197,13 +209,19 @@ if ($action == 1) { //AJAX client list
                                 </div>
                                 <div id="doneMessage" style="display: none;">
                                     <div class="alert alert-success alert-block fade in">
-                                        <h4> <i class="icon-ok-sign"></i> Gotowe! </h4>
+                                        <h4><i class="icon-ok-sign"></i> Gotowe! </h4>
                                         <p>Projekt zapisany</p>
                                     </div>
                                 </div>
                                 <table style="margin: 0 auto; border-collapse: separate; border-spacing: 2px;">
-                                    <tr><td style="text-align: right;">Nazwa:</td><td><input type="text" name="name" class="form-control" id="name"/></td></tr>
-                                    <tr><td style="text-align: right;">Data:</td><td><?php echo '<input type="number" class="form-control" name="dd" value="' . date('d') . '" style="width: 55px"/><input type="number" name="dm" class="form-control" value="' . date('m') . '" style="width: 55px"/><input type="number" class="form-control" name="dy" value="' . date('Y') . '" style="width: 86px"/>'; ?></td></tr>
+                                    <tr>
+                                        <td style="text-align: right;">Nazwa:</td>
+                                        <td><input type="text" name="name" class="form-control" id="name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: right;">Data:</td>
+                                        <td><?php echo '<input type="number" class="form-control" name="dd" value="' . date('d') . '" style="width: 55px"/><input type="number" name="dm" class="form-control" value="' . date('m') . '" style="width: 55px"/><input type="number" class="form-control" name="dy" value="' . date('Y') . '" style="width: 86px"/>'; ?></td>
+                                    </tr>
                                 </table>
                             </div>
                             <div class="modal-footer">
@@ -218,14 +236,15 @@ if ($action == 1) { //AJAX client list
     </div>
     <div class="col-lg-9">
         <div class="widget">
-            <div class="widget-header"> <i class="icon-copy"></i>
+            <div class="widget-header"><i class="icon-copy"></i>
                 <h3>Projekty</h3>
             </div>
             <div class="widget-content" id="pcontent"></div>
         </div>
     </div>
 </div>
-<div style="display: none;" aria-hidden="true" aria-labelledby="editModal" role="dialog" tabindex="-1" class="modal fade modal-scroll modal-overflow" id="addToCostingModal">
+<div style="display: none;" aria-hidden="true" aria-labelledby="editModal" role="dialog" tabindex="-1"
+     class="modal fade modal-scroll modal-overflow" id="addToCostingModal">
     <div class="modal-content">
         <form action="?" id="editform" method="POST">
             <div class="modal-header">
@@ -234,9 +253,15 @@ if ($action == 1) { //AJAX client list
             </div>
             <div class="modal-body" id="costing-wrapper">
                 <table>
-                    <tr><td>Nazwa projektu</td><td><input name="p_name_input" type="text" class="form-control" placeholder=""/></td></tr>
-                    <tr><td>Data utworzenia</td><td><input name="p_date_input" class="form-control date-picker" data-date-format="yyyy-mm-dd" size="16" type="text" value=""/></td></tr>
-                    <tr><td>Data zakończenia</td><td><input name="p_date_input2" class="form-control date-picker" data-date-format="yyyy-mm-dd" size="16" type="text" value=""/></td></tr>
+                    <tr>
+                        <td>Nazwa projektu</td>
+                        <td><input name="p_name_input" type="text" class="form-control" placeholder=""/></td>
+                    </tr>
+                    <tr>
+                        <td>Data utworzenia</td>
+                        <td><input name="p_date_input" class="form-control date-picker" data-date-format="yyyy-mm-dd"
+                                   size="16" type="text" value=""/></td>
+                    </tr>
                 </table>
             </div>
             <div class="modal-footer">
@@ -259,6 +284,7 @@ if ($action == 1) { //AJAX client list
             });
         }
     }
+
     function pList(_id) {
         $("#pdiv").fadeIn();
         $.ajax({
@@ -287,17 +313,13 @@ if ($action == 1) { //AJAX client list
                 $.ajax({
                     url: "<?php echo $site_path; ?>/engine/projectbase.php?a=5&pid=" + edit_id
                 }).done(function (msg) {
-                    var returns;
-                    if (msg != "") {
-                        returns = JSON.parse(msg);
-                        $("input[name='p_name_input']").val(returns.name);
-                        $("input[name=p_date_input]").val(returns.startdate);
-                        $("input[name=p_date_input2]").val(returns.endtdate);
-                    } else {
-                        $("input").val("");
-                    }
+                    let returns;
+                    returns = JSON.parse(msg);
+                    $("input[name='p_name_input']").val(returns['name']);
+                    $("input[name=p_date_input]").val(returns['startdate']);
+
                     App.unblockUI();
-                    $("#editModal").modal("show")
+                    $("#addToCostingModal").modal("show")
                 });
             }
         });
@@ -308,7 +330,7 @@ if ($action == 1) { //AJAX client list
             history.replaceState({}, 'ABL', "/manager/site/7/projekty");
             location.replace("<?php echo $site_path; ?>/galery/12/" + _id + "/");
         });
-        var table = null
+        var table = null;
         $("#clist").on("click", "tr", function () {
             var _id = $(this).attr("id");
             pList(_id);
