@@ -34,6 +34,7 @@ class PlateMultipartDuplicator
             $programsPart = $this->getProgramsPart($oldDetails, $details);
             $this->clonePrograms($programsPart);
             $this->cloneProgramsPart($programsPart);
+            $db->commit();
         } catch (\Exception $ex) {
             $db->rollBack();
             throw $ex;
@@ -62,6 +63,10 @@ class PlateMultipartDuplicator
                 ->bindValue('PartCount', $programPart['PartCount'], PDO::PARAM_STR)
                 ->bindValue('UnfoldXSize', $programPart['UnfoldXSize'], PDO::PARAM_STR)
                 ->bindValue('UnfoldYSize', $programPart['UnfoldYSize'], PDO::PARAM_STR)
+                ->bindValue('RectangleArea', $programPart['RectangleArea'], PDO::PARAM_STR)
+                ->bindValue('RectangleAreaW', $programPart['RectangleAreaW'], PDO::PARAM_STR)
+                ->bindValue('RectangleAreaWO', $programPart['RectangleAreaWO'], PDO::PARAM_STR)
+                ->bindValue('Weight', $programPart['Weight'], PDO::PARAM_STR)
                 ->bindValue('LaserMatName', $programPart['LaserMatName'], PDO::PARAM_STR)
                 ->bindValue('ProgramId', $programPart['ProgramId'], PDO::PARAM_INT)
                 ->bindValue('CreateDate', date("Y-m-d H:i:s"), PDO::PARAM_STR)
@@ -342,10 +347,6 @@ class PlateMultipartDuplicator
             ->bindValue('parent_dir_id', $directoryId, PDO::PARAM_STR)
             ->flush();
 
-        echo $newDirFolderName . "\n";
-        echo $db->lastInsertId();
-
-        die;
         return $db->lastInsertId();
     }
 }
