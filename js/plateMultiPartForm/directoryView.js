@@ -107,7 +107,6 @@ function addNewDirectory(name) {
             data: "name=" + name,
             url: plateMultiPartUrl + "?action=addDirectory"
         }).done(function (response) {
-            console.log(response);
             chooseDirectory(response);
         });
     }

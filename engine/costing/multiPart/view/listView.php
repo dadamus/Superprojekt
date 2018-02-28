@@ -47,6 +47,18 @@
                                         break;
                                 }
 
+                                //Dla multipartu blach wszystkie statusy
+                                switch ($row["type"]) {
+                                    case OT::AUTO_WYCENA_BLACH_MULTI_KROK_1:
+                                    case OT::AUTO_WYCENA_BLACH_MULTI_KROK_2:
+                                    case OT::AUTO_WYCENA_BLACH_MULTI_ZABLOKOWANE:
+                                    case OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA:
+                                    case OT::AUTO_WYCENA_BLACH_MULTI_ANULOWANA:
+                                    case OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA:
+                                        $multiType = "plate";
+                                        break;
+                                }
+
                                 if ($row["price"] > 0) {
                                     $text = "Wycenione";
                                     $status = "success";

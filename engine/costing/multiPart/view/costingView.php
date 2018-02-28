@@ -41,6 +41,7 @@
                                                                 <th>Id</th>
                                                                 <th>Nazwa detalu</th>
                                                                 <th>Nazwa</th>
+                                                                <th>Sztuk</th>
                                                                 <th></th>
                                                             </tr>
                                                             </thead>
@@ -51,6 +52,7 @@
                                                                     <td><?= $detail["detail_id"] ?></td>
                                                                     <td><?= $detail["real_detail_name"] ?></td>
                                                                     <td><?= $detail["detail_name"] ?></td>
+                                                                    <td><?= $detail["pieces"] ?></td>
                                                                     <td>
                                                                         <a
                                                                                 href="javascript:;"
@@ -101,12 +103,6 @@
                                                                 <td>Grubość:</td>
                                                                 <td>
                                                                     <b><?= $mpwData["thickness"] ?></b>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Sztuk:</td>
-                                                                <td>
-                                                                    <b><?= $mpwData["pieces"] ?></b>
                                                                 </td>
                                                             </tr>
                                                             <tr>

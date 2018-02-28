@@ -29,7 +29,10 @@ class directoryViewController extends mainController
     {
         global $db;
 
-        $partDirectories = $db->query("SELECT id FROM plate_multiPartDirectories ORDER BY id DESC LIMIT 1");
+        $minDate = date("Y-m-01");
+        $maxDate = date("Y-m-31");
+
+        $partDirectories = $db->query("SELECT id FROM plate_multiPartDirectories WHERE created_at >= '$minDate' AND created_at <= '$maxDate' ORDER BY id DESC LIMIT 1");
         $lastRow = $partDirectories->fetch();
 
         $lastId = 1;
@@ -51,7 +54,9 @@ class directoryViewController extends mainController
     public function getDirectory($filter = '')
     {
         global $db;
-        $partDirectories = $db->query("SELECT id, dir_name, blocked FROM plate_multiPartDirectories WHERE dir_name LIKE '%" . $filter . "%'");
+        $minDate = date("Y-m-01");
+        $maxDate = date("Y-m-31");
+        $partDirectories = $db->query("SELECT id, dir_name, blocked FROM plate_multiPartDirectories WHERE dir_name LIKE \"%$filter%\"");
 
         $dirs = [];
 

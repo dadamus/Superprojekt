@@ -3,10 +3,10 @@
 $main = $data["main"];
 ?>
 <div class="row">
-    <div class="col-lg-7">
+    <div class="col-lg-6">
         <h2 class="page-title">Costing - multipart </h2>
     </div>
-    <div class="col-lg-5">
+    <div class="col-lg-6">
         <form class="form-horizontal" id="changeDesignerForm" action="?" data-dir-id="<?= $data["directoryId"] ?>">
             <div class="form-group">
                 <label class="col-md-2 control-label">Projektant: </label>
@@ -33,51 +33,64 @@ $main = $data["main"];
                     </span>
                     </div>
                 </div>
-                <?php if (!$main->isBlocked()): ?>
-                    <div class="col-md-4">
-                        <div class="btn-group btn-group-solid">
-                            <a
-                                    class="btn red popovers"
-                                    href="javascript:;"
-                                    id="costingCancel"
-                                    data-dir-id="<?= $data["directoryId"] ?>"
-                                    data-container="body"
-                                    data-trigger="hover"
-                                    data-placement="bottom"
-                                    data-content="Anuluj"
-                                    data-original-title=""
-                            >
-                                <i class="fa fa-ban"></i>
-                            </a>
-                            <a
-                                    class="btn dark popovers"
-                                    href="javascript:;"
-                                    id="costingBlock"
-                                    data-dir-id="<?= $data["directoryId"] ?>"
-                                    data-container="body"
-                                    data-trigger="hover"
-                                    data-placement="bottom"
-                                    data-content="Zablokuj"
-                                    data-original-title=""
-                            >
-                                <i class="fa fa-lock"></i>
-                            </a>
-                            <a
-                                    class="btn green popovers"
-                                    id="costingAccept"
-                                    href="javascript:;"
-                                    data-dir-id="<?= $data["directoryId"] ?>"
-                                    data-container="body"
-                                    data-trigger="hover"
-                                    data-placement="bottom"
-                                    data-content="Akceptuj"
-                                    data-original-title=""
-                            >
-                                <i class="fa fa-check"></i>
-                            </a>
-                        </div>
+                <div class="col-md-4">
+                    <?php if (!$main->isBlocked()): ?>
+                    <div class="btn-group btn-group-solid">
+                        <a
+                                class="btn red popovers"
+                                href="javascript:;"
+                                id="costingCancel"
+                                data-dir-id="<?= $data["directoryId"] ?>"
+                                data-container="body"
+                                data-trigger="hover"
+                                data-placement="bottom"
+                                data-content="Anuluj"
+                                data-original-title=""
+                        >
+                            <i class="fa fa-ban"></i>
+                        </a>
+                        <a
+                                class="btn dark popovers"
+                                href="javascript:;"
+                                id="costingBlock"
+                                data-dir-id="<?= $data["directoryId"] ?>"
+                                data-container="body"
+                                data-trigger="hover"
+                                data-placement="bottom"
+                                data-content="Zablokuj"
+                                data-original-title=""
+                        >
+                            <i class="fa fa-lock"></i>
+                        </a>
+                        <a
+                                class="btn green popovers"
+                                id="costingAccept"
+                                href="javascript:;"
+                                data-dir-id="<?= $data["directoryId"] ?>"
+                                data-container="body"
+                                data-trigger="hover"
+                                data-placement="bottom"
+                                data-content="Akceptuj"
+                                data-original-title=""
+                        >
+                            <i class="fa fa-check"></i>
+                        </a>
+                        <?php endif; ?>
+                        <a
+                                class="btn dark popovers"
+                                id="duplicate"
+                                href="javascript:;"
+                                data-dir-id="<?= $data["directoryId"] ?>"
+                                data-container="body"
+                                data-trigger="hover"
+                                data-placement="bottom"
+                                data-content="Duplikuj"
+                                data-original-title=""
+                        >
+                            <i class="fa fa-clone"></i>
+                        </a>
                     </div>
-                <?php endif; ?>
+                </div>
             </div>
         </form>
     </div>

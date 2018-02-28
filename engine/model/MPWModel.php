@@ -517,10 +517,11 @@ class MPWModel
         }
 
         $dirDataParts = explode("/", $dirData["dir_name"]);
-        $dirNr = $dirDataParts[0];
+        $dirNr = reset($dirDataParts);
+        $dirY = end($dirDataParts);
 
         //Robimy glowny folder wyceny
-        $mpwPath = $data_src . "multipart/" . date("m") . "/" . $dirNr;
+        $mpwPath = $data_src . "multipart/" . date("m") . "/" . $dirNr . "-" . $dirY;
         if (!file_exists($mpwPath)) {
             mkdir($mpwPath, 0777, true);
         }

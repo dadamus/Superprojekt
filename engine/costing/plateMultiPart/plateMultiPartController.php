@@ -10,6 +10,7 @@ require_once dirname(__DIR__) . "/../mainController.php";
 require_once dirname(__DIR__) . "/../model/CheckboxModel.php";
 require_once dirname(__FILE__) . "/plateMultiPart.php";
 require_once dirname(__FILE__) . "/model/mainCardModel/mainCardModel.php";
+require_once dirname(__FILE__) . "/model/PlateMultipartDuplicator.php";
 require_once dirname(__FILE__) . "/model/detailCardModel/detailCardModel.php";
 
 /**
@@ -381,5 +382,15 @@ class plateMultiPartController extends mainController
             $mpwUpdateQuery->bindValue(":id", $mpwId, PDO::PARAM_INT);
             $mpwUpdateQuery->execute();
         }
+    }
+
+    /**
+     * @param int $directoryId
+     * @return int
+     */
+    public function duplicate(int $directoryId): int
+    {
+        $duplicator = new PlateMultipartDuplicator($directoryId);
+        return $duplicator->getNewDirectoryId();
     }
 }

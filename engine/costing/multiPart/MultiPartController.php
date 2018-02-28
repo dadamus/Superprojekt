@@ -86,7 +86,6 @@ class MultiPartController extends mainController
                         $d["version"] == $detail["version"]
                         && $d["material_name"] == $detail["material_name"]
                         && $d["thickness"] == $detail["thickness"]
-                        && $d["pieces"] == $detail["pieces"]
                         && $d["atribute"] == $detail["atribute"]
                     ) {
                         $mpwId = $d["id"];

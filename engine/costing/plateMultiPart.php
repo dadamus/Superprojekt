@@ -111,4 +111,10 @@ switch ($action) {
         $plateMultiPartController->cancel($directoryId);
         header("Location: /plateMulti/$directoryId/");
         break;
+    case "duplicate": //Kopiujemy
+        $directoryId = $_GET["dir"];
+        $newDirId = $plateMultiPartController->duplicate($directoryId);
+
+        header("Location: /plateMulti/$newDirId/");
+        break;
 }
