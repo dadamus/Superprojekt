@@ -2,6 +2,10 @@
 $did = $_GET["did"];
 $qdetail = $db->query("SELECT * FROM `details` WHERE `id` = '$did'");
 $detail = $qdetail->fetch();
+
+if (isset($_POST['reason'])) {
+    
+}
 ?>
 
 <div class="row">
@@ -28,6 +32,10 @@ $detail = $qdetail->fetch();
                                 </div>
                             </div>
                             <div class="portlet-body">
+                                <a href="javascript:;" data-toggle="modal" data-target="#ufoModal" class="icon-btn">
+                                    <i class="fa fa-question-circle"></i>
+                                    <div>UFO</div>
+                                </a>
                                 <a href="javascript:;" class="icon-btn">
                                     <i class="fa fa-share-square-o"></i>
                                     <div>WZ</div>
@@ -35,14 +43,6 @@ $detail = $qdetail->fetch();
                                 <a href="javascript:;" class="icon-btn">
                                     <i class="fa fa-globe"></i>
                                     <div>Obróbka</div>
-                                </a>
-                                <a href="javascript:;" class="icon-btn">
-                                    <i class="fa fa-times-circle-o"></i>
-                                    <div>Złom</div>
-                                </a>
-                                <a href="javascript:;" class="icon-btn">
-                                    <i class="fa fa-question-circle"></i>
-                                    <div>UFO</div>
                                 </a>
                                 <a href="javascript:;" class="icon-btn">
                                     <i class="fa fa-euro"></i>
@@ -74,68 +74,68 @@ $detail = $qdetail->fetch();
                             <div class="portlet-body">
                                 <table class="table table-striped table-bordered table-advance table-hover">
                                     <thead>
-                                        <tr>
-                                            <th><i class="fa fa-info-circle"></i> Status</th>
-                                            <th><i class="fa fa-key"></i> ID</th>
-                                            <th><i class="fa fa-book"></i> Nazwa</th>
-                                            <th><i class="fa fa-pie-chart"></i> Ilość</th>
-                                            <th><i class="fa fa-calendar-check-o"></i> Data cięcia</th>
-                                            <th><i class="fa fa-calendar-plus-o"></i> Data dodania</th>
-                                        </tr>
+                                    <tr>
+                                        <th><i class="fa fa-info-circle"></i> Status</th>
+                                        <th><i class="fa fa-key"></i> ID</th>
+                                        <th><i class="fa fa-book"></i> Nazwa</th>
+                                        <th><i class="fa fa-pie-chart"></i> Ilość</th>
+                                        <th><i class="fa fa-calendar-check-o"></i> Data cięcia</th>
+                                        <th><i class="fa fa-calendar-plus-o"></i> Data dodania</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <?php
-                                        $qmpw = $db->query("SELECT `id`, `program` FROM `mpw` WHERE `did` = '$did' AND `program` != ''");
-                                        $programs = array();
-                                        foreach ($qmpw as $mpw) {
-                                            $_p = explode("|", $mpw["program"]);
-                                            foreach ($_p as $pid) {
-                                                if ($pid == '') {
-                                                    continue;
-                                                }
-
-                                                $qprogram = $db->query("SELECT `id`, `status`, `name`, `mpw`, `date` FROM `programs` WHERE `id` = '$pid'");
-                                                $program = $qprogram->fetch();
-
-                                                $status_class = "";
-                                                $status_text = "";
-                                                switch ($program["status"]) {
-                                                    case 0:
-                                                        $status_class = "info";
-                                                        $status_text = "Dodano";
-                                                        break;
-                                                    case 1:
-                                                        $status_class = "success";
-                                                        $status_text = "Wycięto";
-                                                        break;
-                                                    case 2:
-                                                        $status_class = "success";
-                                                        $status_text = "Wycięto";
-                                                        break;
-                                                    case 4:
-                                                        $status_class = "warning";
-                                                        $status_text = "Błąd";
-                                                        break;
-                                                    default:
-                                                        $status_class = "warning";
-                                                        $status_text = "Błąd";
-                                                        break;
-                                                }
-                                                $cut_date = "-";
-                                                if ($program["status"] > 0) {
-                                                    $qcd = $db->query("SELECT `date` FROM `email` WHERE `pid` = '$pid' ORDER BY `id` DESC LIMIT 1");
-                                                    $fcd = $qcd->fetch();
-                                                    $cut_date = $fcd["date"];
-                                                }
-
-                                                $pmpw = json_decode($program["mpw"], true);
-                                                //die(var_dump($pmpw));
-                                                $size = $pmpw[$mpw["id"]];
-
-                                                echo '<tr><td class="highlight"><div class="' . $status_class . '"></div><a href="javascript:;">' . $status_text . '</a></td><td>' . $program["id"] . '</td><td>' . $program["name"] . '</td><td>' . $size . '</td><td>' . $cut_date . '</td><td>' . $program["date"] . '</td></tr>';
+                                    <?php
+                                    $qmpw = $db->query("SELECT `id`, `program` FROM `mpw` WHERE `did` = '$did' AND `program` != ''");
+                                    $programs = array();
+                                    foreach ($qmpw as $mpw) {
+                                        $_p = explode("|", $mpw["program"]);
+                                        foreach ($_p as $pid) {
+                                            if ($pid == '') {
+                                                continue;
                                             }
+
+                                            $qprogram = $db->query("SELECT `id`, `status`, `name`, `mpw`, `date` FROM `programs` WHERE `id` = '$pid'");
+                                            $program = $qprogram->fetch();
+
+                                            $status_class = "";
+                                            $status_text = "";
+                                            switch ($program["status"]) {
+                                                case 0:
+                                                    $status_class = "info";
+                                                    $status_text = "Dodano";
+                                                    break;
+                                                case 1:
+                                                    $status_class = "success";
+                                                    $status_text = "Wycięto";
+                                                    break;
+                                                case 2:
+                                                    $status_class = "success";
+                                                    $status_text = "Wycięto";
+                                                    break;
+                                                case 4:
+                                                    $status_class = "warning";
+                                                    $status_text = "Błąd";
+                                                    break;
+                                                default:
+                                                    $status_class = "warning";
+                                                    $status_text = "Błąd";
+                                                    break;
+                                            }
+                                            $cut_date = "-";
+                                            if ($program["status"] > 0) {
+                                                $qcd = $db->query("SELECT `date` FROM `email` WHERE `pid` = '$pid' ORDER BY `id` DESC LIMIT 1");
+                                                $fcd = $qcd->fetch();
+                                                $cut_date = $fcd["date"];
+                                            }
+
+                                            $pmpw = json_decode($program["mpw"], true);
+                                            //die(var_dump($pmpw));
+                                            $size = $pmpw[$mpw["id"]];
+
+                                            echo '<tr><td class="highlight"><div class="' . $status_class . '"></div><a href="javascript:;">' . $status_text . '</a></td><td>' . $program["id"] . '</td><td>' . $program["name"] . '</td><td>' . $size . '</td><td>' . $cut_date . '</td><td>' . $program["date"] . '</td></tr>';
                                         }
-                                        ?>
+                                    }
+                                    ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -145,4 +145,29 @@ $detail = $qdetail->fetch();
             </div>
         </div>
     </div>
+</div>
+
+<div id="ufoModal" class="modal fade in" tabindex="-1" data-width="760" aria-hidden="true">
+    <form method="POST" action="?">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title">UFO</h4>
+        </div>
+        <div class="modal-body" style="padding: 20px">
+            <div class="row">
+                    <select name="reason" class="form-control" style="margin: 4px">
+                        <option value="1">Korekta dodająca</option>
+                        <option value="2">Korekta odejmująca</option>
+                        <option value="3">Złomowanie</option>
+                        <option value="4">Zagubione</option>
+                    </select>
+                    <input name="quantity" type="text" class="form-control" style="margin: 4px">
+                    <textarea name="reason" style="margin: 4px"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" data-dismiss="modal" class="btn btn-outline dark">Zamknij</button>
+            <button type="button" class="btn green">Zapisz</button>
+        </div>
+    </form>
 </div>

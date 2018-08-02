@@ -122,6 +122,7 @@ class mainCardModel
         //Check if not blocked
         $checkBlockedQuery = $db->prepare("
             SELECT 
+            mpw.id,
             mpw.type
             FROM
             plate_multiPartDetails mpd
@@ -134,6 +135,7 @@ class mainCardModel
         $checkBlockedQuery->execute();
 
         $checkBlockedData = $checkBlockedQuery->fetch(PDO::FETCH_ASSOC);
+
         if ($checkBlockedData["type"] >= OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA) {
             $this->blocked = true;
         }

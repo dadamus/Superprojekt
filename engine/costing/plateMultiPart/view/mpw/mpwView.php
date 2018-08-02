@@ -33,6 +33,7 @@
                     <td>Blacha</td>
                     <td>
                         <select class="form-control" name="material" id="cmaterial">
+                            <option selected="selected" disabled="disabled">Wybierz</option>
                             <?php foreach ($data["material"] as $material): ?>
                                 <option value="<?= $material["id"] ?>"><?= $material["name"] ?></option>
                             <?php endforeach; ?>
@@ -41,7 +42,10 @@
                 </tr>
                 <tr>
                     <td>Grubość</td>
-                    <td><input type="text" class="form-control" name="thickness" id="cthickness" required="required">
+                    <td>
+                        <select name="thickness" id="cthickness" required="required" class="form-control">
+                            <option selected="selected" disabled="disabled">Wybierz</option>
+                        </select>
                     </td>
                 </tr>
                 <tr>

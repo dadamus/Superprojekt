@@ -4,6 +4,13 @@ $state = $firstDetail['state'];
 
 $firstState = 0;
 $maxState = count($listStatus) - 1;
+
+if (isset($_GET['state'])) {
+    if ($_GET['state'] > 0) {
+        $firstState = $_GET['state'] - 1;
+        $maxState = $_GET['state'];
+    }
+}
 ?>
 
 <div id="status-modal" class="modal" tabindex="-1" data-width="760">

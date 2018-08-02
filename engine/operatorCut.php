@@ -54,6 +54,18 @@ function getPrograms()
             }
         }
 
+        // ------ Tutaj parenty
+        $parentQuery = $db->prepare("
+            SELECT COUNT(*) as ile FROM cutting_queue_list WHERE state <> 2 AND cutting_queue_id = :cqid
+        ");
+        $parentQuery->bindParam(":cqid", $program["new_cutting_queue_id"], PDO::PARAM_INT);
+        $parentQuery->execute();
+        $count = $parentQuery->fetch();
+
+        if ($count['ile'] == 0) {
+            continue;
+        }
+
         // ------ Tutaj update parentu odpadu
 
         if ($program['parent_synced'] === 0) {

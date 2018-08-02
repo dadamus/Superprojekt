@@ -13,12 +13,14 @@ require_once dirname(__DIR__) . "/../mainController.php";
  */
 class MultiPartController extends mainController
 {
+    private $materialThickness = [];
+
     /**
      * MultiPartController constructor.
      */
     public function __construct()
     {
-        $this->setViewPath(dirname(__FILE__) . "/view/");
+        $this->setViewPath(__DIR__ . "/view/");
     }
 
     public function getList()
@@ -58,15 +60,23 @@ class MultiPartController extends mainController
         $detailsQuery = $db->prepare("
             SELECT 
             m.*,
+            d.pid,
+            m.id as mpw_id,
+            mat.id as material_id,
             mat.name as material_name,
             details.name as detail_name,
             details.did as detail_id,
-            d.src as real_detail_name
+            d.src as real_detail_name,
+            cc.matName as laser_material_name,
+            cc.id as laser_material_id,
+            tm.MaterialName as material_type_name
             FROM 
             plate_multiPartDetails details
             LEFT JOIN mpw m ON m.id = details.mpw
             LEFT JOIN details d ON d.id = details.did
             LEFT JOIN material mat ON mat.id = m.material
+            LEFT JOIN cutting_conditions_names cc ON cc.id = m.cutting_conditions_name_id
+            LEFT JOIN T_material tm On tm.MaterialTypeName = cc.matType AND tm.thickness = cc.thck
             WHERE
             details.dirId = :dirId
             ORDER BY details.mpw ASC
@@ -77,31 +87,46 @@ class MultiPartController extends mainController
         $detailsData = $detailsQuery->fetchAll(PDO::FETCH_ASSOC);
 
         $mpw = [];
+        $dlp = 0;
+        $detailDescriptionArray = [];
         foreach ($detailsData as $detail) {
-            //Szukamy takich samych mpw
-            $mpwId = $detail["id"];
-            foreach ($mpw as $i) {
-                foreach ($i["details"] as $d) {
-                    if (
-                        $d["version"] == $detail["version"]
-                        && $d["material_name"] == $detail["material_name"]
-                        && $d["thickness"] == $detail["thickness"]
-                        && $d["pieces"] == $detail["pieces"]
-                        && $d["atribute"] == $detail["atribute"]
-                    ) {
-                        $mpwId = $d["id"];
-                        break 2;
-                    }
-                }
+            //Rozmiar aktualnego materialu
+            if (isset($this->materialThickness[$detail['material_id']])) {
+                $detail['material_thickness_info'] = $this->materialThickness[$detail['material_id']];
+            } else {
+                $materialThicknessQuery = $db->prepare('
+                  SELECT 
+                  tm.Thickness
+                  FROM T_material tm
+                  LEFT JOIN material m ON m.name = tm.MaterialTypeName
+                  WHERE
+                  m.id = :matId
+                  GROUP BY tm.Thickness
+                  ORDER BY tm.Thickness ASC
+                ');
+                $materialThicknessQuery->bindValue(':matId', $detail['material_id'], PDO::PARAM_INT);
+                $materialThicknessQuery->execute();
+
+                $this->materialThickness[$detail['material_id']] = $materialThicknessQuery->fetchAll(PDO::FETCH_ASSOC);
+                $detail['material_thickness_info'] = $this->materialThickness[$detail['material_id']];
             }
 
-            $mpw[$mpwId]["details"][] = $detail;
+            $mpw[$dlp]["details"][] = $detail;
+
+            $detailDescriptionArray[] = [
+                'id' => $detail['id'],
+                'did' => $detail['id'],
+                'mpw' => $detail['mpw_id'],
+                'dirId' => $dirId,
+                'pid' => $detail['pid']
+            ];
+            $dlp++;
         }
 
         //Jeszcze materialy do selectow
         $materialQuery = $db->query("
             SELECT 
-            id, name
+            id, `name`
             FROM 
             material
         ");
@@ -110,7 +135,8 @@ class MultiPartController extends mainController
             "dirName" => $dirData["dir_name"],
             "dirId" => explode("/", $dirData["dir_name"])[0],
             "mpw" => $mpw,
-            "materials" => $materialQuery->fetchAll(PDO::FETCH_ASSOC)
+            "materials" => $materialQuery->fetchAll(PDO::FETCH_ASSOC),
+            'detailsDataJson' => json_encode($detailDescriptionArray)
         ]);
     }
 

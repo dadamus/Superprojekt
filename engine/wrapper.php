@@ -145,7 +145,7 @@
                                 <i class="icon-screen-desktop"></i> Panel Operatora</a>
                             <ul class="dropdown-menu dropdown-menu-fw">
                                 <li><a href="<?= $site_path ?>/site/15/operator"><i class="fa fa-play"></i> Programy pod cięcie</a></li>
-                                <li><a href="#"><i class="fa fa-pause"></i> Programy pocięte</a></li>
+                                <li><a href="<?= $site_path ?>/site/22/operator"><i class="fa fa-pause"></i> Programy pocięte</a></li>
                             </ul>
                         </li>
                         <li class="dropdown dropdown-fw active" id="mb5">
@@ -176,86 +176,90 @@
             $render = false;
             switch ($site) {
                 case 0:
-                    include dirname(__FILE__) . '/dashboard.php';
+                    include __DIR__ . '/dashboard.php';
                     $mb = 1;
                     break;
                 case 3:
                     $ct = 1; // blacha
-                    include dirname(__FILE__) . '/costing.php';
+                    include __DIR__ . '/costing.php';
                     $mb = 2;
                     break;
                 case 4:
                     $ct = 2; // PROFILE ID = 2
-                    include dirname(__FILE__) . '/costing.php';
+                    include __DIR__ . '/costing.php';
                     $mb = 2;
                     break;
                 case 6:
-                    include dirname(__FILE__) . '/clientbase.php';
+                    include __DIR__ . '/clientbase.php';
                     $mb = 3;
                     break;
                 case 7:
                     $mb = 3;
-                    include dirname(__FILE__) . '/projectbase.php';
+                    include __DIR__ . '/projectbase.php';
                     break;
                 case 8:
                     $mb = 3;
-                    include dirname(__FILE__) . '/details.php';
+                    include __DIR__ . '/details.php';
                     break;
                 case 11:
-                    include dirname(__FILE__) . '/filemanager.php';
+                    include __DIR__ . '/filemanager.php';
                     break;
                 case 12:
                     $mb = 3;
-                    include dirname(__FILE__) . '/galery.php';
+                    include __DIR__ . '/galery.php';
                     break;
                 case 13: //Order cart
                     $mb = 2;
-                    include dirname(__FILE__) . '/chart/order.php';
+                    include __DIR__ . '/chart/order.php';
                     break;
                 case 14: //Detail cart
                     $mb = 3;
-                    include dirname(__FILE__) . '/chart/detail.php';
+                    include __DIR__ . '/chart/detail.php';
                     break;
                 case 15: //Operator cut
                     $mb = 4;
-                    include dirname(__FILE__) . '/operatorCut.php';
+                    include __DIR__ . '/operatorCut.php';
                     break;
                 case 16: //Program cart
                     $mb = 4;
-                    include dirname(__FILE__) . '/chart/program.php';
+                    include __DIR__ . '/chart/program.php';
                     break;
                 case 17: //Plate warehouse
                     $mb = 3;
-                    include dirname(__FILE__) . '/plateWarehouse.php';
+                    include __DIR__ . '/plateWarehouse.php';
                     break;
                 case 18: //Task
-                    include dirname(__FILE__) . '/task.php';
+                    include __DIR__ . '/task.php';
                     break;
                 case 19: //Status
-                    include dirname(__FILE__) . '/pstatus.php';
+                    include __DIR__ . '/pstatus.php';
                     break;
 				case 20: //Plate costing frame
-					include dirname(__FILE__) . '/costing/plateFrame.php';
+					include __DIR__ . '/costing/plateFrame.php';
 					break;
                 case 21: //Client card
                     $mb = 3;
-                    include dirname(__FILE__) . "/ClientCardRouter.php";
+                    include __DIR__ . "/ClientCardRouter.php";
+                    break;
+                case 22: //Operator cut
+                    $mb = 4;
+                    include __DIR__ . '/operatorCutted.php';
                     break;
                 case 29: //Multipart
                     $mb = 2;
-                    include dirname(__FILE__) . '/costing/multiPart.php';
+                    include __DIR__ . '/costing/multiPart.php';
                     break;
                 case 30: //plate Program card
                     $mb = 2;
-                    include dirname(__FILE__) . '/costing/plateMultiPart.php';
+                    include __DIR__ . '/costing/plateMultiPart.php';
                     break;
                 case 31: //order list
                     $mb = 3;
-                    include dirname(__FILE__) . '/orderList.php';
+                    include __DIR__ . '/orderList.php';
                     break;
                 case 32:
                     $mb = 3;
-                    include dirname(__FILE__) . '/wz.php';
+                    include __DIR__ . '/wz.php';
                     break;
                 case 40:
                     $mb = 3;
@@ -264,72 +268,72 @@
                 case 200: //Calendar
                     calendar_body();
                     $active = 0;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 201:
                     calendar_body();
                     $active = 1;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 202:
                     calendar_body();
                     $active = 2;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 203:
                     calendar_body();
                     $active = 3;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 204:
                     calendar_body();
                     $active = 4;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 205:
                     calendar_body();
                     $active = 5;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 206:
                     calendar_body();
                     $active = 6;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 207:
                     calendar_body();
                     $active = 7;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 208:
                     calendar_body();
                     $active = 8;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 209:
                     calendar_body();
                     $active = 9;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 210:
                     calendar_body();
                     $active = 10;
-                    require dirname(__FILE__) . '/calendar.php';
+                    require __DIR__ . '/calendar.php';
                     break;
                 case 600: //COSTING
                     $mb = 2;
                     $url = $_GET["url"];
-                    include dirname(__FILE__) . '/costing/' . $url . '.php';
+                    include __DIR__ . '/costing/' . $url . '.php';
                     break;
                 case 601:
                     $mb = 2;
                     $nr = $_GET["add"];
-                    include dirname(__FILE__) . '/costing/autoc.php';
+                    include __DIR__ . '/costing/autoc.php';
                     break;
 				case 602: //Plate single
 					$mb = 2;
 					$costingId = $_GET["add"];
-					include dirname(__FILE__) . '/costing/plateSinglePartForm.php';
+					include __DIR__ . '/costing/plateSinglePartForm.php';
 					break;
                 default:
                     echo '<div class="alert alert-block alert-danger fade in"><strong>Błąd 404!</strong> Nie znalazłem podanej podstrony! ID: ' . $site . '</div>';

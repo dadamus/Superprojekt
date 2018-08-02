@@ -76,4 +76,22 @@ $(document).on("ready", function () {
             location.href = "/engine/costing/plateMultiPart.php?action=block&dir=" + dirId;
             });
     });
+
+    $("a#duplicate").on("click", function () {
+        var dirId = $(this).data("dir-id");
+
+        swal({
+                title: "Jesteś pewien?",
+                text: "Akcja spowoduje zduplikowanie multipartu",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Kopiuj",
+                cancelButtonText: "Anuluj",
+                closeOnConfirm: false
+            },
+            function () {
+                location.href = "/engine/costing/plateMultiPart.php?action=duplicate&dir=" + dirId;
+            });
+    });
 });

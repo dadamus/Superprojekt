@@ -324,7 +324,7 @@ if (@$_GET["a"] == 6) { // Set default
                             d.id as dirId,
                             mpw.pieces,
                             programs.CreateDate,
-                            mpw.atribute,
+                            mpw.attributes,
                             mpw.type,
                             settings.price
                             FROM plate_multiPartProgramsPart parts
@@ -355,8 +355,8 @@ if (@$_GET["a"] == 6) { // Set default
                                 <td><?= $row["CreateDate"] ?></td>
                                 <td><?= $row["price"] ?>zł</td>
                                 <td>
-                                    <?php if (strlen($row["atribute"]) > 0): ?>
-                                        <?php foreach (json_decode($row["atribute"]) as $param): ?>
+                                    <?php if (strlen($row["attributes"]) > 0): ?>
+                                        <?php foreach (json_decode($row["attributes"]) as $param): ?>
                                             <?= _getChecboxText($param) ?>
                                         <?php endforeach; ?>
                                     <?php endif; ?>

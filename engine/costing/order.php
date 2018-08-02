@@ -154,7 +154,7 @@ if ($action == 5) {
             mpw.src,
             mpw.did,
             mpw.pid,
-            mpw.atribute,
+            mpw.attributes,
             mpw.pieces,
             mpw.material,
             mpw.type,
@@ -191,7 +191,7 @@ if ($action == 5) {
                 mpw.src,
                 mpw.did,
                 mpw.pid,
-                mpw.atribute,
+                mpw.attributes,
                 mpw.pieces,
                 mpw.type,
                 mpw.code,
@@ -310,7 +310,7 @@ if ($action == 5) {
         $esrc = explode(".", $data["detail_name"]);
         $ext = end($esrc);
 
-        $j_atr = json_decode($data["atribute"], true);
+        $j_atr = json_decode($data["attributes"], true);
         $a = "";
         if (count($j_atr) > 0) {
             foreach ($j_atr as $atr) {
@@ -378,7 +378,7 @@ if ($action == 6) {
         mpw.material,
         m.name as material_name,
         mpw.pieces,
-        mpw.atribute,
+        mpw.attributes,
         mpw.mcp,
         mpw.type,
         oi.did as order_detail
@@ -403,7 +403,7 @@ if ($action == 6) {
         $wid = $oitem["mpw"];
 
         $atribute_s = "";
-        $atribute = json_decode($oitem["atribute"]);
+        $atribute = json_decode($oitem["attributes"]);
         if (count($atribute) > 0) {
             foreach ($atribute as $a) {
                 $atribute_s .= " <b>" . _getChecboxText($a) . "</b> ";
@@ -535,20 +535,6 @@ if ($action == 9) {
 if ($action == 10) {
     $pval = $_GET["pval"]; // New value
     $mpw = $_GET["mpw"]; // Item id
-
-    $qoitem = $db->query("SELECT `pcr` FROM `oitems` WHERE `mpw` = '$mpw'");
-    $oitem = $qoitem->fetch();
-    $pcr = $oitem["pcr"];
-
-    $message = array();
-
-    if ($pcr > $pval) {
-        $message["type"] = "error";
-        $message["header"] = "Za mała ilość detalu!";
-        $message["content"] = "Zaprogramowane jest już $pcr sztuk tego detalu.";
-        $jmessage = json_encode($message);
-        die($jmessage);
-    }
 
     $db->query("UPDATE `mpw` SET `pieces` = '$pval' WHERE `id` = '$mpw'");
 

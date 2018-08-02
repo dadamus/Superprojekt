@@ -69,15 +69,17 @@ if ($a == 1) {
 	p.Height,
 	m.Thickness,
 	p.createDate,
-	p.QtyAvailable
+	p.QtyAvailable,
+	si.src
 	FROM `plate_warehouse` p
 	LEFT JOIN `T_material` m ON m.MaterialName = p.MaterialName
+	LEFT JOIN sheet_image si ON si.plate_warehouse_id = p.id
 	WHERE p.state = '$type' " . $filtr);
     $data = $pselect->fetchAll(PDO::FETCH_ASSOC);
 
     $table = "";
     foreach ($data as $row) {
-        $table .= "<tr><td></td><td>" . $row['SheetCode'] . "</td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td><td><a href='/material/" . $row['SheetCode']  . "/' target='_blank' class='btn btn-success material-card'>Karta</a></button></td></tr>";
+        $table .= "<tr><td></td> <td>" . $row['SheetCode'] . " </td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td><td><a href='/material/" . $row['SheetCode']  . "/' target='_blank' class='btn btn-success material-card'>Karta</a></button></td></tr>";
     }
     die($table);
 } else if ($a == 2) { //Insert new plate

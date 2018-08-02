@@ -7,6 +7,7 @@ var versions;
 
 function mpwMultiLoad() {
     versions = JSON.parse($("input[name='mpw_versions']").val());
+    $("#cthickness").select2();
 }
 
 /**
@@ -96,6 +97,24 @@ $(document).ready(function () {
         checkMpwReady();
     });
 
+    $multimpwwrapper.on('change', '#cmaterial', function () {
+        let value = $(this).val();
+        $.ajax({
+            'method': 'POST',
+            'data': 'material_id=' + value,
+            'url': plateMultiPartUrl + "?action=getMaterialThickness"
+        }).done(function (response) {
+            let thicknesses = JSON.parse(response);
+            let html = '';
+
+            thicknesses.forEach(function (item) {
+                html += "<option>" + item.thickness + "</option>";
+            });
+
+            $("#cthickness").html(html);
+        });
+    });
+
     $("#multi-mpw-wrapper select[name='version']").on("change", function () {
         checkMpwReady();
     });
@@ -133,7 +152,7 @@ $(document).ready(function () {
                     "hideEasing": "linear",
                     "showMethod": "fadeIn",
                     "hideMethod": "fadeOut"
-                }
+                };
                 toastr.success("Dodane!", "Auto wycena");
             }
         });

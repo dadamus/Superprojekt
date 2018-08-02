@@ -7,9 +7,9 @@
  * Time: 17:35
  */
 
-include dirname(__FILE__) . "/plateMultiPart/directoryViewController.php";
-include dirname(__FILE__) . "/plateMultiPart/createMPWController.php";
-include dirname(__FILE__) . "/plateMultiPart/plateMultiPartController.php";
+include __DIR__ . "/plateMultiPart/directoryViewController.php";
+include __DIR__ . "/plateMultiPart/createMPWController.php";
+include __DIR__ . "/plateMultiPart/plateMultiPartController.php";
 
 $action = @$_GET["action"];
 if (!is_null($action)) {
@@ -38,6 +38,14 @@ switch ($action) {
 
     case "addMPWForm": //Create mpw form
         echo $createMPWController->addMPWForm($_POST["dir"], $_POST["project_id"], json_decode($_POST["details"], true));
+        break;
+
+    case "getMaterialThickness": //Thickness for material
+        echo json_encode($createMPWController->getMaterialThickness($_POST['material_id']));
+        break;
+
+    case 'getMaterialLaser':
+        echo json_encode($createMPWController->getMaterialLaser($_POST['material'], (float)$_POST['thickness']));
         break;
 
     case "addMPW": //Create MPW
@@ -110,5 +118,14 @@ switch ($action) {
 
         $plateMultiPartController->cancel($directoryId);
         header("Location: /plateMulti/$directoryId/");
+        break;
+    case "duplicate": //Kopiujemy
+        $directoryId = $_GET["dir"];
+        $newDirId = $plateMultiPartController->duplicate($directoryId);
+
+        header("Location: /plateMulti/$newDirId/");
+        break;
+    case 'edit': //Edytujemy
+        $plateMultiPartController->edit($_POST);
         break;
 }

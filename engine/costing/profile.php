@@ -8,12 +8,12 @@ function manualInsertMpw($id, $did) {
     global $db;
 
     $date = date("Y-m-d H:i:s");
-    $qpc = $db->query("SELECT `material`, `version`, `pieces`, `atribute` FROM `profile_costing` WHERE `id` = '$id'");
+    $qpc = $db->query("SELECT `material`, `version`, `pieces`, `attributes` FROM `profile_costing` WHERE `id` = '$id'");
     $pc = $qpc->fetch();
     $qmmpw = $db->query("SELECT `id`, `code` FROM `mpw` WHERE `did` = '$did' AND `type` = '3'");
     $mpwud = false;
 
-    $atributes = json_decode($pc["atribute"], true);
+    $atributes = json_decode($pc["attributes"], true);
     $atr_t_j = array();
     foreach ($atributes as $name => $val) {
         array_push($atr_t_j, $name);

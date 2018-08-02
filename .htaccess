@@ -22,6 +22,7 @@ RewriteRule ^material/(.+)/$ /index.php?site=40&sheet_code=$1
 RewriteRule ^plateFrame/(.+)/multi/(.+)/$ /index.php?site=20&f=$1&multi=1&material=$2
 RewriteRule ^plateFrame/(.+)/$ /index.php?site=20&f=$1
 
+RewriteRule ^multipart/plate/csv/([^-]+)/$ /engine/costing/plateMultiPart/multiPartCSV.php?dir_id=$1
 RewriteRule ^multipart/plate/([^-]+)/$ /index.php?site=29&action=viewPlateCostingCard&directory_id=$1
 RewriteRule ^plateMulti/program/([^-]+)/([^-]+)/$ /index.php?site=30&action=viewProgramCard&directory_id=$1&program_id=$2
 RewriteRule ^plateMulti/detail/([^-]+)/([^-]+)/$ /index.php?site=30&action=viewDetailCard&directory_id=$1&detail_id=$2

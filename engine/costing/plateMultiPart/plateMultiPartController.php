@@ -10,6 +10,7 @@ require_once dirname(__DIR__) . "/../mainController.php";
 require_once dirname(__DIR__) . "/../model/CheckboxModel.php";
 require_once dirname(__FILE__) . "/plateMultiPart.php";
 require_once dirname(__FILE__) . "/model/mainCardModel/mainCardModel.php";
+require_once dirname(__FILE__) . "/model/PlateMultipartDuplicator.php";
 require_once dirname(__FILE__) . "/model/detailCardModel/detailCardModel.php";
 
 /**
@@ -380,6 +381,55 @@ class plateMultiPartController extends mainController
             ");
             $mpwUpdateQuery->bindValue(":id", $mpwId, PDO::PARAM_INT);
             $mpwUpdateQuery->execute();
+        }
+    }
+
+    /**
+     * @param int $directoryId
+     * @return int
+     * @throws Exception
+     */
+    public function duplicate(int $directoryId): int
+    {
+        $duplicator = new PlateMultipartDuplicator($directoryId);
+        return $duplicator->getNewDirectoryId();
+    }
+
+    /**
+     * @param array $data
+     * @throws Exception
+     */
+    public function edit(array $data)
+    {
+        $details = json_decode($data['details'], true);
+
+        foreach ((array)$details as $detail) {
+            $did = $detail['id'];
+            $mpwId = $detail['mpw'];
+            $dirId = $detail['dirId'];
+            $pid = $detail['pid'];
+            $_POST['mpw_directory'] = $dirId;
+
+            $material = $data['material'][$did];
+            $thickness = $data['thickness'][$did];
+            $pieces = $data['pieces'][$did];
+            $ccId = $data['laser-material-name'][$did];
+
+            $mpw = new MPWModel();
+            $mpw->findById($mpwId);
+            $mpw->setMaterial($material);
+            $mpw->setThickness($thickness);
+            $mpw->setPieces($pieces);
+            $mpw->setMpwProject($pid);
+            $mpw->setCcId($ccId);
+
+            try {
+                $mpw->deleteDetails($dirId);
+                $mpw->makeDetails($dirId, $mpwId);
+                $mpw->save();
+            } catch (\Exception $ex) {
+                throw $ex;
+            }
         }
     }
 }

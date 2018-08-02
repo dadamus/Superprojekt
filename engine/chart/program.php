@@ -328,7 +328,7 @@ if ($action == 1) { //Imap check messages
         pw.QtyAvailable,
         m.cubic as density,
         pw.actual_weight,
-        plate_warehouse.id
+        pw.id
         FROM 
         cutting_queue_details d 
         LEFT JOIN plate_warehouse pw ON pw.id = d.plate_warehouse_id

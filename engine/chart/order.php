@@ -182,7 +182,7 @@ $status = getOrderStatus($order["status"])
                                     $did = $oitem["did"];
                                     if ($oitem["type"] >= OT::AUTO_WYCENA_BLACH_MULTI_ZATWIERDZONA && $oitem["type"] <= OT::AUTO_WYCENA_BLACH_MULTI_DODANE_DO_ZAMOWIENIA) {
                                         $qmpc = $db->query("
-                                          SELECT m.name as mtype, mpw.`atribute`, mpw.`pieces` as d_qty, mpw.`thickness` 
+                                          SELECT m.name as mtype, mpw.`attributes`, mpw.`pieces` as d_qty, mpw.`thickness` 
                                           FROM `mpw` mpw 
                                           LEFT JOIN material m ON m.id = mpw.material
                                           WHERE mpw.`id` = '$mpw_id'
@@ -201,7 +201,7 @@ $status = getOrderStatus($order["status"])
                                                             Karta detalu <i class="fa fa-mail-forward"></i>
                                                         </a>
                                                         <a href="javascript:;" class="btn btn-default OrDB"
-                                                           id="<?= $oitem[" mpw"] ?>_odba">
+                                                           id="<?= $oitem["oi_id"] ?>_odba">
                                                         Usuń <i class="fa fa-trash"></i>
                                                         </a>
                                                     </div>
@@ -220,8 +220,8 @@ $status = getOrderStatus($order["status"])
                                                             <div class="col-md-5 name">Parametry:</div>
                                                             <div class="col-md-7 value">
                                                                 <?php //Checkboxy
-                                                                if (isset($mpc["atribute"])) {
-                                                                    $attributes = json_decode($mpc["atribute"]);
+                                                                if (isset($mpc["attributes"])) {
+                                                                    $attributes = json_decode($mpc["attributes"]);
                                                                     if (count($attributes) > 0) {
                                                                         foreach ($attributes as $attribute) {
                                                                             echo _getChecboxText($attribute) . " ";
@@ -552,7 +552,7 @@ $status = getOrderStatus($order["status"])
             if (confirm("Usunać detal z zamówienia?")) {
                 blockSite();
                 $.ajax({
-                    url: "<?php echo $site_path; ?>/engine/chart/orderAjax.php?action=7&mpw=" + _id
+                    url: "<?php echo $site_path; ?>/engine/chart/orderAjax.php?action=7&oitemId=" + _id
                 }).done(function (msg) {
                     unblockSite();
                     if (msg != "1") {

@@ -177,6 +177,7 @@ class sqlBuilder
      * @param $name
      * @param $value
      * @param $type
+     * @return $this
      */
     public function bindValue($name, $value, $type)
     {
@@ -188,6 +189,7 @@ class sqlBuilder
         }
 
         $this->values .= ":$name";
+        return $this;
     }
 
     /**

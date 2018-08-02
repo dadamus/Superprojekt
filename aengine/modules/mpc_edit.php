@@ -84,7 +84,7 @@ if ($action == 2) {
 
 
         //Atributes
-        $atributes = json_decode($row["atributes"]);
+        $attributess = json_decode($row["attributes"]);
         if (count(@$atributes) > 0) {
             foreach ($atributes as $key => $val) {
                 $GLOBALS["a" . $key . "i2"] = $val;
@@ -105,7 +105,7 @@ if ($action == 2) {
     if ($action == 1) { // Save data
         $qmpc = $db->query("SELECT * FROM `mpc` WHERE `id` = '$mpc_id'");
         $fetch = $qmpc->fetch();
-        $fetch["atributes"] = json_decode(stripslashes($fetch["atributes"]), true);
+        $fetch["attributes"] = json_decode(stripslashes($fetch["attributes"]), true);
         var_dump($fetch);
         $snapshot = json_encode($fetch);
         $date = date("Y-m-d H:i:s");
@@ -134,7 +134,7 @@ if ($action == 2) {
             $update_s .= "`" . $input->name . "` = :" . $input->name . ", ";
         }
 
-        $update_s .= "`udate` = :udate, `atributes` = '$atributes' WHERE `id` = '$mpc_id'";
+        $update_s .= "`udate` = :udate, `attributes` = '$atributes' WHERE `id` = '$mpc_id'";
 
         $uquery = $db->prepare($update_s);
         $_INPUTS->BindInputs($uquery);

@@ -113,13 +113,34 @@ if ($action == 6) { //Change multiplier
     header("Location: $site_path/order/$oid/");
 }
 if ($action == 7) { //Delete item
-    $mpw = $_GET["mpw"];
-    $qpmpw = $db->query("SELECT `id` FROM `mpw` WHERE `id` = '$mpw' AND `program` != ''");
-    if ($pmpw = $qpmpw->fetch()) {
-        die("Najpierw usuń programy!");
-    } else {
-        $db->query("DELETE FROM `oitems` WHERE `mpw` = '$mpw'");
-        die("1");
+    $oitemId = $_GET["oitemId"];
+
+    $oitemQuery = $db->prepare('
+        SELECT
+        cqd.id,
+        oi.dct,
+        cqd.cutting_queue_list_id,
+        cql, 
+        FROM
+        cutting_queue_details cqd
+        LEFT JOIN oitems oi ON oi.id = cqd.oitem_id
+        LEFT JOIN cutting_queue_list cql ON cql.id = cqd.cutting_queue_list_id
+        WHERE
+        cqd.oitem_id = :oitemId
+    ');
+    $oitemQuery->bindValue(':oitemId', $oitemId. PDO::PARAM_INT);
+    $oitemQuery->execute();
+
+    while($cuttingQueueDetails = $oitemQuery->fetch())
+    {
+        if ($cuttingQueueDetails['dct'] <= 0) {
+            $db->query('DELETE FROM cutting_queue_list WHERE id = ' . $cuttingQueueDetails['id']);
+        } else {
+            break;
+        }
     }
+
+    $db->query("DELETE FROM `oitems` WHERE `id` = '$oitemId'");
+    die("1");
 }
 ob_end_flush();

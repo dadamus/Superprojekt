@@ -120,7 +120,7 @@ class mainCardDetailModel
 
         $checkboxQuery = $db->prepare("
             SELECT 
-            mpw.atribute
+            mpw.attributes
             FROM
             plate_multiPartDetails d
             LEFT JOIN mpw mpw ON mpw.id = d.mpw
@@ -133,7 +133,7 @@ class mainCardDetailModel
         $checkboxQuery->execute();
 
         $checkboxQueryData = $checkboxQuery->fetch(PDO::FETCH_ASSOC);
-        $checkboxString = $checkboxQueryData["atribute"];
+        $checkboxString = $checkboxQueryData["attributes"];
 
         if (strlen($checkboxString) > 0) {
             $checkboxData = json_decode($checkboxString, true);

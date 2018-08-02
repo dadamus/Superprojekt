@@ -92,6 +92,11 @@ class MPWModel
      */
     private $type;
 
+    /**
+     * @var int
+     */
+    private $ccId = 0;
+
     public function __construct(array $data = [])
     {
         foreach ($data as $key => $value) {
@@ -125,8 +130,25 @@ class MPWModel
                     break;
             }
         }
+    }
 
-        //make attributes
+    /**
+     * @return array
+     */
+    public function mpwPerDetail(): array
+    {
+        $response = [];
+        $details = json_decode($this->getMpwDetails(), true);
+
+        foreach ($details as $detail) {
+            $newDetail = [];
+            $newDetail[] = $detail;
+            $newMpw = clone $this;
+            $newMpw->setMpwDetails(json_encode($newDetail));
+            $response[] = $newMpw;
+        }
+
+        return $response;
     }
 
     /**
@@ -150,7 +172,7 @@ class MPWModel
         foreach ($mpwData as $key => $value) {
             switch ($key) {
                 case "pid":
-                    $this->setPid(intval($value));
+                    $this->setPid((int)$value);
                     break;
 
                 case "src":
@@ -158,7 +180,7 @@ class MPWModel
                     break;
 
                 case "frame":
-                    $this->setFrame(intval($value));
+                    $this->setFrame((int)$value);
                     break;
 
                 case "code":
@@ -166,15 +188,15 @@ class MPWModel
                     break;
 
                 case "version":
-                    $this->setVersion(intval($value));
+                    $this->setVersion((int)$value);
                     break;
 
                 case "material":
-                    $this->setMaterial(intval($value));
+                    $this->setMaterial((int)$value);
                     break;
 
                 case "thickness":
-                    $this->setThickness(floatval($value));
+                    $this->setThickness((float)$value);
                     break;
 
                 case "pieces":
@@ -197,11 +219,15 @@ class MPWModel
                     break;
 
                 case "type":
-                    $this->setType(intval($value));
+                    $this->setType((int)$value);
                     break;
 
                 case "plate_multiDirectory":
-                    $this->setMpwDirectory(intval($value));
+                    $this->setMpwDirectory((int)$value);
+                    break;
+
+                case "cutting_conditions_name_id":
+                    $this->setCcId($value);
                     break;
             }
         }
@@ -480,6 +506,82 @@ class MPWModel
     }
 
     /**
+     * @return int
+     */
+    public function getCcId(): int
+    {
+        return $this->ccId;
+    }
+
+    /**
+     * @param int $ccId
+     */
+    public function setCcId(int $ccId)
+    {
+        $this->ccId = $ccId;
+    }
+
+    /**
+     * @param int $dirId
+     * @return array
+     */
+    private function getDetailsFromDb(int $dirId): array
+    {
+        global $db;
+
+        $detailsQuery = '
+        SELECT 
+        id,did,src,name
+        FROM plate_multiPartDetails
+        WHERE
+        mpw = ' . $this->getMpwId() . '
+        AND dirId = ' . $dirId . '
+        ';
+
+        $response = [];
+        $detailsToMpw = [];
+        foreach ($db->query($detailsQuery) as $row) {
+            $response[] = [
+                'id' => $row['id'],
+                'did' => $row['did'],
+                'src' => $row['src'],
+                'name' => $row['name']
+            ];
+
+            $detailsToMpw[] = $row['did'];
+        }
+
+        $this->setMpwDetails(json_encode($detailsToMpw));
+        return $response;
+    }
+
+    /**
+     * @param int $dirId
+     */
+    public function deleteDetails(int $dirId)
+    {
+        global $db;
+
+        $details = $this->getDetailsFromDb($dirId);
+        $src = $this->getSrc();
+
+        foreach ($details as $detail) {
+            $detailPath = $src . '/' . $detail['src'];
+            if (file_exists($detailPath)) {
+                unlink($detailPath);
+            }
+
+            $db->exec('
+              DELETE 
+              FROM plate_multiPartDetails 
+              WHERE 
+              id = ' . $detail['id'] . ' 
+              AND dirId = ' . $dirId . '
+            ');
+        }
+    }
+
+    /**
      * @param int $dirId
      * @param int $mpwId
      * @throws Exception
@@ -494,7 +596,7 @@ class MPWModel
 
         $details = json_decode($this->getMpwDetails(), true);
 
-        if (count($details) == 0) {
+        if (empty($details)) {
             throw new \Exception("Brak detali!");
         }
 
@@ -517,10 +619,11 @@ class MPWModel
         }
 
         $dirDataParts = explode("/", $dirData["dir_name"]);
-        $dirNr = $dirDataParts[0];
+        $dirNr = reset($dirDataParts);
+        $dirY = end($dirDataParts);
 
         //Robimy glowny folder wyceny
-        $mpwPath = $data_src . "multipart/" . date("m") . "/" . $dirNr;
+        $mpwPath = $data_src . "multipart/" . date("m") . "/" . $dirNr . "-" . $dirY;
         if (!file_exists($mpwPath)) {
             mkdir($mpwPath, 0777, true);
         }
@@ -555,7 +658,9 @@ class MPWModel
             $detailNewName .= "." . $detailExt;
 
             $detailOldPath = $projectPath . "/V" . $this->getVersion() . "/dxf/" . $detailName;
-            copy($detailOldPath, $mpwPath . "/" . $detailNewName);
+            if (file_exists($detailOldPath)) {
+                copy($detailOldPath, $mpwPath . "/" . $detailNewName);
+            }
 
             $insertQuery->bindValue(":mpw", $this->getMpwId(), PDO::PARAM_INT);
             $insertQuery->bindValue(":dirId", $_POST["mpw_directory"], PDO::PARAM_INT);
@@ -588,10 +693,11 @@ class MPWModel
         $sqlBuilder->bindValue("material", $this->getMaterial(), PDO::PARAM_INT);
         $sqlBuilder->bindValue("thickness", $this->getThickness(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("pieces", $this->getPieces(), PDO::PARAM_INT);
-        $sqlBuilder->bindValue("atribute", $this->getAttributes(), PDO::PARAM_STR);
+        $sqlBuilder->bindValue("attributes", $this->getAttributes(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("des", $this->getDes(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("date", $this->getDate(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("type", $this->getType(), PDO::PARAM_INT);
+        $sqlBuilder->bindValue("cutting_conditions_name_id", $this->getCcId(), PDO::PARAM_INT);
         $sqlBuilder->flush();
 
         if ($insert) {

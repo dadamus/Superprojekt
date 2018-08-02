@@ -221,7 +221,6 @@ function deleteDetail()
     $cq->execute();
     $costing = $cq->fetch();
 
-    $atribute = json_decode($costing["atribute"]);
     $details = json_decode($costing["did"]);
     $_details = array();
     if (is_array($details)) {
@@ -460,7 +459,7 @@ if ($action == 7) {
         d.src as detail_name,
         mpw.id as nr,
         mpw.pieces,
-        mpw.atribute,
+        mpw.attributes,
         mpd.name as detail_code,
         m.name as material_name,
         mpcds.price

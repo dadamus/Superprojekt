@@ -7,8 +7,8 @@
  * Time: 20:55
  */
 
-require_once dirname(__FILE__) . "/model/PhpData.php";
-require_once dirname(__DIR__) . "/../repository/MPWRepository.php";
+require_once __DIR__ . "/model/PhpData.php";
+require_once __DIR__ . "/../../repository/MPWRepository.php";
 
 /**
  * Class PlateMultiPart
@@ -260,7 +260,7 @@ class PlateMultiPart
         $parts = [];
         while($partData = $searchQuery->fetch(PDO::FETCH_ASSOC)) {
             $part = new ProgramCardPartData();
-
+            
             if ($partData["id"] <= 0) {
                 continue;
             }
