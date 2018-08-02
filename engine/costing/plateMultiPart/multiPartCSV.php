@@ -61,6 +61,10 @@ if (file_exists($csvSrc)) {
 $file = fopen($csvSrc, "wb");
 
 foreach ($detailsData as $detail) {
+    $detailWebSrc = $detail['src'] . '/' . $detail['detail_src_name'];
+    $detailWebSrc = str_replace('/var/www/html/ABL/', 'X:\\', $detailWebSrc);
+    $detailWebSrc = str_replace('/', '\\', $detailWebSrc);
+
     fputcsv($file, [
         '"'.$detail['src'] . '/' . $detail['detail_src_name'].'"',
         '"'.$detail['material'].'"',

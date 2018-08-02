@@ -9,4 +9,5 @@ CREATE TABLE IF NOT EXISTS `warehouse_adjustments` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin2 AUTO_INCREMENT=1 ;
 
+ALTER TABLE  `mpw` ADD  `plate_multiDirectory` INT NULL AFTER  `plate_multiDirectory`;
 ALTER TABLE  `mpw` ADD  `cutting_conditions_name_id` INT NULL AFTER  `plate_multiDirectory`;
