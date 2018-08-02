@@ -66,7 +66,7 @@ foreach ($detailsData as $detail) {
     $detailWebSrc = str_replace('/', '\\', $detailWebSrc);
 
     fputcsv($file, [
-        '"'.$detail['src'] . '/' . $detail['detail_src_name'].'"',
+        '"'.$detailWebSrc.'"',
         '"'.$detail['material'].'"',
         '"'.$detail['material_name'].'"',
         $detail['thickness'],
