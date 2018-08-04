@@ -30,12 +30,15 @@ $detailsQuery = $db->prepare("
             mat.name as material_name,
             details.name as detail_name,
             details.did as detail_id,
-            details.src as detail_src_name
+            details.src as detail_src_name,
+            ccn.matType as laser_material_type,
+            ccn.matName as laser_material_name
             FROM 
             plate_multiPartDetails details
             LEFT JOIN mpw m ON m.id = details.mpw
             LEFT JOIN details d ON d.id = details.did
             LEFT JOIN material mat ON mat.id = m.material
+            LEFT JOIN cutting_conditions_names ccn ON ccn.id = m.cuttin_conditions_name_id
             WHERE
             details.dirId = :dirId
             ORDER BY details.mpw ASC
@@ -70,8 +73,8 @@ foreach ($detailsData as $detail) {
         '"'.$detail['material'].'"',
         '"'.$detail['material_name'].'"',
         $detail['thickness'],
-        '"'.$detail['material_name'].$detail['thickness'].'"',
-        '"'.$detail['material_name'].$detail['thickness'].'E'.'"',
+        '"'.$detail['t_material_name'].'"',
+        '"'.$detail['laser_material_name'].'"',
         '"File"',
         10
     ], ',', '"', "\n");

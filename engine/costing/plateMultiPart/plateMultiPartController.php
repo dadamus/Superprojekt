@@ -414,6 +414,7 @@ class plateMultiPartController extends mainController
             $thickness = $data['thickness'][$did];
             $pieces = $data['pieces'][$did];
             $ccId = $data['laser-material-name'][$did];
+            $tMaterial = $data['material_name'][$did];
 
             $mpw = new MPWModel();
             $mpw->findById($mpwId);
@@ -422,6 +423,7 @@ class plateMultiPartController extends mainController
             $mpw->setPieces($pieces);
             $mpw->setMpwProject($pid);
             $mpw->setCcId($ccId);
+            $mpw->setTMaterialName($tMaterial);
 
             try {
                 $mpw->deleteDetails($dirId);

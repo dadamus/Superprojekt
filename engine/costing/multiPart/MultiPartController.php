@@ -14,6 +14,7 @@ require_once dirname(__DIR__) . "/../mainController.php";
 class MultiPartController extends mainController
 {
     private $materialThickness = [];
+    private $laserMaterial = [];
 
     /**
      * MultiPartController constructor.
@@ -76,7 +77,7 @@ class MultiPartController extends mainController
             LEFT JOIN details d ON d.id = details.did
             LEFT JOIN material mat ON mat.id = m.material
             LEFT JOIN cutting_conditions_names cc ON cc.id = m.cutting_conditions_name_id
-            LEFT JOIN T_material tm On tm.MaterialTypeName = cc.matType AND tm.thickness = cc.thck
+            LEFT JOIN T_material tm On tm.MaterialName = m.t_material_name
             WHERE
             details.dirId = :dirId
             ORDER BY details.mpw ASC
@@ -110,6 +111,42 @@ class MultiPartController extends mainController
                 $this->materialThickness[$detail['material_id']] = $materialThicknessQuery->fetchAll(PDO::FETCH_ASSOC);
                 $detail['material_thickness_info'] = $this->materialThickness[$detail['material_id']];
             }
+
+            if (isset($this->laserMaterial[$detail['laser_material_id']])) {
+                $detail['laser_material_info'] = $this->laserMaterial[$detail['laser_material_id']];
+            } else {
+                $laserMaterialQuery = $db->prepare('
+                    SELECT
+                    cc.id,
+                    cc.matName
+                    FROM
+                    cutting_conditions_names cc
+                    LEFT JOIN cutting_conditions_names c ON c.id = :currentId
+                    WHERE
+                    cc.thck = c.thck
+                    AND cc.matType = c.matType
+                    AND cc.profile = 1
+                ');
+                $laserMaterialQuery->bindValue(':currentId', $detail['laser_material_id'], PDO::PARAM_INT);
+                $laserMaterialQuery->execute();
+                $detail['laser_material_info'] = $laserMaterialQuery->fetchAll(PDO::FETCH_ASSOC);
+                $this->laserMaterial[$detail['laser_material_id']] = $detail['laser_material_info'];
+            }
+
+            $tMaterialQuery = $db->prepare('
+                    SELECT
+                    MaterialName
+                    FROM
+                    T_material
+                    WHERE
+                    MaterialTypeName = :material
+                    AND Thickness = :thickness
+                ');
+            $tMaterialQuery->bindValue(':material', $detail['material_name'], PDO::PARAM_INT);
+            $tMaterialQuery->bindValue(':thickness', $detail['thickness'], PDO::PARAM_STR);
+            $tMaterialQuery->execute();
+            $detail['t_material_info'] = $tMaterialQuery->fetchAll(PDO::FETCH_ASSOC);
+
 
             $mpw[$dlp]["details"][] = $detail;
 
@@ -146,7 +183,8 @@ class MultiPartController extends mainController
      * @param int $detailId
      * @return string
      */
-    public function deleteDetail(int $dirId, int $mpwId, int $detailId) {
+    public function deleteDetail(int $dirId, int $mpwId, int $detailId)
+    {
         global $db, $data_src;
 
         $dataQuery = $db->prepare("
@@ -177,7 +215,7 @@ class MultiPartController extends mainController
             unlink($detailPath);
         }
 
-        $db->query("DELETE FROM plate_multiPartDetails WHERE id = ". $data["id"]);
+        $db->query("DELETE FROM plate_multiPartDetails WHERE id = " . $data["id"]);
         return "ok";
     }
 }

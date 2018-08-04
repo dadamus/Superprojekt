@@ -48,8 +48,12 @@ switch ($action) {
         echo json_encode($createMPWController->getMaterialLaser($_POST['material'], (float)$_POST['thickness']));
         break;
 
+    case 'getTMaterial':
+        echo json_encode($createMPWController->getTMaterial($_POST['material'], (float)$_POST['thickness']));
+        break;
+
     case "addMPW": //Create MPW
-        echo $createMPWController->addMpw($_POST, $_POST["mpw_directory"]);
+        echo json_encode($createMPWController->addMpw($_POST, $_POST["mpw_directory"]));
         break;
 
     case "viewMainCard": //Karta glowna wyceny

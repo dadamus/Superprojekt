@@ -90,6 +90,7 @@ $details.on('change', '.thickness-picker', function () {
     let thickness = $(this).val();
     let $tr = $(this).closest('tr');
     let material = $tr.find('.material-picker').find(':selected').html().trim();
+    loadTMaterial($tr, material, thickness);
     loadLaserMaterial($tr, material, thickness);
 });
 
@@ -97,10 +98,39 @@ $details.on('change', '.material-picker', function () {
     let material = $(this).find(':selected').text().trim();
     let $tr = $(this).closest('tr');
     let thickness = $tr.find('.thickness-picker').val();
+    loadTMaterial($tr, material, thickness);
     loadLaserMaterial($tr, material, thickness);
 });
 
+let loadTMaterial = function ($tr, material, thickness) {
+    let $picker = $tr.find('.t-material-picker');
+    $picker.prop('disabled', true);
+
+    $.ajax({
+        'method': 'POST',
+        'data': 'material=' + material + "&thickness=" + thickness,
+        'url': plateMultiPartUrl + "?action=getTMaterial"
+    }).done(function (responseData) {
+        let response = JSON.parse(responseData);
+
+        if (response.length > 0) {
+            $picker.prop('disabled', false);
+            $picker.html(function () {
+                let data = '';
+                for (let item in response) {
+                    data += "<option>" + response[item].MaterialName + "</option>";
+                }
+                return data;
+            });
+        } else {
+            $picker.html('');
+        }
+    });
+};
+
 let loadLaserMaterial = function ($tr, material, thickness) {
+    let $picker = $tr.find('.laser-material-name-picker');
+    $picker.prop('disabled', true);
     $.ajax({
         'method': 'POST',
         'data': 'material=' + material + "&thickness=" + thickness,
@@ -108,15 +138,17 @@ let loadLaserMaterial = function ($tr, material, thickness) {
     }).done(function (responseData) {
         let response = JSON.parse(responseData);
         if (response.length > 0) {
-            $tr.find('.material-name').html(response[0]['MaterialName']);
-            $tr.find('.laser-material-name-picker').html(function () {
-                console.log(response);
+            $picker.html(function () {
                 let data = '';
                 for (let item in response) {
                     data += "<option value='" + response[item].ccId + "'>" + response[item].laserMaterialName + "</option>";
                 }
                 return data;
             });
+            $picker.prop('disabled', false);
+        } else {
+            toastr.error('Brak materiału lasera dla typu materiału: ' + material + ' i grubosci: ' + thickness);
+            $picker.html('');
         }
     });
 };
@@ -124,6 +156,8 @@ let loadLaserMaterial = function ($tr, material, thickness) {
 $details.on('change', '.material-picker', function () {
     let value = $(this).val();
     let $pickerTr = $(this).parent().parent();
+    let $thicknessPicker = $pickerTr.find('.thickness-picker');
+
     $.ajax({
         'method': 'POST',
         'data': 'material_id=' + value,
@@ -133,16 +167,20 @@ $details.on('change', '.material-picker', function () {
         let html = '';
 
         thicknesses.forEach(function (item) {
-            html += "<option data-material-name='" + item.material_name + "'>" + item.thickness + "</option>";
+            let selected = '';
+            console.log(item.thickness +":"+ value);
+            if (item.thickness === $thicknessPicker.val()) {
+                selected = 'selected="selected"'
+            }
+            html += "<option "+selected+" data-material-name='" + item.material_name + "'>" + item.thickness + "</option>";
         });
 
-        $pickerTr.find('.thickness-picker').html(html);
+        $thicknessPicker.html(html);
     });
 });
 
 $details.on('change', '.thickness-picker', function () {
     let name = $(this).find(':selected').data('material-name');
-    $(this).parent().parent().find('.material-name').html(name);
 });
 
 $("#saveMpwEdit").on('click', function (e) {
@@ -160,7 +198,7 @@ $("#saveMpwEdit").on('click', function (e) {
         'method': 'POST',
         'url': '/index.php?site=30&action=edit'
     }).done(function (response) {
-        //window.location.reload();
+        window.location.reload();
     }).fail(function () {
         swl("Błąd", "Wystąpił błąd!", "error");
     });

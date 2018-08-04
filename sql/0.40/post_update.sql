@@ -1,0 +1,1 @@
+ALTER TABLE mpw ADD COLUMN t_material_name VARCHAR(128) NULL;

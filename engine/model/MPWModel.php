@@ -97,6 +97,11 @@ class MPWModel
      */
     private $ccId = 0;
 
+    /**
+     * @var string
+     */
+    private $TMaterialName = '';
+
     public function __construct(array $data = [])
     {
         foreach ($data as $key => $value) {
@@ -228,6 +233,10 @@ class MPWModel
 
                 case "cutting_conditions_name_id":
                     $this->setCcId($value);
+                    break;
+
+                case 't_material_name':
+                    $this->setTMaterialName((string)$value);
                     break;
             }
         }
@@ -582,6 +591,22 @@ class MPWModel
     }
 
     /**
+     * @return string
+     */
+    public function getTMaterialName(): string
+    {
+        return $this->TMaterialName;
+    }
+
+    /**
+     * @param string $TMaterialName
+     */
+    public function setTMaterialName(string $TMaterialName)
+    {
+        $this->TMaterialName = $TMaterialName;
+    }
+
+    /**
      * @param int $dirId
      * @param int $mpwId
      * @throws Exception
@@ -698,6 +723,7 @@ class MPWModel
         $sqlBuilder->bindValue("date", $this->getDate(), PDO::PARAM_STR);
         $sqlBuilder->bindValue("type", $this->getType(), PDO::PARAM_INT);
         $sqlBuilder->bindValue("cutting_conditions_name_id", $this->getCcId(), PDO::PARAM_INT);
+        $sqlBuilder->bindValue("t_material_name", $this->getTMaterialName(), PDO::PARAM_STR);
         $sqlBuilder->flush();
 
         if ($insert) {

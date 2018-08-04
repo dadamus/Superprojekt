@@ -89,7 +89,31 @@ class createMPWController extends mainController
             WHERE
             t.Thickness = '$thickness'
             AND t.MaterialTypeName = '$material'
+            AND cc.profile = 1
+            GROUP BY laserMaterialName
         ");
+        return $data->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @param string $material
+     * @param float $thickness
+     * @return array
+     */
+    public function getTMaterial(string $material, float $thickness)
+    {
+        global $db;
+
+        $data = $db->query("
+            SELECT
+            MaterialName
+            FROM
+            T_material
+            WHERE
+            MaterialTypeName = '$material'
+            AND Thickness = '$thickness'
+        ");
+
         return $data->fetchAll(\PDO::FETCH_ASSOC);
     }
 
