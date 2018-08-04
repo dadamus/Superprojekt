@@ -54,7 +54,7 @@ $details.on('change', 'select', function () {
     $selected.find('select[data-name="' + name + '"]').val(value);
 });
 
-setMaterialName = function ($tr) {
+let setMaterialName = function ($tr) {
     let material = $tr.find('select[name="material[]"]').find('option:selected').text();
     let thickness = $tr.find('input[name="thickness[]"]').val();
 };

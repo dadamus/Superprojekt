@@ -63,6 +63,7 @@
                                 </td>
                                 <td class="material-name">
                                     <select class="form-control t-material-picker"
+                                            data-name="material-name"
                                             name="material_name[<?= $detail['id'] ?>]">
                                         <?php foreach ($detail['t_material_info'] as $material): ?>
                                             <option <?php if ($material['MaterialName'] === $detail['material_type_name']): ?>selected="selected"<?php endif; ?>>
@@ -73,6 +74,7 @@
                                 </td>
                                 <td>
                                     <select name="laser-material-name[<?= $detail['id'] ?>]"
+                                            data-name="laser-material-name"
                                             class="form-control laser-material-name-picker">
                                         <?php foreach ($detail['laser_material_info'] as $material): ?>
                                             <option value="<?= $material['id'] ?>"
