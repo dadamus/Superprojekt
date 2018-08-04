@@ -38,7 +38,7 @@ $detailsQuery = $db->prepare("
             LEFT JOIN mpw m ON m.id = details.mpw
             LEFT JOIN details d ON d.id = details.did
             LEFT JOIN material mat ON mat.id = m.material
-            LEFT JOIN cutting_conditions_names ccn ON ccn.id = m.cuttin_conditions_name_id
+            LEFT JOIN cutting_conditions_names ccn ON ccn.id = m.cutting_conditions_name_id
             WHERE
             details.dirId = :dirId
             ORDER BY details.mpw ASC

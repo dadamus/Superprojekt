@@ -198,7 +198,7 @@ $("#saveMpwEdit").on('click', function (e) {
         'method': 'POST',
         'url': '/index.php?site=30&action=edit'
     }).done(function (response) {
-        //window.location.reload();
+        window.location.reload();
     }).fail(function () {
         swl("Błąd", "Wystąpił błąd!", "error");
     });
