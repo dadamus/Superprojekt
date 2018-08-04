@@ -24,6 +24,7 @@ $dirData = $dirDataQuery->fetch();
 $detailsQuery = $db->prepare("
             SELECT 
             m.*,
+            m.t_material_name as material_type_name
             d.pid,
             m.id as mpw_id,
             mat.id as material_id,
@@ -73,7 +74,7 @@ foreach ($detailsData as $detail) {
         '"'.$detail['material'].'"',
         '"'.$detail['material_name'].'"',
         $detail['thickness'],
-        '"'.$detail['t_material_name'].'"',
+        '"'.$detail['material_type_name'].'"',
         '"'.$detail['laser_material_name'].'"',
         '"File"',
         10

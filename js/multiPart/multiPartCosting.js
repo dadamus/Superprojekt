@@ -190,15 +190,15 @@ $("#saveMpwEdit").on('click', function (e) {
     App.blockUI();
 
     $.ajax({
-        'url': '/multipart/plate/csv/' + dirId + '/'
-    });
-
-    $.ajax({
         'data': data,
         'method': 'POST',
         'url': '/index.php?site=30&action=edit'
     }).done(function (response) {
-        window.location.reload();
+        $.ajax({
+            'url': '/multipart/plate/csv/' + dirId + '/'
+        }).done(function () {
+            window.location.reload();
+        });
     }).fail(function () {
         swl("Błąd", "Wystąpił błąd!", "error");
     });
