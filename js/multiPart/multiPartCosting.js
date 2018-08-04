@@ -197,7 +197,7 @@ $("#saveMpwEdit").on('click', function (e) {
         $.ajax({
             'url': '/multipart/plate/csv/' + dirId + '/'
         }).done(function () {
-            //window.location.reload();
+            window.location.reload();
         });
     }).fail(function () {
         swl("Błąd", "Wystąpił błąd!", "error");
