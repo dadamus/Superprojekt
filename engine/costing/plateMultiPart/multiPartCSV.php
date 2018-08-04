@@ -24,7 +24,7 @@ $dirData = $dirDataQuery->fetch();
 $detailsQuery = $db->prepare("
             SELECT 
             m.*,
-            m.t_material_name as material_type_name
+            m.t_material_name as material_type_name,
             d.pid,
             m.id as mpw_id,
             mat.id as material_id,
