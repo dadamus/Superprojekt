@@ -232,7 +232,7 @@ class MPWModel
                     break;
 
                 case "cutting_conditions_name_id":
-                    $this->setCcId($value);
+                    $this->setCcId((int)$value);
                     break;
 
                 case 't_material_name':
