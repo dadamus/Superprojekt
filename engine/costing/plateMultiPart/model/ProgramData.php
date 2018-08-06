@@ -68,6 +68,24 @@ class ProgramData
     /** @var  float */
     private $CutAll;
 
+    /** @var float  */
+    private $rectangleAreaRectVal = 0;
+
+    /** @var float  */
+    private $rectangleAreaTrashVal = 0;
+
+    /** @var float */
+    private $matValAll = 0;
+
+    /** @var float */
+    private $rectangleAreaRectWeight = 0;
+
+    /** @var float */
+    private $rectangleAreaRectWWeight = 0;
+
+    /** @var float */
+    private $rectangleAreaTrashWeight = 0;
+
     /**
      * ProgramData constructor.
      */
@@ -704,6 +722,61 @@ class ProgramData
             $part->setPriceKg(
                 $part->getLastPrice() / $part->getWeight() * 1000
             );
+
+            $this->rectangleAreaRectVal += $part->getRectangleAreaRectVal();
+            $this->rectangleAreaTrashVal += $part->getRectangleAreaTrashVal();
+            $this->matValAll += $part->getMatValAll();
+            $this->rectangleAreaRectWeight += $part->getRectangleAreaRectWeight();
+            $this->rectangleAreaRectWWeight += $part->getRectangleAreaRectWWeight();
+            $this->rectangleAreaTrashWeight += $part->getRectangleAreaTrashWeight();
         }
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaRectVal()
+    {
+        return $this->rectangleAreaRectVal;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaTrashVal()
+    {
+        return $this->rectangleAreaTrashVal;
+    }
+
+    /**
+     * @return float
+     */
+    public function getMatValAll()
+    {
+        return $this->matValAll;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaRectWeight()
+    {
+        return $this->rectangleAreaRectWeight;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaRectWWeight()
+    {
+        return $this->rectangleAreaRectWWeight;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRectangleAreaTrashWeight()
+    {
+        return $this->rectangleAreaTrashWeight;
     }
 }

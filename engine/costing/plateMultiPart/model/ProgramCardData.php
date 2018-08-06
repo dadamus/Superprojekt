@@ -21,8 +21,9 @@ class ProgramCardData
 
     /**
      * @param array $data
+     * @throws Exception
      */
-    function create($data)
+    public function create(array $data)
     {
         $this->setSheetName($data["SheetName"]);
         $this->setSheetCount($data["SheetCount"]);

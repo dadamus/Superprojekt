@@ -244,6 +244,22 @@ $main = $data["main"];
                                                         </tr>
                                                     <?php endforeach; ?>
                                                     </tbody>
+                                                    <tfoot>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th><?= $main->getSztN() ?></th>
+                                                        <th><?= $main->getKomN() ?></th>
+                                                        <th><?= $main->getSztB() ?></th>
+                                                        <th><?= $main->getKomB() ?></th>
+                                                        <th></th>
+                                                        <th><?= $main->getWeight() ?></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                    </tr>
+                                                    </tfoot>
                                                 </table>
                                             </div>
                                         </div>

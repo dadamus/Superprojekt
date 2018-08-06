@@ -362,6 +362,18 @@ $mainMaterial = $mainProgram->getMaterial();
                                                 </tr>
                                             <?php endforeach; ?>
                                             </tbody>
+                                            <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th><?= $mainProgram->getRectangleAreaRectVal() ?></th>
+                                                <th><?= $mainProgram->getRectangleAreaTrashVal() ?></th>
+                                                <th><?= $mainProgram->getMatValAll() ?></th>
+                                                <th></th>
+                                                <th><?= $mainProgram->getRectangleAreaRectWeight() ?></th>
+                                                <th><?= $mainProgram->getRectangleAreaRectWWeight() ?></th>
+                                                <th><?= $mainProgram->getRectangleAreaTrashWeight() ?></th>
+                                            </tr>
+                                            </thead>
                                         </table>
                                     </div>
                                 </div>

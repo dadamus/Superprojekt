@@ -6,9 +6,9 @@
  * Time: 12:32
  */
 
-require_once dirname(__FILE__) . "/mainCardProjectModel.php";
-require_once dirname(__DIR__) . "/ProgramCardPartData.php";
-require_once dirname(__DIR__) . "/MaterialData.php";
+require_once __DIR__ . '/mainCardProjectModel.php';
+require_once __DIR__. '/../ProgramCardPartData.php';
+require_once __DIR__ . '/../MaterialData.php';
 
 class mainCardDetailModel
 {
@@ -479,7 +479,7 @@ class mainCardDetailModel
     /**
      * @return float
      */
-    public function getKomN(): float
+    public function getKomN()
     {
         return $this->KomN;
     }
@@ -495,7 +495,7 @@ class mainCardDetailModel
     /**
      * @return float
      */
-    public function getKomB(): float
+    public function getKomB()
     {
         return $this->KomB;
     }
@@ -511,7 +511,7 @@ class mainCardDetailModel
     /**
      * @return float
      */
-    public function getSztN(): float
+    public function getSztN()
     {
         return $this->SztN;
     }
@@ -527,7 +527,7 @@ class mainCardDetailModel
     /**
      * @return float
      */
-    public function getSztB(): float
+    public function getSztB()
     {
         return $this->SztB;
     }

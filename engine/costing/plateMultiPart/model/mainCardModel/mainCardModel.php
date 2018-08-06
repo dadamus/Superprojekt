@@ -23,6 +23,31 @@ class mainCardModel
     private $blocked = false;
 
     /**
+     * @var float
+     */
+    private $sztN = 0.0;
+
+    /**
+     * @var float
+     */
+    private $sztB = 0.0;
+
+    /**
+     * @var float
+     */
+    private $komN = 0.0;
+
+    /**
+     * @var float
+     */
+    private $komB = 0.0;
+
+    /**
+     * @var float
+     */
+    private $Weight = 0.0;
+
+    /**
      * mainCardModel constructor.
      * @param PlateMultiPart $plateMultiPart
      */
@@ -101,6 +126,12 @@ class mainCardModel
             foreach ($client->getDetails() as $detail) {
                 $detail->Calculate();
 
+                $this->komN += $detail->getKomN();
+                $this->komB += $detail->getKomB();
+                $this->sztN += $detail->getSztN();
+                $this->sztB += $detail->getSztB();
+                $this->Weight += $detail->getWeight() * $detail->getCountAll();
+
                 //Tylko pierwszy zapis bedzie dzial
                 $detail->saveDetailSettings($plateMultiPart->getDirId(), true);
 
@@ -172,5 +203,45 @@ class mainCardModel
     public function getClients(): array
     {
         return $this->clientModels;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSztN()
+    {
+        return $this->sztN;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSztB()
+    {
+        return $this->sztB;
+    }
+
+    /**
+     * @return float
+     */
+    public function getKomN()
+    {
+        return $this->komN;
+    }
+
+    /**
+     * @return float
+     */
+    public function getKomB()
+    {
+        return $this->komB;
+    }
+
+    /**
+     * @return float
+     */
+    public function getWeight()
+    {
+        return $this->Weight;
     }
 }
