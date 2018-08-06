@@ -50,7 +50,7 @@ $details.on('click', '.select-checkbox', function (e) {
                 $lastSelected.find('.select-checkbox').trigger('click');
             }
             $lastSelected = $lastSelected.next();
-            if ($lastSelected === $clickedTr) {
+            if ($lastSelected.index() === $clickedTr.index()) {
                 break;
             }
         }
