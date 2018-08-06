@@ -24,6 +24,39 @@ $details.DataTable({
     order: [[1, 'asc']]
 });
 
+let shiftPressed = false;
+
+$(document).on('keydown', function (e) {
+    if (e.which === 16) {
+        shiftPressed = true;
+    }
+}).on('keyup', function (e) {
+    if (e.which === 16) {
+        shiftPressed = false;
+    }
+});
+
+$details.on('click', '.select-checkbox', function (e) {
+    if (shiftPressed) {
+        shiftPressed = false;
+        let $clickedTr = $(this).closest('tr');
+        let $selected = $details.find('tr.selected');
+        let last = ($selected.length - 2);
+
+        let $lastSelected = $details.find('tr.selected:eq(' + last + ')');
+
+        for (let i = 1; i < 10000; i++) {
+            if (!$lastSelected.hasClass('selected')) {
+                $lastSelected.find('.select-checkbox').trigger('click');
+            }
+            $lastSelected = $lastSelected.next();
+            if ($lastSelected === $clickedTr) {
+                break;
+            }
+        }
+    }
+});
+
 $details.on('keyup', 'input', function () {
     let $tr = $(this).closest('tr');
     if (!$tr.hasClass('selected')) {
@@ -104,6 +137,12 @@ $details.on('change', '.material-picker', function () {
 
 let loadTMaterial = function ($tr, material, thickness) {
     let $picker = $tr.find('.t-material-picker');
+
+    let $selected = $details.find('tr.selected').find('.t-material-picker');
+    if ($tr.hasClass('selected')) {
+        $selected.prop('disabled', true);
+    }
+
     $picker.prop('disabled', true);
 
     $.ajax({
@@ -114,22 +153,35 @@ let loadTMaterial = function ($tr, material, thickness) {
         let response = JSON.parse(responseData);
 
         if (response.length > 0) {
+            let data = '';
+            for (let item in response) {
+                data += "<option>" + response[item].MaterialName + "</option>";
+            }
+            $picker.html(data);
+
+            if ($tr.hasClass('selected')) {
+                $selected.html(data);
+                $selected.prop('disabled', false);
+            }
+
             $picker.prop('disabled', false);
-            $picker.html(function () {
-                let data = '';
-                for (let item in response) {
-                    data += "<option>" + response[item].MaterialName + "</option>";
-                }
-                return data;
-            });
         } else {
             $picker.html('');
+            if ($tr.hasClass('selected')) {
+                $selected.html('')
+            }
         }
     });
 };
 
 let loadLaserMaterial = function ($tr, material, thickness) {
     let $picker = $tr.find('.laser-material-name-picker');
+
+    let $selected = $details.find('tr.selected').find('.laser-material-name-picker');
+    if ($tr.hasClass('selected')) {
+        $selected.prop('disabled', true);
+    }
+
     $picker.prop('disabled', true);
     $.ajax({
         'method': 'POST',
@@ -138,17 +190,24 @@ let loadLaserMaterial = function ($tr, material, thickness) {
     }).done(function (responseData) {
         let response = JSON.parse(responseData);
         if (response.length > 0) {
-            $picker.html(function () {
-                let data = '';
-                for (let item in response) {
-                    data += "<option value='" + response[item].ccId + "'>" + response[item].laserMaterialName + "</option>";
-                }
-                return data;
-            });
+            let data = '';
+            for (let item in response) {
+                data += "<option value='" + response[item].ccId + "'>" + response[item].laserMaterialName + "</option>";
+            }
+
+            $picker.html(data);
+
+            if ($tr.hasClass('selected')) {
+                $selected.html(data);
+                $selected.prop('disabled', false);
+            }
             $picker.prop('disabled', false);
         } else {
             toastr.error('Brak materiału lasera dla typu materiału: ' + material + ' i grubosci: ' + thickness);
             $picker.html('');
+            if ($tr.hasClass('selected')) {
+                $selected.html('')
+            }
         }
     });
 };
@@ -168,13 +227,15 @@ $details.on('change', '.material-picker', function () {
 
         thicknesses.forEach(function (item) {
             let selected = '';
-            console.log(item.thickness +":"+ value);
             if (item.thickness === $thicknessPicker.val()) {
                 selected = 'selected="selected"'
             }
-            html += "<option "+selected+" data-material-name='" + item.material_name + "'>" + item.thickness + "</option>";
+            html += "<option " + selected + " data-material-name='" + item.material_name + "'>" + item.thickness + "</option>";
         });
 
+        if ($pickerTr.hasClass('selected')) {
+            $details.find('tr.selected').find('.thickness-picker').html(html);
+        }
         $thicknessPicker.html(html);
     });
 });
