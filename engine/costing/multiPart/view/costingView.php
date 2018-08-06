@@ -20,7 +20,7 @@
                 <table id="details" class="table table-striped">
                     <thead>
                     <tr>
-                        <th></th>
+                        <th><input type="checkbox" class="select-all form-control"></th>
                         <th>ID</th>
                         <th>Nazwa detalu</th>
                         <th>Nazwa</th>
@@ -66,7 +66,8 @@
                                             data-name="material-name"
                                             name="material_name[<?= $detail['id'] ?>]">
                                         <?php foreach ($detail['t_material_info'] as $material): ?>
-                                            <option <?php if ($material['MaterialName'] === $detail['material_type_name']): ?>selected="selected"<?php endif; ?>>
+                                            <option
+                                                <?php if ($material['MaterialName'] === $detail['material_type_name']): ?>selected="selected"<?php endif; ?>>
                                                 <?= $material['MaterialName'] ?>
                                             </option>
                                         <?php endforeach; ?>

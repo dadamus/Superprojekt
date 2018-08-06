@@ -7,7 +7,6 @@ const $details = $("#details");
 $("#mpwToCsv").on('click', function (e) {
     e.preventDefault();
 
-
 });
 
 $details.DataTable({
@@ -36,6 +35,18 @@ $(document).on('keydown', function (e) {
     }
 });
 
+$('.select-all').closest('th').on('click', function () {
+    let $select = $('.select-all');
+
+    if (!$select.prop('checked')) {
+        $select.prop('checked', true);
+        $details.find('tbody > tr:not(.selected)').find('.select-checkbox').trigger('click');
+    } else {
+        $select.prop('checked', false);
+        $details.find('tbody> tr.selected').find('.select-checkbox').trigger('click');
+    }
+});
+
 $details.on('click', '.select-checkbox', function (e) {
     if (shiftPressed) {
         shiftPressed = false;
@@ -54,7 +65,17 @@ $details.on('click', '.select-checkbox', function (e) {
                 break;
             }
         }
+    } else {
+        if ($details.find('tr.selected').length > 0) {
+            $('.select-all').prop('checked', true);
+        } else {
+            $('.select-all').prop('checked', false);
+        }
     }
+});
+
+$details.on('click', '.select-all', function () {
+    console.log('test');
 });
 
 $details.on('keyup', 'input', function () {
