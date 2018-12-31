@@ -145,7 +145,7 @@
                                 <i class="icon-screen-desktop"></i> Panel Operatora</a>
                             <ul class="dropdown-menu dropdown-menu-fw">
                                 <li><a href="<?= $site_path ?>/site/15/operator"><i class="fa fa-play"></i> Programy pod cięcie</a></li>
-                                <li><a href="<?= $site_path ?>/site/22/operator"><i class="fa fa-pause"></i> Programy pocięte</a></li>
+                                <li><a href="<?= $site_path ?>/site/22/operator"><i class="fa fa-pause"></i> Historia wyciętych</a></li>
                             </ul>
                         </li>
                         <li class="dropdown dropdown-fw active" id="mb5">
@@ -218,7 +218,8 @@
                     break;
                 case 15: //Operator cut
                     $mb = 4;
-                    include __DIR__ . '/operatorCut.php';
+                    $list = 1;
+                    include __DIR__ . '/operator.php';
                     break;
                 case 16: //Program cart
                     $mb = 4;
@@ -243,7 +244,8 @@
                     break;
                 case 22: //Operator cut
                     $mb = 4;
-                    include __DIR__ . '/operatorCutted.php';
+                    $list = 2;
+                    include __DIR__ . '/operator.php';
                     break;
                 case 29: //Multipart
                     $mb = 2;

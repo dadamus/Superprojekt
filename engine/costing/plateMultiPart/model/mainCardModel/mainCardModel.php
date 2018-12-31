@@ -48,6 +48,11 @@ class mainCardModel
     private $Weight = 0.0;
 
     /**
+     * @var int
+     */
+    private $countAll = 0;
+
+    /**
      * mainCardModel constructor.
      * @param PlateMultiPart $plateMultiPart
      */
@@ -130,7 +135,8 @@ class mainCardModel
                 $this->komB += $detail->getKomB();
                 $this->sztN += $detail->getSztN();
                 $this->sztB += $detail->getSztB();
-                $this->Weight += $detail->getWeight() * $detail->getCountAll();
+                $this->Weight += $detail->getAllWeight() * $detail->getCountAll();
+                $this->countAll += $detail->getCountAll();
 
                 //Tylko pierwszy zapis bedzie dzial
                 $detail->saveDetailSettings($plateMultiPart->getDirId(), true);
@@ -243,5 +249,13 @@ class mainCardModel
     public function getWeight()
     {
         return $this->Weight;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCountAll(): int
+    {
+        return $this->countAll;
     }
 }

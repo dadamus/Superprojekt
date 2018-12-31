@@ -270,12 +270,15 @@ if ($action == 1) { //Imap check messages
         $oitemData = $oitemDataQuery->fetch();
 
         $cutting = $_POST['detail_' . $detailId];
+        $waste = $_POST['detail_waste_' . $detailId];
         if ($newState == 2 || $newState == 3) {
             $cuttingUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'cutting_queue_details');
             $cuttingUpdate->addCondition('id = ' . $detailId);
             $cuttingUpdate->bindValue('cutting', $cutting, PDO::PARAM_INT);
+            $cuttingUpdate->bindValue('waste', $waste, PDO::PARAM_INT);
             $cuttingUpdate->flush();
         }
+
 
         if ($newState == 3) {
             $oitemData['dct'] += $cutting;
@@ -352,6 +355,8 @@ if ($action == 1) { //Imap check messages
         $insert->bindValue('actual_weight', $actualWeight, PDO::PARAM_STR);
         $insert->addCondition('id = ' . $warehouseData['id']);
         $insert->flush();
+    } else if ($oldState == 3) {
+
     }
 
     $stateUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'cutting_queue_list');
@@ -382,6 +387,11 @@ if ($action == 1) { //Imap check messages
         $mainListUpdate->flush();
     }
 
+    $checkListUpdate = sqlBuilder::createUpdate('cutting_queue');
+    $checkListUpdate->bindValue('modified_at', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+    $checkListUpdate->addCondition('id = ' . $oldStateData['cutting_queue_id']);
+    $checkListUpdate->flush();
+
     die;
 }
 
@@ -390,128 +400,11 @@ if ($prId == null) {
     die("Brak id programu!");
 }
 
-$qprogram = $db->prepare("
-SELECT 
-p.new_cutting_queue_id,
-p.name,
-i.src as image_src
-FROM `programs` p
-LEFT JOIN sheet_image i ON i.program_id = p.id
-WHERE 
-p.id = :prId
-");
-$qprogram->bindValue(':prId', $prId, PDO::PARAM_INT);
-$qprogram->execute();
 
-$program = $qprogram->fetch();
 
-$mpwQuery = $db->prepare('
-  SELECT
-  cq.id,
-  pw.SheetCode,
-  pw.MaterialName,
-  tm.Thickness,
-  tm.MaterialTypeName,
-  cq.sheet_name,
-  cq.sheet_count,
-  qd.LaserMatName,
-  pw2.SheetCode as ParentSheetCode
-  FROM
-  cutting_queue_details qd
-  LEFT JOIN cutting_queue_list l ON l.id = qd.cutting_queue_list_id
-  LEFT JOIN cutting_queue cq ON cq.id = l.cutting_queue_id
-  LEFT JOIN plate_warehouse pw ON pw.id = qd.plate_warehouse_id
-  LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
-  LEFT JOIN plate_warehouse pw2 ON pw2.id = pw.parentId
-  WHERE
-  cq.id = :cuttingQueueId
-  LIMIT 1
-');
-$mpwQuery->bindValue(':cuttingQueueId', $program['new_cutting_queue_id'], PDO::PARAM_INT);
-$mpwQuery->execute();
 
-$mpwData = $mpwQuery->fetch();
 
-$listQuery = $db->prepare('
-    SELECT
-    l.*
-    FROM
-    cutting_queue_list l
-    WHERE
-    l.cutting_queue_id = :qid
-');
-$listQuery->bindValue(':qid', $program['new_cutting_queue_id'], PDO::PARAM_INT);
-$listQuery->execute();
-
-$listData = $listQuery->fetchAll(PDO::FETCH_ASSOC);
 
 $programName = str_replace('.', '+', $program['name']);
-$image = str_replace('/var/www/html', '', $program['image_src']);
 ?>
 
-<div class="alert alert-info">
-    <div style="float: right;"><a href=""><i style="cursor: pointer;" class="fa fa-external-link"></i></a></div>
-    <div style="clear: both;"></div>
-</div>
-<table class="table table-striped">
-    <tbody>
-    <tr>
-        <td>Nazwa:</td>
-        <td><?= $programName ?></td>
-    </tr>
-    <tr>
-        <td>SheetCode:</td>
-        <td><?= $mpwData["SheetCode"] ?></td>
-    </tr>
-    <tr>
-        <td>ParentSheetCode:</td>
-        <td><?= $mpwData["ParentSheetCode"] ?></td>
-    </tr>
-    <tr>
-        <td>Nazwa materiału:</td>
-        <td><?= $mpwData["MaterialTypeName"] ?></td>
-    </tr>
-    <tr>
-        <td>LaserMatName:</td>
-        <td><?= $mpwData["LaserMatName"] ?></td>
-    </tr>
-    <tr>
-        <td>Grubość:</td>
-        <td><?= $mpwData["Thickness"] ?></td>
-    </tr>
-    <tr>
-        <td>Obrazek:</td>
-        <td><img src="<?= $image ?>" width="200px"></td>
-    </tr>
-    </tbody>
-</table>
-
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <th>Numer</th>
-        <th>Status</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <?php foreach ($listData as $listItem): ?>
-        <tr>
-            <td>
-                <?= $listItem['lp'] ?>
-            </td>
-            <td class="list-item-state" data-item-id="<?= $listItem['id'] ?>">
-                <?= $listStatus[$listItem['state']] ?>
-            </td>
-            <td>
-                <a href="<?= '/engine/chart/program.php?action=2&p=' . $mpwData['id'] . '&lp=' . $listItem['lp'] ?>"
-                   data-toggle="modal" class="ajax-modal">
-                    <i class="fa fa-pencil"></i>
-                </a>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-    </tbody>
-</table>
-
-<div id="modal-container"></div>

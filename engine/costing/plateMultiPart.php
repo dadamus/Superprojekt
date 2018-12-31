@@ -98,6 +98,20 @@ switch ($action) {
 
         echo $plateMultiPartController->viewProgramCard($directoryId, $programId);
         break;
+    case 'deleteProgram':
+        $directoryId = 0;
+        $programId = 0;
+
+        if (isset($_GET["directory_id"])) {
+            $directoryId = $_GET["directory_id"];
+        }
+
+        if (isset($_GET["program_id"])) {
+            $programId = $_GET["program_id"];
+        }
+
+        echo $plateMultiPartController->deleteProgram($directoryId, $programId);
+        break;
     case "changeDesigner": //Zmiana projektanta
         $directoryId = $_GET["dir"];
         $userId = $_GET["user"];

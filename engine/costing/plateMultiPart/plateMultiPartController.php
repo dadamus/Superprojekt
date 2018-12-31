@@ -221,6 +221,21 @@ class plateMultiPartController extends mainController
     }
 
     /**
+     * @param int $directoryId
+     * @param int $programId
+     * @return string
+     */
+    public function deleteProgram(int $directoryId, int $programId): string
+    {
+        global $db;
+        $db->query('
+            DELETE FROM plate_multiPartPrograms WHERE id = ' . $programId . ';
+            DELETE FROM `plate_multiPartProgramsPart` WHERE programId = ' . $programId . ';
+        ');
+        return 'ok';
+    }
+
+    /**
      * @param PlateMultiPart $plateMultiPart
      * @param int $programId
      */

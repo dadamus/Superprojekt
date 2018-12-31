@@ -23,8 +23,8 @@ function reloadDetails(type) {
                 'searchable': false,
                 'orderable': false,
                 'className': 'dt-body-center',
-                'render': function (data, type, full, meta){
-                    return '<input type="checkbox" name="selected[]" value="' + full[1] + '">';
+                'render': function (data, type, full, meta) {
+                    return '<input type="checkbox" name="selected[]" value="' + full[2] + '">';
                 }
             }]
         });
@@ -207,8 +207,7 @@ $(document).ready(function () {
             return false;
         }
 
-        if ($('select[name="MaterialTypeName"]').val() == '')
-        {
+        if ($('select[name="MaterialTypeName"]').val() == '') {
             $('select[name="MaterialTypeName"]').parent().addClass("has-error");
             return false;
         }

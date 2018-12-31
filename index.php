@@ -152,10 +152,10 @@ require_once dirname(__FILE__) . '/config.php';
     <?php
     if (@$_SESSION["login"] == null) {
         echo '<body class="login">';
-        require_once dirname(__FILE__) . '/login.php';
+        require_once __DIR__ . '/login.php';
     } else {
         echo '<body class="page-header-fixed page-sidebar-closed-hide-logo page-md">';
-        require_once dirname(__FILE__) . '/engine/wrapper.php'; //Ja pierdole nie mam pojecia czemu to nei dziala
+        require_once __DIR__ . '/engine/wrapper.php'; //Ja pierdole nie mam pojecia czemu to nei dziala
     }
     ?>
 

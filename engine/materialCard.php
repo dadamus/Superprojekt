@@ -17,10 +17,18 @@ if ($action !== null) {
 }
 
 $materialCardController = new MaterialCardController();
-
 switch ($action) {
     case 'release':
         echo $materialCardController->releaseAction($_POST);
+        break;
+
+    case 'remnantCheck':
+        $checkbox = 0;
+        if (isset($_POST['remnant-check'])) {
+            $checkbox = $_POST['remnant-check'];
+        }
+
+        $materialCardController->remnantCheck($_POST['plate-warehouse-id'], $checkbox, $_POST['remnant-text']);
         break;
 
     default:

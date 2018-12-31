@@ -56,7 +56,7 @@ if (isset($_GET['state'])) {
                                 <?= $detail['quantity'] ?>
                             </td>
                             <td>
-                                <input type="number" class="form-control">
+                                <input type="number" name="detail_waste_<?= $detail['queue_detail_id'] ?>" class="form-control">
                             </td>
                         </tr>
                     <?php endforeach; ?>

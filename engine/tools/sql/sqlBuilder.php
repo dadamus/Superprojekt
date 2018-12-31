@@ -37,14 +37,32 @@ class sqlBuilder
             case "INSERT":
                 $this->from = "INSERT INTO `$table` ";
                 break;
-			case "UPDATE":
-				$this->from = "UPDATE `$table` ";
-				break;
+            case "UPDATE":
+                $this->from = "UPDATE `$table` ";
+                break;
             case "SELECT":
                 $this->from = "FROM `$table`";
                 break;
         }
         $this->type = $type;
+    }
+
+    /**
+     * @param string $table
+     * @return sqlBuilder
+     */
+    public static function createInsert(string $table): sqlBuilder
+    {
+        return new self(self::INSERT, $table);
+    }
+
+    /**
+     * @param string $table
+     * @return sqlBuilder
+     */
+    public static function createUpdate(string $table): sqlBuilder
+    {
+        return new self(self::UPDATE, $table);
     }
 
     /**
@@ -55,15 +73,15 @@ class sqlBuilder
         return $this->type;
     }
 
-	/**
-	 * @param $query
-	 * @return PDOStatement
-	 */
+    /**
+     * @param $query
+     * @return PDOStatement
+     */
     public function Query($query)
-	{
-		global $db;
-		return $db->query($query);
-	}
+    {
+        global $db;
+        return $db->query($query);
+    }
 
     public function generateQuery()
     {
@@ -71,9 +89,9 @@ class sqlBuilder
             case "INSERT":
                 return $this->generateInsertQuery();
                 break;
-			case "UPDATE":
-				return $this->generateUpdateQuery();
-				break;
+            case "UPDATE":
+                return $this->generateUpdateQuery();
+                break;
             case "SELECT":
                 return $this->generateSelectQuery();
                 break;
@@ -83,19 +101,19 @@ class sqlBuilder
     }
 
     private function generateUpdateQuery()
-	{
-		$updateBidString = "";
+    {
+        $updateBidString = "";
 
-		foreach ($this->values_data as $key => $value) {
-			if (strlen($updateBidString) > 0) {
-				$updateBidString .= ", ";
-			}
-			$updateBidString .= "`$key` = :$key";
-		}
+        foreach ($this->values_data as $key => $value) {
+            if (strlen($updateBidString) > 0) {
+                $updateBidString .= ", ";
+            }
+            $updateBidString .= "`$key` = :$key";
+        }
 
-		$this->query = $this->from . " SET " . $updateBidString . " WHERE " . $this->where;
-		return true;
-	}
+        $this->query = $this->from . " SET " . $updateBidString . " WHERE " . $this->where;
+        return true;
+    }
 
     public function addCondition($sql)
     {
@@ -130,9 +148,9 @@ class sqlBuilder
             case "INSERT":
                 return $this->prepareInsertQuery();
                 break;
-			case "UPDATE":
-				return $this->prepareInsertQuery();
-				break;
+            case "UPDATE":
+                return $this->prepareInsertQuery();
+                break;
             case "SELECT":
                 return $this->prepareSelectQuery();
                 break;
@@ -200,7 +218,7 @@ class sqlBuilder
         if ($this->bind != null) {
             $this->bind .= ", ";
         }
-        $this->bind .= $mark.$name.$mark;
+        $this->bind .= $mark . $name . $mark;
     }
 
     /**
@@ -209,7 +227,7 @@ class sqlBuilder
     public function addBinds($names)
     {
         if (is_array($names)) {
-            foreach($names as $name) {
+            foreach ($names as $name) {
                 $this->addBind($name);
             }
         }

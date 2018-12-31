@@ -123,14 +123,21 @@ $main = $data["main"];
                                     <i class="fa fa-list"></i> Programy
                                     <i class="fa fa-angle-down "></i>
                                 </a>
-                                <ul class="dropdown-menu pull-right" style="position: absolute;">
+                                <ul class="dropdown-menu pull-right" style="position: absolute; width: 200px;">
                                     <?php
                                     $programs = $main->getPlateMultiPart()->getPrograms();
                                     ?>
                                     <?php foreach ($programs as $program): ?>
                                         <li>
-                                            <a href="/plateMulti/program/<?= $data["directoryId"] ?>/<?= $program->getId() ?>/">
+                                            <a href="/plateMulti/program/<?= $data["directoryId"] ?>/<?= $program->getId() ?>/"
+                                               style="width: 80%; float: left;">
                                                 <?= $program->getSheetName() ?>
+                                            </a>
+                                            <a href="#" style="width: 15%; float: left; clear: none;"
+                                               data-dir-id="<?= $data["directoryId"] ?>"
+                                               data-program-id="<?= $program->getId() ?>"
+                                               class="remove-program-button">
+                                                <i class="fa fa-times"></i>
                                             </a>
                                         </li>
                                     <?php endforeach; ?>
@@ -248,13 +255,13 @@ $main = $data["main"];
                                                     <tr>
                                                         <th></th>
                                                         <th></th>
-                                                        <th><?= $main->getSztN() ?></th>
-                                                        <th><?= $main->getKomN() ?></th>
-                                                        <th><?= $main->getSztB() ?></th>
-                                                        <th><?= $main->getKomB() ?></th>
+                                                        <th></th>
+                                                        <th><?= $main->getKomN() ?> zł</th>
+                                                        <th></th>
+                                                        <th><?= $main->getKomB() ?> zł</th>
                                                         <th></th>
                                                         <th><?= $main->getWeight() ?></th>
-                                                        <th></th>
+                                                        <th><?= $main->getCountAll() ?> szt</th>
                                                         <th></th>
                                                         <th></th>
                                                         <th></th>
@@ -312,8 +319,8 @@ $main = $data["main"];
                                                         <td><?= globalTools::seconds_to_time($material->getTime()) ?></td>
                                                         <td>
                                                             <?php foreach ($material->getPrograms() as $program): ?>
-                                                                <span>
-                                                                <?= $program->getSheetName() ?>,
+                                                                <span class="badge badge-primary">
+                                                                <?= $program->getSheetName() ?>
                                                             </span>
                                                             <?php endforeach; ?>
                                                         </td>
@@ -427,6 +434,36 @@ $main = $data["main"];
 
     <script type="text/javascript">
         $(document).ready(function () {
+
+            $('.remove-program-button').on('click', function (e) {
+                e.preventDefault();
+
+                let dirId = $(this).data('dir-id');
+                let programId = $(this).data('program-id');
+                let $line = $(this).closest('li');
+
+                swal({
+                        title: "Jesteś pewien?",
+                        text: "Akcja spowoduje usunięcie programu",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonClass: "btn-danger",
+                        confirmButtonText: "Tak usuń!",
+                        cancelButtonText: "Anuluj",
+                        closeOnConfirm: false
+                    },
+                    function () {
+                        swal.close();
+                        App.blockUI();
+                        $.ajax({
+                            url: '/plateMulti/program/delete/' + dirId + '/' + programId + '/'
+                        }).done(function () {
+                            $line.remove();
+                        }).always(function () {
+                            App.unblockUI();
+                        });
+                    });
+            });
 
             $(document).on("click", function (e) {
                 if (!$(e.target).is("#flyingWindowComments") && $("#flyingWindowComments").has(e.target).length === 0) {

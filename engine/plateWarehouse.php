@@ -60,7 +60,6 @@ if ($a == 1) {
         $filtr .= " AND `Thickness` LIKE '%" . $_POST["f_Thickness"] . "%'";
     }
 
-    //die("SELECT * FROM `plate_warehouse` WHERE `type` = '$type' ".$filtr);
     $pselect = $db->query("
 	SELECT 
 	p.SheetCode,
@@ -70,16 +69,22 @@ if ($a == 1) {
 	m.Thickness,
 	p.createDate,
 	p.QtyAvailable,
-	si.src
+	si.src,
+	wrc.remnant_check
 	FROM `plate_warehouse` p
 	LEFT JOIN `T_material` m ON m.MaterialName = p.MaterialName
 	LEFT JOIN sheet_image si ON si.plate_warehouse_id = p.id
+	LEFT JOIN warehouse_remnant_check wrc ON wrc.plate_warehouse_id = p.id
 	WHERE p.state = '$type' " . $filtr);
     $data = $pselect->fetchAll(PDO::FETCH_ASSOC);
 
     $table = "";
     foreach ($data as $row) {
-        $table .= "<tr><td></td> <td>" . $row['SheetCode'] . " </td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td><td><a href='/material/" . $row['SheetCode']  . "/' target='_blank' class='btn btn-success material-card'>Karta</a></button></td></tr>";
+        $warning = '';
+        if ($row['remnant_check']) {
+            $warning = '<i class="fa fa-exclamation-circle"></i>';
+        }
+        $table .= "<tr><td></td> <td>$warning</td><td>" . $row['SheetCode'] . " </td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td><td><a href='/material/" . $row['SheetCode'] . "/' target='_blank' class='btn btn-success material-card'>Karta</a></button></td></tr>";
     }
     die($table);
 } else if ($a == 2) { //Insert new plate
@@ -176,7 +181,7 @@ if ($a == 1) {
     $SqlBuilder->bindValue("createDate", date("Y-m-d H:i:s"), PDO::PARAM_STR);
     $SqlBuilder->bindValue("pdate", $_POST['pdate'], PDO::PARAM_STR);
     $SqlBuilder->bindValue("ndp", $_POST['ndp'], PDO::PARAM_STR);
-    $SqlBuilder->bindValue("OwnerId", (int) $_POST["OwnerId"], PDO::PARAM_INT);
+    $SqlBuilder->bindValue("OwnerId", (int)$_POST["OwnerId"], PDO::PARAM_INT);
     $SqlBuilder->bindValue("UserID", $_SESSION["login"], PDO::PARAM_INT);
 
     $SqlBuilder->bindValue("Price_kg", $cena_zl_kg, PDO::PARAM_STR);
@@ -194,7 +199,7 @@ if ($a == 1) {
     PlateWarehouseJob::NewJob(PlateWarehouseJob::JOB_NEW, $id, [
         'SheetCode' => $SheetCode,
         'MaterialName' => $_POST["MaterialTypeName"],
-        'QtyAvailable'=> $_POST['QtyAvailable'],
+        'QtyAvailable' => $_POST['QtyAvailable'],
         'GrainDirection' => $_POST['GrainDirection'],
         'Width' => $_POST['Width'],
         'Height' => $_POST['Height'],
@@ -303,6 +308,7 @@ if ($a == 1) {
                                                 <a class="btn btn-sm btn-default">Akcje</a>
                                             </div>
                                         </th>
+                                        <th>Remant Check</th>
                                         <th>SheetCode</th>
                                         <th>Rodzaj</th>
                                         <th>Wymiary</th>

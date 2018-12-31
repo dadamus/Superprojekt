@@ -21,20 +21,85 @@ class MaterialCardController extends mainController
     /**
      * @param string $sheetCode
      * @return string
+     * @throws Exception
      */
     public function indexAction(string $sheetCode): string
     {
         global $db;
 
-        $sheetDataQuery = $db->prepare("SELECT * FROM plate_warehouse WHERE SheetCode = :sheetCode");
+        $sheetDataQuery = $db->prepare("
+          SELECT 
+          w.*,
+          p.SheetCode as parentSheedCode,
+          m.MaterialTypeName,
+          rc.remnant_check,
+          rc.text as remnant_text,
+          i.src as image
+          FROM plate_warehouse w
+          LEFT JOIN plate_warehouse p ON p.id = w.parentId
+          LEFT JOIN T_material m ON m.MaterialName = w.MaterialName
+          LEFT JOIN warehouse_remnant_check rc ON rc.plate_warehouse_id = w.id
+          LEFT JOIN sheet_image i ON i.plate_warehouse_id = w.id
+          WHERE w.SheetCode = :sheetCode
+        ");
         $sheetDataQuery->bindValue(':sheetCode', $sheetCode, PDO::PARAM_STR);
         $sheetDataQuery->execute();
 
-        $sheetData = $sheetDataQuery->fetch();
+        $sheetData = $sheetDataQuery->fetch(PDO::FETCH_ASSOC);
+
+        $childrenDataQuery = $db->prepare("
+            SELECT
+            *
+            FROM
+            plate_warehouse
+            WHERE
+            parentId = :parentId
+        ");
+        $childrenDataQuery->bindValue(':parentId', $sheetData['id'], PDO::PARAM_INT);
+        $childrenDataQuery->execute();
 
         return $this->render('mainView.php', [
-            'sheetData' => $sheetData
+            'sheetData' => $sheetData,
+            'childrenData' => $childrenDataQuery->fetchAll(PDO::FETCH_ASSOC)
         ]);
+    }
+
+    /**
+     * @param int $warehouseId
+     * @param int $checbkox
+     * @param string $text
+     */
+    public function remnantCheck(int $warehouseId, int $checkbox, string $text)
+    {
+        global $db;
+        $sheetDataQuery = $db->prepare('
+            SELECT
+            w.SheetCode,
+            c.operator_id
+            FROM plate_warehouse w 
+            LEFT JOIN warehouse_remnant_check c ON c.plate_warehouse_id = w.id
+            WHERE
+            w.id = :id
+        ');
+        $sheetDataQuery->bindValue(':id', $warehouseId, PDO::PARAM_INT);
+        $sheetDataQuery->execute();
+
+        $sheetData = $sheetDataQuery->fetch(PDO::FETCH_ASSOC);
+
+        if ($sheetData['operator_id'] === null) {
+            $sql = sqlBuilder::createInsert('warehouse_remnant_check');
+            $sql->bindValue('plate_warehouse_id', $warehouseId, PDO::PARAM_INT);
+        } else {
+            $sql = sqlBuilder::createUpdate('warehouse_remnant_check');
+            $sql->addCondition('plate_warehouse_id = ' . $warehouseId);
+        }
+
+        $sql->bindValue('remnant_check', $checkbox, PDO::PARAM_INT);
+        $sql->bindValue('text', $text, PDO::PARAM_STR);
+        $sql->bindValue('operator_id', $_SESSION["login"], PDO::PARAM_STR);
+        $sql->flush();
+
+        header('Location: /material/' . $sheetData['SheetCode'] . '/');
     }
 
     /**
@@ -56,7 +121,7 @@ class MaterialCardController extends mainController
             case 0: //Przyjęcie
             case 3: //Korekta dodająca
                 $action = '+';
-            $toSave = (int)$qtyData['QtyAvailable'] + (int)$data['quantity'];
+                $toSave = (int)$qtyData['QtyAvailable'] + (int)$data['quantity'];
                 break;
             case 1: //Wydanie zewnętrzne
             case 2: //Wydanie wewnętrzne
@@ -64,7 +129,7 @@ class MaterialCardController extends mainController
             case 5: //Zagubiona
             case 6: //Złomowanie
                 $action = '-';
-            $toSave = (int)$qtyData['QtyAvailable'] - (int)$data['quantity'];
+                $toSave = (int)$qtyData['QtyAvailable'] - (int)$data['quantity'];
                 break;
         }
 
