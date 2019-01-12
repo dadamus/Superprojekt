@@ -24,6 +24,7 @@ class SheetTrash
           WHERE
           QtyAvailable <= 0
           AND state != 'deleted'
+          AND SheetCode NOT LIKE 'NEST%'
         ");
         $trashQuery->execute();
 
