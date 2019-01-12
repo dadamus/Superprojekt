@@ -71,7 +71,7 @@ foreach ($detailsData as $detail) {
 
     fputcsv($file, [
         '"'.$detailWebSrc.'"',
-        '"'.$detail['material'].'"',
+        '"'.$detail['pieces'].'"',
         '"'.$detail['material_name'].'"',
         $detail['thickness'],
         '"'.$detail['material_type_name'].'"',
