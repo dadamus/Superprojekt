@@ -146,6 +146,8 @@
                             <ul class="dropdown-menu dropdown-menu-fw">
                                 <li><a href="<?= $site_path ?>/site/15/operator"><i class="fa fa-play"></i> Programy pod cięcie</a></li>
                                 <li><a href="<?= $site_path ?>/site/22/operator"><i class="fa fa-pause"></i> Historia wyciętych</a></li>
+                                <li><a href="<?= $site_path ?>/site/23/operator"><i class="fa fa-pause"></i> Bufor</a></li>
+                                <li><a href="<?= $site_path ?>/site/24/operator"><i class="fa fa-pause"></i> Poprawki</a></li>
                             </ul>
                         </li>
                         <li class="dropdown dropdown-fw active" id="mb5">
@@ -245,6 +247,16 @@
                 case 22: //Operator cut
                     $mb = 4;
                     $list = 2;
+                    include __DIR__ . '/operator.php';
+                    break;
+                case 23: //Operator cut
+                    $mb = 4;
+                    $list = 3;
+                    include __DIR__ . '/operator.php';
+                    break;
+                case 24: //Operator cut
+                    $mb = 4;
+                    $list = 4;
                     include __DIR__ . '/operator.php';
                     break;
                 case 29: //Multipart

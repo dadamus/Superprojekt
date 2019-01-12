@@ -23,6 +23,7 @@ class OperatorController extends mainController
         4 => 'Wstrzymany',
         5 => 'Anulowany',
         6 => 'Nie rozpoznany',
+        7 => 'Poprawka'
     ];
 
     /**
@@ -65,14 +66,31 @@ class OperatorController extends mainController
         ]);
     }
 
+    /**
+     * @return string
+     * @throws Exception
+     */
     public function bufferListAction(): string
     {
         $programs = $this->listRepository->getPrograms([2]);
-        $this->updatePlateWaste($programs);
+        //$this->updatePlateWaste($programs);
         return $this->render('cutList.php', [
             'programs' => $programs
         ]);
 
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function correctionListAction(): string
+    {
+        $programs = $this->listRepository->getPrograms();
+
+        return $this->render('correctionList.php', [
+            'programs' => $programs
+        ]);
     }
 
     /**
@@ -86,7 +104,7 @@ class OperatorController extends mainController
         $programData = $this->listRepository->getProgramData($programId);
         $data = [
             'program' => $programData,
-            'mpwData' => $this->listRepository->getMPWData($programData['new_cutting_queue_id']),
+            'mpwData' => $this->listRepository->getMPWData((int)$programData['new_cutting_queue_id']),
             'list' => $this->listRepository->getQueueList($programData['new_cutting_queue_id']),
             'image' => str_replace('/var/www/html', '', $programData['image_src']),
             'statusList' => self::STATUS_LIST

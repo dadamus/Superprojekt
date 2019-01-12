@@ -50,13 +50,14 @@ if (isset($_GET['state'])) {
                                 <input type="number" name="detail_<?= $detail['queue_detail_id'] ?>"
                                        value="<?= ($detail['state'] == 2 ? $detail['cutting'] : $detail['quantity']) ?>"
                                        data-detail-id="<?= $detail['queue_detail_id'] ?>"
-                                class="form-control detail-count">
+                                       class="form-control detail-count">
                             </td>
                             <td>
                                 <?= $detail['quantity'] ?>
                             </td>
                             <td>
-                                <input type="number" name="detail_waste_<?= $detail['queue_detail_id'] ?>" class="form-control">
+                                <input type="number" name="detail_waste_<?= $detail['queue_detail_id'] ?>"
+                                       class="form-control">
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -64,9 +65,22 @@ if (isset($_GET['state'])) {
                 </table>
             </div>
         </div>
+        <div class="row correction" style="display: none; margin-top: 25px;">
+            <div class="col-lg-12">
+                <select class="select2" name="correction-program" id="correction-program-select2">
+                    <?php foreach ($listPrograms as $program): ?>
+                        <option value="<?= $program['id'] ?>">
+                            <?= $program['sheet_name'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" data-dismiss="modal" class="btn">Zamknij</button>
-        <button type="button" class="btn btn-primary submit-status-change" data-list-id="<?= $firstDetail['list_id'] ?>">Zapisz</button>
+        <button type="button" class="btn btn-primary submit-status-change"
+                data-list-id="<?= $firstDetail['list_id'] ?>">Zapisz
+        </button>
     </div>
 </div>

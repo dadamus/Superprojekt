@@ -40,28 +40,43 @@ $(document).ready(function () {
         e.preventDefault();
 
         App.blockUI();
-        var url = $(this).attr('href');
+        let url = $(this).data('url');
         $.ajax({
             method: 'GET',
             url: url
         }).done(function (response) {
-            $('#modal-container').html(response).find('#status-modal').modal('show');
+            $('#modal-container').html(response);
+            initModal();
         }).always(function () {
             App.unblockUI();
         });
     });
+
+    let initModal = function () {
+        $('#correction-program-select2').select2();
+        $('#modal-container').find('#status-modal').modal('show');
+    };
+
     $(document).on('change', 'select[name="list-state"]', function () {
         //Tu przy statusie 2,3 otwieramy pole do wpisanie sztuk detali
-        var $statusSelect = $('select[name="list-state"]');
-        var state = $statusSelect.val();
+        let $statusSelect = $('select[name="list-state"]');
+        let state = $statusSelect.val();
 
-        var $detailsRow = $('.list-details');
+        let $detailsRow = $('.list-details');
+        let $correctionRow = $('.correction');
+
+        console.log(state);
 
         if (state == 2 || state == 3) {
             $detailsRow.show();
         } else {
             $detailsRow.hide();
-            return true;
+        }
+
+        if (state == 7) {
+            $correctionRow.show();
+        } else {
+            $correctionRow.hide();
         }
 
     });
@@ -91,6 +106,8 @@ $(document).ready(function () {
         });
 
         postData += "&details=" + details;
+
+        postData += "&correctionId=" + $("#correction-program-select2").val();
 
         $('#status-modal').modal('hide');
         App.blockUI();

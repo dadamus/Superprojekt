@@ -53,7 +53,7 @@
                 <?= $data['statusList'][$listItem['state']] ?>
             </td>
             <td>
-                <a href="<?= '/engine/chart/program.php?action=2&p=' . $data['mpwData']['id'] . '&lp=' . $listItem['lp'] ?>"
+                <a data-url="<?= '/engine/chart/program.php?action=2&p=' . $data['mpwData']['id'] . '&lp=' . $listItem['lp'] ?>"
                    data-toggle="modal" class="ajax-modal">
                     <i class="fa fa-pencil"></i>
                 </a>

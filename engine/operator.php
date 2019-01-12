@@ -36,6 +36,14 @@ if ($action == 1) { // Save new queue
         case 2:
             echo $operatorController->historyListAction();
             break;
+
+        case 3:
+            echo $operatorController->bufferListAction();
+            break;
+
+        case 4:
+            echo $operatorController->correctionListAction();
+            break;
     }
 
 }

@@ -129,6 +129,7 @@ $listStatus = [
     4 => 'Wstrzymany',
     5 => 'Anulowany',
     6 => 'Nie rozpoznany',
+    7 => 'Poprawka'
 ];
 
 $action = @$_GET["action"];
@@ -224,6 +225,16 @@ if ($action == 1) { //Imap check messages
     $listItemQuery->bindValue(':cqid', $_GET['p'], PDO::PARAM_INT);
     $listItemQuery->execute();
 
+    $programQueue = $db->query('
+        SELECT
+        id, sheet_name
+        FROM
+        cutting_queue
+        ORDER BY id DESC 
+        LIMIT 10;
+    ');
+
+    $listPrograms = $programQueue->fetchAll(PDO::FETCH_ASSOC);
     $listItems = $listItemQuery->fetchAll(PDO::FETCH_ASSOC);
     include dirname(__FILE__) . '/programStatusModal.php';
     die;
@@ -359,6 +370,20 @@ if ($action == 1) { //Imap check messages
 
     }
 
+    if ($newState == 7) {
+        $correctionId = $_POST['correctionId'];
+
+        $correctionUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'cutting_queue_list');
+        $correctionUpdate->bindValue('correction_id', $correctionId, PDO::PARAM_INT);
+        $correctionUpdate->addCondition('id = ' . $listId);
+        $correctionUpdate->flush();
+    } else if ($oldState == 7) {
+        $correctionUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'cutting_queue_list');
+        $correctionUpdate->bindValue('correction_id', null, PDO::PARAM_NULL);
+        $correctionUpdate->addCondition('id = ' . $listId);
+        $correctionUpdate->flush();
+    }
+
     $stateUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'cutting_queue_list');
     $stateUpdate->bindValue('state', $newState, PDO::PARAM_INT);
     $stateUpdate->addCondition('id = ' . $listId);
@@ -368,7 +393,7 @@ if ($action == 1) { //Imap check messages
       SELECT COUNT(*) as wrongState
       FROM cutting_queue_list
       WHERE
-      state not in (5, 3)
+      state not in (5, 3, 7)
       AND cutting_queue_id = :cqid
     ');
     $checkListQuery->bindValue(':cqid', $oldStateData['cutting_queue_id'], PDO::PARAM_INT);

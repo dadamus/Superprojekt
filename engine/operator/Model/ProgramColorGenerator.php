@@ -17,6 +17,10 @@ class ProgramColorGenerator
      */
     public static function generate(array $program): string
     {
+        if ($program['correction_quantity'] > 0) {
+            return '#8caeff';
+        }
+
         if ($program['all_programs_quantity'] === $program['canceled_programs_quantity']) {
             return '#d05454';
         }
@@ -28,6 +32,8 @@ class ProgramColorGenerator
         if ($program['details_to_cut'] <= 0) {
             return '#1BBC9B';
         }
+
+
 
         return '';
     }

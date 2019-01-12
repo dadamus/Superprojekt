@@ -128,7 +128,16 @@ class ListRepository
             cutting_queue_list cql
             WHERE
             cql.cutting_queue_id = cq.id
-          ) as all_programs_quantity
+          ) as all_programs_quantity,
+          (
+            SELECT
+            COUNT(*)
+            FROM
+            cutting_queue_list cql
+            WHERE
+            cql.cutting_queue_id = cq.id
+            AND state = 7
+          ) as correction_quantity
           FROM `programs` p
           LEFT JOIN cutting_queue cq ON cq.id = p.new_cutting_queue_id
           $stateWhere
