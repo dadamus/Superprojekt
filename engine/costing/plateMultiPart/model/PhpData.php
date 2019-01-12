@@ -76,7 +76,7 @@ class PhpData
                     continue;
                 }
 
-                return;
+                break;
             }
 
             $this->programs[] = $program;
