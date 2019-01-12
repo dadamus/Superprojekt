@@ -67,8 +67,17 @@ class PhpData
             $program = new ProgramData();
             $program->create($programData);
 
-            $ImageId = $this->createImage($program->getSheetName(), $programId);
-            $program->setImageId($ImageId);
+            while (true) {
+                try {
+                    $ImageId = $this->createImage($program->getSheetName(), $programId);
+                    $program->setImageId($ImageId);
+                } catch (\Exception $ex) {
+                    $programId++;
+                    continue;
+                }
+
+                return;
+            }
 
             $this->programs[] = $program;
             $programId++;
@@ -104,6 +113,7 @@ class PhpData
                 $SheetName
             ) . ".bmp"
         ;
+
         $filePath = $data_src . 'temp/' . $programId . '.bmp';
 
         if (!file_exists($filePath)) {
