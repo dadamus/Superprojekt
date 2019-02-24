@@ -30,7 +30,10 @@ class router
             "multipart_plate_costing" => "MultipartPlateCosting",
             "plate_production_sync" => "PlateProductionSync",
             "plate_warehouse_get_jobs" => "GetJobs",
-            "plate_warehouse_sync_jobs" => "SyncJobs"
+            "plate_warehouse_sync_jobs" => "SyncJobs",
+            "insert_plate_warehouse" => "insertPlate",
+            "update_plate_warehouse" => "updatePlate",
+            "delete_plate_warehouse" => "deletePlate",
         ];
     }
 }

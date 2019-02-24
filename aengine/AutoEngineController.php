@@ -491,4 +491,27 @@ class AutoEngineController
 
         $db->query("UPDATE plate_warehouse_jobs SET done_at = '$date' WHERE id IN ($toUpdateJobs)");
     }
+
+    public function insertPlate() {
+        global $db;
+
+        $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST['insert']));
+        $db->query("INSERT INTO plate_warehouse " + $input);
+    }
+
+    public function updatePlate() {
+        global $db;
+
+        $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST['insert']));
+
+        $db->query("UPDATE plate_warehouse SET " + $input);
+    }
+
+    public function deletePlate() {
+        global $db;
+
+        $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST['insert']));
+
+        $db->query("DELETE FROM plate_warehouse WHERE " + $input);
+    }
 }
