@@ -495,9 +495,7 @@ class AutoEngineController
     public function insertPlate() {
         global $db;
 
-        var_dump($_POST);die;
-
-        $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST['data']));
+        $input = $_POST['data'];
 
         try {
             $db->query("INSERT INTO plate_warehouse " + $input);
@@ -511,7 +509,7 @@ class AutoEngineController
     public function updatePlate() {
         global $db;
 
-        $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST['data']));
+        $input = $_POST['data'];
 
         $db->query("UPDATE plate_warehouse SET " + $input);
     }
@@ -519,7 +517,7 @@ class AutoEngineController
     public function deletePlate() {
         global $db;
 
-        $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST['data']));
+        $input = $_POST['data'];
 
         $db->query("DELETE FROM plate_warehouse WHERE " + $input);
     }
