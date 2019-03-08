@@ -498,10 +498,9 @@ class AutoEngineController
         $input = base64_decode($_POST['data']);
 
         try {
-            $db->query("INSERT INTO plate_warehouse " + $input);
+            $db->query("INSERT INTO plate_warehouse " . $input);
         } catch (\Exception $ex) {
             echo 'response fail';
-            var_dump("INSERT INTO plate_warehouse " + $input);
             var_dump($input);
             var_dump($_POST);
             die;
@@ -513,7 +512,7 @@ class AutoEngineController
 
         $input = base64_decode($_POST['data']);
 
-        $db->query("UPDATE plate_warehouse SET " + $input);
+        $db->query("UPDATE plate_warehouse SET " . $input);
     }
 
     public function deletePlate() {
@@ -521,6 +520,6 @@ class AutoEngineController
 
         $input = base64_decode($_POST['data']);
 
-        $db->query("DELETE FROM plate_warehouse WHERE " + $input);
+        $db->query("DELETE FROM plate_warehouse WHERE " . $input);
     }
 }
