@@ -495,6 +495,8 @@ class AutoEngineController
     public function insertPlate() {
         global $db;
 
+        var_dump($_POST);die;
+
         $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST['data']));
 
         try {
