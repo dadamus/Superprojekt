@@ -496,7 +496,13 @@ class AutoEngineController
         global $db;
 
         $input = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($_POST['data']));
-        $db->query("INSERT INTO plate_warehouse " + $input);
+
+        try {
+            $db->query("INSERT INTO plate_warehouse " + $input);
+        } catch (\Exception $ex) {
+            echo "INSERT INTO plate_warehouse " + $input;
+            die;
+        }
     }
 
     public function updatePlate() {
