@@ -500,7 +500,8 @@ class AutoEngineController
         try {
             $db->query("INSERT INTO plate_warehouse " + $input);
         } catch (\Exception $ex) {
-            echo "INSERT INTO plate_warehouse " + $input;
+            echo 'response fail';
+            var_dump("INSERT INTO plate_warehouse " + $input);
             die;
         }
     }
