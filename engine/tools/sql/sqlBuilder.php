@@ -111,6 +111,10 @@ class sqlBuilder
             $updateBidString .= "`$key` = :$key";
         }
 
+//        if (strlen($this->where) < 1) {
+//            throw new \Exception("Update without where!");
+//        }
+
         $this->query = $this->from . " SET " . $updateBidString . " WHERE " . $this->where;
         return true;
     }
