@@ -7,6 +7,7 @@
  */
 
 include __DIR__ . '/materialCard/MaterialCardController.php';
+include __DIR__ . '/materialCard/MaterialCardLogController.php';
 
 $action = @$_GET["action"];
 if ($action !== null) {
@@ -17,6 +18,8 @@ if ($action !== null) {
 }
 
 $materialCardController = new MaterialCardController();
+$materialLogController = new MaterialCardLogController();
+
 switch ($action) {
     case 'release':
         echo $materialCardController->releaseAction($_POST);
@@ -29,6 +32,10 @@ switch ($action) {
         }
 
         $materialCardController->remnantCheck($_POST['plate-warehouse-id'], $checkbox, $_POST['remnant-text']);
+        break;
+
+    case 'log':
+        echo $materialLogController->showAction();
         break;
 
     default:

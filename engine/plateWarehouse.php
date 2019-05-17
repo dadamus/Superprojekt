@@ -84,7 +84,7 @@ if ($a == 1) {
         if ($row['remnant_check']) {
             $warning = '<i class="fa fa-exclamation-circle"></i>';
         }
-        $table .= "<tr><td></td> <td>$warning</td><td>" . $row['SheetCode'] . " </td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td><td><a href='/material/" . $row['SheetCode'] . "/' target='_blank' class='btn btn-success material-card'>Karta</a></button></td></tr>";
+        $table .= "<tr><td></td> <td>" . $row['SheetCode'] . " $warning </td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td><td><a href='/material/" . $row['SheetCode'] . "/' target='_blank' class='btn btn-success material-card'>Karta</a></button></td></tr>";
     }
     die($table);
 } else if ($a == 2) { //Insert new plate
@@ -195,6 +195,8 @@ if ($a == 1) {
     $SqlBuilder->flush();
 
     $id = $db->lastInsertId();
+
+    WarehouseLogService::newRow($SheetCode, $_POST['QtyAvailable'], $_SESSION["login"]);
 
     PlateWarehouseJob::NewJob(PlateWarehouseJob::JOB_NEW, $id, [
         'SheetCode' => $SheetCode,
@@ -308,7 +310,6 @@ if ($a == 1) {
                                                 <a class="btn btn-sm btn-default">Akcje</a>
                                             </div>
                                         </th>
-                                        <th>Remant Check</th>
                                         <th>SheetCode</th>
                                         <th>Rodzaj</th>
                                         <th>Wymiary</th>

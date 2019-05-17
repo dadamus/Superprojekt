@@ -158,7 +158,7 @@
                             <i class="fa fa-file-image-o"></i>
                             <div>Zdjęcia</div>
                         </a>
-                        <a href="javascript:;" class="icon-btn">
+                        <a href="/material/<?= $sheet['SheetCode'] ?>/log" class="icon-btn">
                             <i class="fa fa-line-chart"></i>
                             <div>Aktywność</div>
                         </a>

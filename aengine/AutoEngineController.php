@@ -499,6 +499,13 @@ class AutoEngineController
 
         try {
             $db->query("INSERT INTO plate_warehouse " . $input);
+
+            $sheetId = $db->lastInsertId();
+
+            $sheetInfoQuery = $db->query('SELECT * FROM plate_warehouse WHERE id = ' . $sheetId);
+            $data = $sheetInfoQuery->fetch(PDO::FETCH_ASSOC);
+
+            WarehouseLogService::newRow($data['SheetCode'], $data['QtyAvailable']);
         } catch (\Exception $ex) {
             echo 'response fail';
             var_dump($input);
@@ -512,7 +519,32 @@ class AutoEngineController
 
         $input = base64_decode($_POST['data']);
 
+        $sheetCode = $this->getSheetCodeFromWhere($input);
+        $oldQuantity = $this->getSheetCodeQuantity($sheetCode);
+
         $db->query("UPDATE plate_warehouse SET " . $input);
+
+        $newQuantity = $this->getSheetCodeQuantity($sheetCode);
+
+        if ($oldQuantity !== $newQuantity) {
+            WarehouseLogService::quantityChanged($sheetCode, $oldQuantity, $newQuantity);
+        }
+    }
+
+    private function getSheetCodeQuantity(string $sheetCode): int
+    {
+        global $db;
+        $query = $db->query('
+            SELECT QtyAvailable FROM plate_warehouse WHERE SheetCode = "' . $sheetCode . '"
+        ');
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+
+    private function getSheetCodeFromWhere(string $input): string
+    {
+        $part = explode('WHERE', $input);
+        $wherePart = str_replace(["SheetCode = '", ' '], ['', ''], end($part));
+        return substr($wherePart, 0, strlen($wherePart) - 1);
     }
 
     public function deletePlate() {
