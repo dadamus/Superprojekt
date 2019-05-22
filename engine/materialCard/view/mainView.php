@@ -162,6 +162,10 @@
                             <i class="fa fa-line-chart"></i>
                             <div>Aktywność</div>
                         </a>
+                        <a href="/engine/materialCard.php?sheet_code=<?= $sheet['SheetCode'] ?>&action=print" class="icon-btn" target="_blank">
+                            <i class="fa fa-barcode"></i>
+                            <div>Kod</div>
+                        </a>
                     </div>
                 </div>
             </div>

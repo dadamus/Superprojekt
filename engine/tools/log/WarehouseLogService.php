@@ -18,6 +18,7 @@ class WarehouseLogService
     public CONST NEGATIVE_CORRECTION_TYPE = 6;
     public CONST LOSS_TYPE = 7;
     public CONST SCRAPPING_TYPE = 8;
+    public CONST WEIGHT_TYPE = 8;
 
     public static function newRow(string $sheetCode, int $quantity, int $user = self::SYSTEM): void
     {
@@ -107,6 +108,19 @@ class WarehouseLogService
             $text,
             self::BADGE_EDIT,
             $userId
+        );
+    }
+
+    public static function changeWeight(string $sheetCode, string $programName, string $programId, float $weight): void
+    {
+        $text = "Edycja wagi -> $weight kg. Program $programName";
+
+        self::insertLog(
+            $sheetCode,
+            self::WEIGHT_TYPE,
+            $text,
+            self::BADGE_ABL,
+            self::SYSTEM
         );
     }
 

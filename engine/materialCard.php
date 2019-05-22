@@ -6,6 +6,8 @@
  * Time: 17:43
  */
 
+require_once __DIR__ . '/../config.php';
+
 include __DIR__ . '/materialCard/MaterialCardController.php';
 include __DIR__ . '/materialCard/MaterialCardLogController.php';
 
@@ -34,8 +36,20 @@ switch ($action) {
         $materialCardController->remnantCheck($_POST['plate-warehouse-id'], $checkbox, $_POST['remnant-text']);
         break;
 
+    case 'image':
+        $sheetCode = $_GET['sheet_code'];
+        $generator = new barcode_generator();
+        $generator->output_image('svg', 'dmtx', $sheetCode, []);
+        break;
+
+    case 'print':
+        $sheetCode = $_GET['sheet_code'];
+        echo $materialCardController->printAction($sheetCode);
+        break;
+
     case 'log':
-        echo $materialLogController->showAction();
+        $sheetCode = $_GET['sheet_code'];
+        echo $materialLogController->showAction($sheetCode);
         break;
 
     default:

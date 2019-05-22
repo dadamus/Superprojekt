@@ -10,10 +10,26 @@ class MaterialCardLogController extends mainController
     }
 
     /**
+     * @param string $sheetCode
      * @return string
      * @throws Exception
      */
-    public function showAction() {
-        return $this->render('logView.php');
+    public function showAction(string $sheetCode)
+    {
+        global $db;
+
+        $plateLogQuery = $db->query('
+            SELECT 
+            l.*,
+            a.name
+            FROM plate_warehouse_log l
+            LEFT JOIN accounts a ON a.id = l.user
+            WHERE l.sheetcode = "' . $sheetCode . '"
+        ');
+
+        return $this->render('logView.php', [
+            'sheetCode' => $sheetCode,
+            'logs' => $plateLogQuery->fetchAll(PDO::FETCH_ASSOC)
+        ]);
     }
 }

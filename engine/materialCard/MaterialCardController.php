@@ -64,6 +64,28 @@ class MaterialCardController extends mainController
         ]);
     }
 
+    public function printAction(string $sheetCode)
+    {
+        global $db;
+
+        $materialQuery = $db->query('
+            SELECT
+            m.MaterialTypeName
+            FROM
+            plate_warehouse pw
+            LEFT JOIN T_material m ON m.MaterialName = pw.MaterialName
+            WHERE
+            pw.SheetCode = "' . $sheetCode . '"
+        ');
+
+        $materialData = $materialQuery->fetch(PDO::FETCH_ASSOC);
+
+        return $this->render('printView.php', [
+            'sheet_code' => $sheetCode,
+            'material' => $materialData['MaterialTypeName']
+        ]);
+    }
+
     /**
      * @param int $warehouseId
      * @param int $checbkox

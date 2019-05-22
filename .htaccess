@@ -19,6 +19,7 @@ RewriteRule ^wz/create/(.+)/$ /index.php?site=32&order_id=$1
 RewriteRule ^wz/(.+)/$ /engine/wz.php?wz_id=$1&action=view
 RewriteRule ^material/(.+)/$ /index.php?site=40&sheet_code=$1
 RewriteRule ^material/(.+)/log$ /index.php?site=40&sheet_code=$1&action=log
+RewriteRule ^material/(.+)/code$ /index.php?site=40&sheet_code=$1&action=code
 
 RewriteRule ^plateFrame/(.+)/multi/(.+)/$ /index.php?site=20&f=$1&multi=1&material=$2
 RewriteRule ^plateFrame/(.+)/$ /index.php?site=20&f=$1

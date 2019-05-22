@@ -10,5 +10,6 @@ $toolsEngineController->addTool("csharp");
 $toolsEngineController->addTool("global");
 $toolsEngineController->addTool("drawFrame");
 $toolsEngineController->addTool("log");
+$toolsEngineController->addTool("dataMatrix");
 
 $toolsEngineController->initialize();
