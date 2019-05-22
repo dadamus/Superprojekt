@@ -2,23 +2,23 @@
 
 class WarehouseLogService
 {
-    public const SYSTEM = 0;
+    const SYSTEM = 0;
 
-    public const BADGE_ABL = 1;
-    public const BADGE_ABE = 2;
-    public const BADGE_EDIT = 3;
+    const BADGE_ABL = 1;
+    const BADGE_ABE = 2;
+    const BADGE_EDIT = 3;
 
-    private const LOG_TABLE = 'plate_warehouse_log';
+    const LOG_TABLE = 'plate_warehouse_log';
 
-    public CONST NEW_ROW_TYPE = 1;
-    public CONST QUANTITY_CHANGED_TYPE = 2;
-    public CONST EXTERNAL_DISPATCH_TYPE = 3;
-    public CONST INTERNAL_DISPATCH_TYPE = 4;
-    public CONST POSITIVE_CORRECTION_TYPE = 5;
-    public CONST NEGATIVE_CORRECTION_TYPE = 6;
-    public CONST LOSS_TYPE = 7;
-    public CONST SCRAPPING_TYPE = 8;
-    public CONST WEIGHT_TYPE = 8;
+    CONST NEW_ROW_TYPE = 1;
+    CONST QUANTITY_CHANGED_TYPE = 2;
+    CONST EXTERNAL_DISPATCH_TYPE = 3;
+    CONST INTERNAL_DISPATCH_TYPE = 4;
+    CONST POSITIVE_CORRECTION_TYPE = 5;
+    CONST NEGATIVE_CORRECTION_TYPE = 6;
+    CONST LOSS_TYPE = 7;
+    CONST SCRAPPING_TYPE = 8;
+    CONST WEIGHT_TYPE = 8;
 
     public static function newRow(string $sheetCode, int $quantity, int $user = self::SYSTEM): void
     {
