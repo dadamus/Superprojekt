@@ -425,7 +425,7 @@ if ($action == 7) {
 
 
         $atribute_s = "";
-        $atribute = json_decode($mpw["atribute"]);
+        $atribute = json_decode($mpw["attributes"]);
         if (count($atribute) > 0) {
             foreach ($atribute as $a) {
                 $atribute_s .= " <b>" . _getChecboxText($a) . "</b> ";
