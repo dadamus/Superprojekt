@@ -126,6 +126,8 @@ if (@$_GET["a"] == 1) { // AJAX New client
                                     }
                                 }
 
+                                $msrc = str_replace('data', 'DATA', $msrc);
+
                                 echo '<div class="col-sm-4 col-md-2">
                                     <div class="image-row">
                                     <div class="image-set"> <a href="' . str_replace('data', 'DATA', $src) . '" class="lightbox" title="' . $pdate . '"> <img class="example-image" src="' . $msrc . '" alt="detail" width="150" height="150"/></a> </div>
