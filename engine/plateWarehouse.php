@@ -94,7 +94,7 @@ if ($a == 1) {
         }
 
         if (strlen($row['src']) > 0) {
-            $material = "<a href='" . str_replace('/var/www/html', '', $row['src']) . "' class='lightbox'>" . $row['MaterialTypeName'] . "</a>";
+            $material = "<a href='" . str_replace('/var/www/html', '', $row['src']) . "' class='lightbox'><b>" . $row['MaterialTypeName'] . "</b></a>";
         } else {
             $material = $row['MaterialTypeName'];
         }
