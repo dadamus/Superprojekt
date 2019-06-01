@@ -242,6 +242,7 @@ $status = getOrderStatus($order["status"])
                                                         <?php
                                                         //production info
                                                         $pcr = 0;
+                                                        $warehousePcr = 0;
 
                                                         $cprogram = $oitem["program"];
                                                         $programs = explode("|", $cprogram);
@@ -268,9 +269,10 @@ $status = getOrderStatus($order["status"])
                                                         $programs = [];
 
                                                         while ($program = $programsQuery->fetch()) {
-                                                            if ($program['status'] !== 5) {
+                                                            if ($program['status'] !== ProgramStatus::ANULOWANY) {
                                                                 $pcr += $program["quantity"] * $program["sheet_count"];
                                                             }
+                                                            $warehousePcr += $program["quantity"] * $program["sheet_count"];
                                                             $programs[] = $program;
                                                         }
 
@@ -289,7 +291,7 @@ $status = getOrderStatus($order["status"])
                                                         $dct_des2 = '<span ' . $descStyle . '>' . $oitem["dct"] . '/' . $pcr . '</span>';
 
                                                         $bar2_size = 0;
-                                                        if ($pcr > 0) {
+                                                        if ($warehousePcr > 0) {
                                                             $bar2_size = $oitem["dct"] * 100 / $pcr;
                                                         }
 
@@ -400,6 +402,9 @@ $status = getOrderStatus($order["status"])
                                                                                     switch ($program['status']) {
                                                                                         case ProgramStatus::ZAPROGRAMOWANY:
                                                                                             $status = 'Zaprogramowany';
+                                                                                            break;
+                                                                                        case ProgramStatus::DO_POTWIERDZENIA:
+                                                                                            $status = 'Do potwierdzenia';
                                                                                             break;
                                                                                         case ProgramStatus::WYCIETY:
                                                                                             $status = 'Wycięty';
