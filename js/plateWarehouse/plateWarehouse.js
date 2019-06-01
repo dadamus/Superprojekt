@@ -127,9 +127,7 @@ $(document).ready(function () {
                 "Ostatnie 30 dni": [moment().subtract("days", 29), moment()],
                 "Ten miesiąc": [moment().startOf("month"), moment().endOf("month")],
                 "Ostatni miesiąc": [moment().subtract("month", 1).startOf("month"), moment().subtract("month", 1).endOf("month")]
-            },
-            minDate: "01/01/2012",
-            maxDate: "12/31/2018"
+            }
         },
         function (t, e) {
             $("#defaultrange input").val(t.format("YYYY-MM-DD") + " : " + e.format("YYYY-MM-DD"))
