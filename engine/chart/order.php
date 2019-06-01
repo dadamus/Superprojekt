@@ -164,10 +164,12 @@ $status = getOrderStatus($order["status"])
                                   mpw.did,
                                   mpw.pieces,
                                   mpw.program,
-                                  mpw.type
+                                  mpw.type,
+                                  detail.src as detailName
                                   FROM 
                                   oitems oi
                                   LEFT JOIN mpw mpw ON mpw.id = oi.mpw
+                                  LEFT JOIN detail ON detail.id = oi.did
                                   WHERE 
                                   oi.oid = :oid
                                 ");
@@ -194,7 +196,7 @@ $status = getOrderStatus($order["status"])
                                         <div class="col-md-12">
                                             <div class="portlet yellow-gold box">
                                                 <div class="portlet-title">
-                                                    <div class="caption"><?= $oitem["code"] ?></div>
+                                                    <div class="caption"><?= $oitem["code"] ?> - [<?= $oitem['detailName'] ?>]</div>
                                                     <div class="actions">
                                                         <a href="<?= $site_path ?>/detail/<?= $did ?>/"
                                                            class="btn btn-default" style="margin-right: 10px;">
