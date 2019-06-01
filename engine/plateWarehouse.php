@@ -33,9 +33,16 @@ if ($a == 1) {
         $filtr .= " AND `SheetCode` LIKE '%" . $_POST["f_SheetCode"] . "%'";
     }
     if (!empty($_POST["f_SheetType"])) {
+        $innerFilter = '';
         foreach ($_POST["f_SheetType"] as $mtype) {
-            $filtr .= " AND `MaterialTypeName` = '$mtype'";
+            if ($innerFilter !== '') {
+                $innerFilter .= ' OR ';
+            }
+            $innerFilter .= " `MaterialTypeName` = '$mtype'";
         }
+
+
+        $filtr .= "AND ($innerFilter)";
     }
     if ($_POST["f_date"] != "") {
         $rdate = str_replace(' ', '', $_POST["f_date"]);
@@ -57,7 +64,7 @@ if ($a == 1) {
         $filtr .= " AND `Height` <= " . $_POST["f_Height_Max"];
     }
     if (!empty($_POST["f_Thickness"])) {
-        $filtr .= " AND `Thickness` LIKE '%" . $_POST["f_Thickness"] . "%'";
+        $filtr .= " AND `Thickness` LIKE '" . $_POST["f_Thickness"] . "'";
     }
 
     $pselect = $db->query("
