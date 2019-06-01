@@ -45,7 +45,7 @@ class MaterialCardController extends mainController
         $sheetDataQuery->bindValue(':sheetCode', $sheetCode, PDO::PARAM_STR);
         $sheetDataQuery->execute();
 
-        $sheeata = $sheetDataQuery->fetch(PDO::FETCH_ASSOC);
+        $sheetData = $sheetDataQuery->fetch(PDO::FETCH_ASSOC);
 
         $childrenDataQuery = $db->prepare("
             SELECT
