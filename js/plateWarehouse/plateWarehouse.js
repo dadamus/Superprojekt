@@ -17,7 +17,8 @@ function reloadDetails(type) {
 
         $("#tab" + type + "-content").html(msg);
         $("#tab" + type + "-table").dataTable({
-            "pageLength": 50
+            "pageLength": 50,
+            "order": [[4, "desc"]]
         });
 
         if (type < 4) {
