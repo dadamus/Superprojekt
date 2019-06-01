@@ -292,13 +292,13 @@ $status = getOrderStatus($order["status"])
 
                                                         $bar2_size = 0;
                                                         if ($warehousePcr > 0) {
-                                                            $bar2_size = $oitem["dct"] * 100 / $pcr;
+                                                            $bar2_size = $oitem["dct"] * 100 / $warehousePcr;
                                                         }
 
                                                         $bar22_size = 0;
                                                         $active2 = "active";
                                                         if ($bar2_size >= 100) {
-                                                            $bar2_size = $pcr * 100 / $oitem["dct"];
+                                                            $bar2_size = $warehousePcr * 100 / $oitem["dct"];
                                                             $bar22_size = 100 - $bar2_size;
                                                             $active2 = "";
                                                         }
