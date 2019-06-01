@@ -22,7 +22,7 @@
                                 <td><?= $sheet['SheetCode'] ?></td>
                             </tr>
                             <tr>
-                                <td>Rodzic</td>
+                                <td>Parent</td>
                                 <td>
                                     <a href="/material/<?= $sheet['parentSheedCode'] ?>/">
                                         <?= $sheet['parentSheedCode'] ?>
@@ -84,7 +84,7 @@
                 <div class="portlet box green">
                     <div class="portlet-title">
                         <div class="caption">
-                            Dzieci
+                            Skeletons
                         </div>
                     </div>
                     <div class="portlet-body">
