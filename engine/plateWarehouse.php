@@ -301,7 +301,7 @@ if ($a == 1) {
                         function getTab($id)
                         {
                             echo '<table 
-                            class="table table-striped table-bordered table-hover dt-responsive" 
+                            class="table table-striped table-bordered table-hover" 
                             id="tab' . $id . '-table">
                                 <thead>
                                     <tr>
@@ -310,6 +310,7 @@ if ($a == 1) {
                                         <th>Wymiary</th>
                                         <th>Grubość</th>
                                         <th>Data przyjęcia</th>
+                                        <th>Data modyfikacji</th>
                                         <th>Sztuk</th>
                                     </tr>
                                 </thead>
