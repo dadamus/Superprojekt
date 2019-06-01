@@ -89,10 +89,10 @@ class PlateSyncController
             $programQuery->flush();
 
             $programId = $db->lastInsertId();
-            $this->getImg($plateData['id'], $programId, $sheetNumber);
 
             //Ustawie parenta blachy
-            $this->setPlateChildren($plateData['id'], $sheetName);
+            $parentId = $this->setPlateChildren($plateData['id'], $sheetName);
+            $this->getImg($parentId, $programId, $sheetNumber);
         }
     }
 
@@ -127,6 +127,7 @@ class PlateSyncController
 
             $updateQuery = $db->prepare("UPDATE plate_warehouse SET parentId = $materialId WHERE id = '" . $rowData['id'] . "'");
             $updateQuery->execute();
+            return $rowData['id'];
         } while (count($data) === 0);
     }
 

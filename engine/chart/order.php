@@ -259,7 +259,6 @@ $status = getOrderStatus($order["status"])
                                                           LEFT JOIN programs p ON p.new_cutting_queue_id = q.id
                                                           WHERE
                                                           d.oitem_id = :oitemId
-                                                          AND p.status = 0
                                                         ');
                                                         $programsQuery->bindValue(':oitemId', $oitem['oi_id'], PDO::PARAM_INT);
                                                         $programsQuery->execute();
@@ -267,7 +266,9 @@ $status = getOrderStatus($order["status"])
                                                         $programs = [];
 
                                                         while ($program = $programsQuery->fetch()) {
-                                                            $pcr += $program["quantity"] * $program["sheet_count"];
+                                                            if ($program['status'] !== 5) {
+                                                                $pcr += $program["quantity"] * $program["sheet_count"];
+                                                            }
                                                             $programs[] = $program;
                                                         }
 
