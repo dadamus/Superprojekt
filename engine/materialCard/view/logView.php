@@ -39,6 +39,8 @@ $colorArray = [
                     </tr>
                     </thead>
                     <tbody>
+                    <? var_dump($data['logs'])?>
+
                     <? foreach ($data['logs'] as $log): ?>
                         <tr style="background-color: <?= $colorArray[$log['type']] ?>">
                             <td><?= $log['text'] ?></td>

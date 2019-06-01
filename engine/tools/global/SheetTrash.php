@@ -54,7 +54,7 @@ class SheetTrash
             FROM
             plate_warehouse
             WHERE
-            QtyAvailable > 0
+            QtyAvailable >git  0
             AND state = 'deleted'
         ");
         $fromTrashQuery->execute();
