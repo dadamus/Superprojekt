@@ -165,11 +165,11 @@ $status = getOrderStatus($order["status"])
                                   mpw.pieces,
                                   mpw.program,
                                   mpw.type,
-                                  detail.src as detailName
+                                  details.src as detailName
                                   FROM 
                                   oitems oi
                                   LEFT JOIN mpw mpw ON mpw.id = oi.mpw
-                                  LEFT JOIN detail ON detail.id = oi.did
+                                  LEFT JOIN details ON detail.id = oi.did
                                   WHERE 
                                   oi.oid = :oid
                                 ");
