@@ -48,6 +48,19 @@ if ($action == 1) { // Save new queue
 
 }
 
+echo '<script type="text/javascript">
+    $("#pcontent").on("click", ".lightbox", function (e) {
+        e.preventDefault();
+        var img = $(this).attr("href");
+        if ($("#lightbox").length > 0) {
+            $("#lightbox_img").attr(\'src\', img);
+            $("#lightbox").fadeIn("fast");
+        } else {
+            $("body").append(\'<div id="lightbox"><div id="lightbox_close"></div><img id="lightbox_img" src="\' + img + \'" alt="obrazek"/></div>\');
+        }
+    });
+</script>';
+
 //function getPrograms()
 //{
 //    global $db;
