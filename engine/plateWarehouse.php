@@ -84,7 +84,7 @@ if ($a == 1) {
         if ($row['remnant_check']) {
             $warning = '<i class="fa fa-exclamation-circle"></i>';
         }
-        $table .= "<tr><td><a href='/material/" . $row['SheetCode'] . "/' target='_blank'>" . $row['SheetCode'] . "</a> $warning </td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['QtyAvailable'] . "</td></tr>";
+        $table .= "<tr><td><a href='/material/" . $row['SheetCode'] . "/' target='_blank'>" . $row['SheetCode'] . "</a> $warning </td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td></td><td>" . $row['QtyAvailable'] . "</td></tr>";
     }
     die($table);
 } else if ($a == 2) { //Insert new plate
