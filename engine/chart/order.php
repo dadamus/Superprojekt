@@ -383,6 +383,7 @@ $status = getOrderStatus($order["status"])
                                                                             </thead>
                                                                             <tbody>
                                                                             <?php foreach ($programs as $program): ?>
+                                                                            <?php var_dump($program)?>
                                                                                 <tr>
                                                                                     <td>
                                                                                         <?= $program['sheet_name'] ?>
