@@ -59,6 +59,9 @@ echo '<script type="text/javascript">
             $("body").append(\'<div id="lightbox"><div id="lightbox_close"></div><img id="lightbox_img" src="\' + img + \'" alt="obrazek"/></div>\');
         }
     });
+    $("body").on("click", "#lightbox_close", function () {
+        $("#lightbox").fadeOut("fast");
+    });
 </script>';
 
 //function getPrograms()
