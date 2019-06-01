@@ -30,7 +30,11 @@
     </tr>
     <tr>
         <td>Obrazek:</td>
-        <td><img src="<?= str_replace('/var/www/html', '', $data['mpwData']['imageSrc']) ?>" width="200px"></td>
+        <td>
+            <a href="<?= str_replace('/var/www/html', '', $data['mpwData']['imageSrc']) ?>" class="lightbox">
+                <img src="<?= str_replace('/var/www/html', '', $data['mpwData']['imageSrc']) ?>" width="200px">
+            </a>
+        </td>
     </tr>
     </tbody>
 </table>
@@ -76,21 +80,34 @@
         </thead>
         <tbody>
         <?php foreach ($data['details'] as $detail): ?>
-        <tr>
-            <td><?= $detail['detail_name'] ?></td>
-            <td>
-                <?= $detail['cutting'] ?> / <?= $detail['quantity'] ?> / <?= $detail['waste'] ?>
-            </td>
-            <td>
-                <?= $detail['details_cutted'] ?>
-            </td>
-            <td>
-                <?= $detail['details_remnant'] ?>
-            </td>
-        </tr>
+            <tr>
+                <td><?= $detail['detail_name'] ?></td>
+                <td>
+                    <?= $detail['cutting'] ?> / <?= $detail['quantity'] ?> / <?= $detail['waste'] ?>
+                </td>
+                <td>
+                    <?= $detail['details_cutted'] ?>
+                </td>
+                <td>
+                    <?= $detail['details_remnant'] ?>
+                </td>
+            </tr>
         <?php endforeach; ?>
         </tbody>
     </table>
 <?php endif; ?>
 
 <div id="modal-container"></div>
+
+<script type="text/javascript">
+    $("#pcontent").on("click", ".lightbox", function (e) {
+        e.preventDefault();
+        var img = $(this).attr("href");
+        if ($("#lightbox").length > 0) {
+            $("#lightbox_img").attr('src', img);
+            $("#lightbox").fadeIn("fast");
+        } else {
+            $("body").append('<div id="lightbox"><div id="lightbox_close"></div><img id="lightbox_img" src="' + img + '" alt="obrazek"/></div>');
+        }
+    });
+</script>
