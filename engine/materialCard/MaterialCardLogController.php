@@ -25,7 +25,7 @@ class MaterialCardLogController extends mainController
             FROM plate_warehouse_log l
             LEFT JOIN accounts a ON a.id = l.user
             WHERE l.sheetcode = "' . $sheetCode . '"
-            ORDER BY l.date DESCt a
+            ORDER BY l.date DESC
         ');
 
         return $this->render('logView.php', [
