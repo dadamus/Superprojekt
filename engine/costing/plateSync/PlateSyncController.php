@@ -50,6 +50,7 @@ class PlateSyncController
             $queryBuilder->bindValue('sheet_count', $sheetCount, PDO::PARAM_INT);
             $queryBuilder->bindValue('sheet_name', $sheetName, PDO::PARAM_STR);
             $queryBuilder->bindValue('created_at', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+            $queryBuilder->bindValue('modified_at', date("Y-m-d H:i:s"), PDO::PARAM_STR);
             $queryBuilder->flush();
 
             $cuttingQueueId = $db->lastInsertId();
