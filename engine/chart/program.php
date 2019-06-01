@@ -384,6 +384,8 @@ if ($action == 1) { //Imap check messages
         $correctionUpdate->flush();
     }
 
+    echo 'nowy status: '. $newState;
+
     $stateUpdate = new sqlBuilder(sqlBuilder::UPDATE, 'cutting_queue_list');
     $stateUpdate->bindValue('state', $newState, PDO::PARAM_INT);
     $stateUpdate->addCondition('id = ' . $listId);
