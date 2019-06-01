@@ -22,7 +22,7 @@ class WarehouseLogService
     CONST TRASH_TYPE = 10;
     CONST FROM_TRASH_TYPE = 10;
 
-    public static function newRow(string $sheetCode, int $quantity, int $user = self::SYSTEM): void
+    public static function newRow(string $sheetCode, int $quantity, int $user = self::SYSTEM)
     {
         $text = 'Dodanie nowego wpisu -> ' . $quantity . ' szt';
 
@@ -35,7 +35,7 @@ class WarehouseLogService
         );
     }
 
-    public static function quantityChanged(string $sheetCode, int $oldQuantity, int $newQuantity): void
+    public static function quantityChanged(string $sheetCode, int $oldQuantity, int $newQuantity)
     {
         $text = 'Zmieniono stan: ' . $oldQuantity . ' szt -> ' . $newQuantity . ' szt';
 
@@ -48,7 +48,7 @@ class WarehouseLogService
         );
     }
 
-    public static function externalDispatch(string $sheetCode, int $dispatchQuantity, int $plateQuantity, int $userId): void
+    public static function externalDispatch(string $sheetCode, int $dispatchQuantity, int $plateQuantity, int $userId)
     {
         $text = "Wydanie zewnętrzne $dispatchQuantity szt. Aktualnie $plateQuantity szt";
 
@@ -61,7 +61,7 @@ class WarehouseLogService
         );
     }
 
-    public static function internalDispatch(string $sheetCode, int $dispatchQuantity, int $plateQuantity, int $userId): void
+    public static function internalDispatch(string $sheetCode, int $dispatchQuantity, int $plateQuantity, int $userId)
     {
         $text = "Wydanie wewnętrzne $dispatchQuantity szt. Aktualnie $plateQuantity szt";
 
@@ -74,7 +74,7 @@ class WarehouseLogService
         );
     }
 
-    public static function positiveCorrection(string $sheetCode, int $correctionValue, int $plateQuantity, int $userId): void
+    public static function positiveCorrection(string $sheetCode, int $correctionValue, int $plateQuantity, int $userId)
     {
         $text = "Korekta dodająca $correctionValue szt. Aktualnie $plateQuantity szt";
 
@@ -87,7 +87,7 @@ class WarehouseLogService
         );
     }
 
-    public static function negativeCorrection(string $sheetCode, int $correctionValue, int $plateQuantity, int $userId): void
+    public static function negativeCorrection(string $sheetCode, int $correctionValue, int $plateQuantity, int $userId)
     {
         $text = "Korekta odejmująca $correctionValue szt. Aktualnie $plateQuantity szt";
 
@@ -100,7 +100,7 @@ class WarehouseLogService
         );
     }
 
-    public static function loss(string $sheetCode, int $lossValue, int $plateQuantity, int $userId): void
+    public static function loss(string $sheetCode, int $lossValue, int $plateQuantity, int $userId)
     {
         $text = "Zagubienie $lossValue szt. Aktualnie $plateQuantity szt";
 
@@ -113,7 +113,7 @@ class WarehouseLogService
         );
     }
 
-    public static function scrapping(string $sheetCode, int $lossValue, int $plateQuantity, int $userId): void
+    public static function scrapping(string $sheetCode, int $lossValue, int $plateQuantity, int $userId)
     {
         $text = "Zezłomowanie $lossValue szt. Aktualnie $plateQuantity szt";
 
@@ -126,7 +126,7 @@ class WarehouseLogService
         );
     }
 
-    public static function changeWeight(string $sheetCode, string $programName, string $programId, float $weight): void
+    public static function changeWeight(string $sheetCode, string $programName, string $programId, float $weight)
     {
         $text = "Edycja wagi -> $weight kg. Program $programName";
 
@@ -139,7 +139,7 @@ class WarehouseLogService
         );
     }
 
-    public static function trash(string $sheetCode): void
+    public static function trash(string $sheetCode)
     {
         $text = "Przenesiono do kosza";
 
@@ -152,7 +152,7 @@ class WarehouseLogService
         );
     }
 
-    public static function fromTrash(string $sheetCode): void
+    public static function fromTrash(string $sheetCode)
     {
         $text = "Przenesiono z kosza";
 
@@ -165,7 +165,7 @@ class WarehouseLogService
         );
     }
 
-    private static function insertLog(string $sheetCode, int $type, string $text, int $badge, int $user): void
+    private static function insertLog(string $sheetCode, int $type, string $text, int $badge, int $user)
     {
         $insert = sqlBuilder::createInsert(self::LOG_TABLE);
         $insert
