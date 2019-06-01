@@ -70,7 +70,8 @@ class MaterialCardController extends mainController
 
         $materialQuery = $db->query('
             SELECT
-            m.MaterialTypeName
+            m.MaterialTypeName,
+            m.Thickness
             FROM
             plate_warehouse pw
             LEFT JOIN T_material m ON m.MaterialName = pw.MaterialName
@@ -80,10 +81,35 @@ class MaterialCardController extends mainController
 
         $materialData = $materialQuery->fetch(PDO::FETCH_ASSOC);
 
+        $digits = $this->findSheetCodeDigits($sheetCode);
+
+        $thickness = '';
+        for ($i = 0; $i < 5; $i++) {
+            $thickness .= $materialData['Thickness'] .'MM&nbsp-&nbsp';
+        }
+
         return $this->render('printView.php', [
             'sheet_code' => $sheetCode,
-            'material' => $materialData['MaterialTypeName']
+            'material' => $materialData['MaterialTypeName'],
+            'digits' => $digits,
+            'thickness' => $thickness
         ]);
+    }
+
+    private function findSheetCodeDigits(string $sheetCode): ?string
+    {
+        $sheetCodeParts = explode('-', $sheetCode);
+        $firstPart = reset($sheetCodeParts);
+
+        if ($sheetCode[4] === '-') {
+            $response = '';
+            for ($i = 0; $i < 5; $i++) {
+                $response .= $firstPart .'&nbsp-&nbsp';
+            }
+            return $response;
+        }
+
+        return null;
     }
 
     /**
@@ -132,26 +158,45 @@ class MaterialCardController extends mainController
     {
         global $db;
 
-        $qtyQuery = $db->prepare('SELECT QtyAvailable FROM plate_warehouse WHERE id = "' . $data['SheetId'] . '"');
+        $qtyQuery = $db->prepare('SELECT SheetCode, QtyAvailable FROM plate_warehouse WHERE id = "' . $data['SheetId'] . '"');
         $qtyQuery->execute();
 
         $qtyData = $qtyQuery->fetch();
 
-        $action = '+';
-        $toSave = (int)$qtyData['QtyAvailable'] + (int)$data['quantity'];
+        $userId = $_SESSION["login"];
+        $sheetCode = $qtyData['SheetCode'];
+        $quantity = (int)$data['quantity'];
+
+        $positiveValue = (int)$qtyData['QtyAvailable'] + $quantity;
+        $negativeValue = (int)$qtyData['QtyAvailable'] - $quantity;
+        $toSave = $positiveValue;
+
         switch ($data['status']) {
             case 0: //Przyjęcie
+                WarehouseLogService::newRow($sheetCode, $positiveValue, $userId);
+                break;
             case 3: //Korekta dodająca
-                $action = '+';
-                $toSave = (int)$qtyData['QtyAvailable'] + (int)$data['quantity'];
+                WarehouseLogService::positiveCorrection($sheetCode, $quantity, $positiveValue, $userId);
                 break;
             case 1: //Wydanie zewnętrzne
+                WarehouseLogService::externalDispatch($sheetCode, $quantity, $negativeValue, $userId);
+                $toSave = $negativeValue;
+                break;
             case 2: //Wydanie wewnętrzne
+                WarehouseLogService::internalDispatch($sheetCode, $quantity, $negativeValue, $userId);
+                $toSave = $negativeValue;
+                break;
             case 4: //Korekta odejmująca
+                WarehouseLogService::negativeCorrection($sheetCode, $quantity, $negativeValue, $userId);
+                $toSave = $negativeValue;
+                break;
             case 5: //Zagubiona
+                WarehouseLogService::loss($sheetCode, $quantity, $negativeValue, $userId);
+                $toSave = $negativeValue;
+                break;
             case 6: //Złomowanie
-                $action = '-';
-                $toSave = (int)$qtyData['QtyAvailable'] - (int)$data['quantity'];
+                WarehouseLogService::scrapping($sheetCode, $quantity, $negativeValue, $userId);
+                $toSave = $negativeValue;
                 break;
         }
 
@@ -159,7 +204,6 @@ class MaterialCardController extends mainController
             'quantity' => $toSave,
             'type' => $data['status']
         ]);
-
 
         $db->query('UPDATE plate_warehouse SET QtyAvailable = ' . $toSave . ' WHERE id = "' . $data['SheetId'] . '"');
 

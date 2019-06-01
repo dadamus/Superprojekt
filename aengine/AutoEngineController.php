@@ -537,7 +537,7 @@ class AutoEngineController
         $query = $db->query('
             SELECT QtyAvailable FROM plate_warehouse WHERE SheetCode = "' . $sheetCode . '"
         ');
-        return $query->fetch(PDO::FETCH_ASSOC);
+        return $query->fetch(PDO::FETCH_ASSOC)['QtyAvailable'];
     }
 
     private function getSheetCodeFromWhere(string $input): string

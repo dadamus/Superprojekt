@@ -18,7 +18,9 @@ class WarehouseLogService
     CONST NEGATIVE_CORRECTION_TYPE = 6;
     CONST LOSS_TYPE = 7;
     CONST SCRAPPING_TYPE = 8;
-    CONST WEIGHT_TYPE = 8;
+    CONST WEIGHT_TYPE = 9;
+    CONST TRASH_TYPE = 10;
+    CONST FROM_TRASH_TYPE = 10;
 
     public static function newRow(string $sheetCode, int $quantity, int $user = self::SYSTEM): void
     {
@@ -111,6 +113,19 @@ class WarehouseLogService
         );
     }
 
+    public static function scrapping(string $sheetCode, int $lossValue, int $plateQuantity, int $userId): void
+    {
+        $text = "Zezłomowanie $lossValue szt. Aktualnie $plateQuantity szt";
+
+        self::insertLog(
+            $sheetCode,
+            self::SCRAPPING_TYPE,
+            $text,
+            self::BADGE_EDIT,
+            $userId
+        );
+    }
+
     public static function changeWeight(string $sheetCode, string $programName, string $programId, float $weight): void
     {
         $text = "Edycja wagi -> $weight kg. Program $programName";
@@ -118,6 +133,32 @@ class WarehouseLogService
         self::insertLog(
             $sheetCode,
             self::WEIGHT_TYPE,
+            $text,
+            self::BADGE_ABL,
+            self::SYSTEM
+        );
+    }
+
+    public static function trash(string $sheetCode): void
+    {
+        $text = "Przenesiono do kosza";
+
+        self::insertLog(
+            $sheetCode,
+            self::TRASH_TYPE,
+            $text,
+            self::BADGE_ABL,
+            self::SYSTEM
+        );
+    }
+
+    public static function fromTrash(string $sheetCode): void
+    {
+        $text = "Przenesiono z kosza";
+
+        self::insertLog(
+            $sheetCode,
+            self::FROM_TRASH_TYPE,
             $text,
             self::BADGE_ABL,
             self::SYSTEM

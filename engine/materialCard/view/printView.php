@@ -1,16 +1,19 @@
 <div style="width: 100%;height:100%;position:absolute;top:0px;bottom:0px;margin: auto;margin-top: 0px !important;">
-    <table style="height: 100%; width: 100%; font-size: 2ex;">
+    <table style="height: 100%; width: 100%; font-size: 2.2ex;">
         <tr style="height: 60%">
             <td>
                 <img style="height: 100%;" src="/engine/materialCard.php?sheet_code=<?= $data['sheet_code'] ?>&action=image"/>
             </td>
             <td style="text-align: center;">
-                <b><?= $data['material'] ?> - </b> <?= substr($data['sheet_code'], 0, 30) ?>
+                <b><?= $data['material'] ?> - </b> <?= substr($data['sheet_code'], 0, 30) ?><br/><br/>
+                <b style="font-size: 3ex"><?= $data['digits'] ?></b>
             </td>
         </tr>
         <tr>
-            <td colspan="2">
-                <div style="width: 100%; height: 100%; margin-top: 2px; border-top: black dashed 2px;"></div>
+            <td colspan="2" style="text-align: center;">
+                <div style="width: 100%; height: 90%; border-top: black dashed 2px;">
+                    <b style="font-size: 3ex"><?= $data['thickness']?></b>
+                </div>
             </td>
         </tr>
     </table>
