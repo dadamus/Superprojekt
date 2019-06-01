@@ -219,7 +219,7 @@ class ListRepository
           LEFT JOIN cutting_queue cq ON cq.id = l.cutting_queue_id
           LEFT JOIN plate_warehouse pw ON pw.id = qd.plate_warehouse_id
           LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
-          LEFT JOIN plate_warehouse pw2 ON pw2.id = pw.parentId
+          LEFT JOIN plate_warehouse pw2 ON pw2.parentId = pw.id
           WHERE
           cq.id = :cuttingQueueId
           LIMIT 1
