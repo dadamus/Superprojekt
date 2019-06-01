@@ -169,7 +169,7 @@ $status = getOrderStatus($order["status"])
                                   FROM 
                                   oitems oi
                                   LEFT JOIN mpw mpw ON mpw.id = oi.mpw
-                                  LEFT JOIN details ON detail.id = oi.did
+                                  LEFT JOIN details ON details.id = oi.did
                                   WHERE 
                                   oi.oid = :oid
                                 ");
