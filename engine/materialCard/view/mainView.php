@@ -126,19 +126,6 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="portlet light bordered">
-                    <div class="portlet-body">
-                        <?php if ($sheet['image'] === null): ?>
-                            Brak podgladu
-                        <?php else: ?>
-                            <img src="<?= $sheet['image'] ?>" style="width: 90%"/>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="portlet light bordered">
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="fa fa-info"></i>
@@ -191,6 +178,19 @@
                             <textarea class="form-control" style="resize: vertical"
                                       name="remnant-text"><?= $sheet['remnant_text'] ?></textarea>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="portlet light bordered">
+                    <div class="portlet-body">
+                        <?php if ($sheet['image'] === null): ?>
+                            Brak podgladu
+                        <?php else: ?>
+                            <img src="<?= str_replace('/var/www/html', '', $sheet['image']) ?>" style="width: 90%"/>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

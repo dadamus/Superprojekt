@@ -13,7 +13,7 @@
         <td><?= $data['mpwData']["SheetCode"] ?></td>
     </tr>
     <tr>
-        <td>ParentSheetCode:</td>
+        <td>ChildSheetCode:</td>
         <td><?= $data['mpwData']["ParentSheetCode"] ?></td>
     </tr>
     <tr>
