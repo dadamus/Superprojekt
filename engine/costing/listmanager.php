@@ -426,8 +426,6 @@ if ($action == 7) {
 
         $atribute_s = "";
 
-        var_dump($mpw);
-
         $atribute = json_decode($mpw["attributes"], true);
         if (count($atribute) > 0) {
             foreach ($atribute as $a) {
@@ -484,7 +482,7 @@ if ($action == 7) {
     while ($detail = $autoCostingprice->fetch(PDO::FETCH_ASSOC)) {
 
         $atribute_s = "";
-        $atribute = json_decode($detail["atribute"]);
+        $atribute = json_decode($detail["attributes"], true);
         if (count($atribute) > 0) {
             foreach ($atribute as $a) {
                 $atribute_s .= " <b>" . _getChecboxText($a) . "</b> ";
