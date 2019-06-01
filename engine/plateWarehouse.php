@@ -92,7 +92,14 @@ if ($a == 1) {
         if ($row['remnant_check']) {
             $warning = '<i class="fa fa-exclamation-circle"></i>';
         }
-        $table .= "<tr><td><a href='/material/" . $row['SheetCode'] . "/' target='_blank'>" . $row['SheetCode'] . "</a> $warning </td><td><a href='" . str_replace('/var/www/html', '', $row['src']) . "' class='lightbox'>" . $row['MaterialTypeName'] . "</a></td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['lastModified'] . "</td><td>" . $row['QtyAvailable'] . "</td></tr>";
+
+        if (strlen($row['src']) > 0) {
+            $material = "<a href='" . str_replace('/var/www/html', '', $row['src']) . "' class='lightbox'>" . $row['MaterialTypeName'] . "</a>";
+        } else {
+            $material = $row['MaterialTypeName'];
+        }
+
+        $table .= "<tr><td><a href='/material/" . $row['SheetCode'] . "/' target='_blank'>" . $row['SheetCode'] . "</a> $warning </td><td>".$material."</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['lastModified'] . "</td><td>" . $row['QtyAvailable'] . "</td></tr>";
     }
     die($table);
 } else if ($a == 2) { //Insert new plate
