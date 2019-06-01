@@ -41,6 +41,8 @@ class SheetTrash
             $jobQuery->bindValue('created_at', date("Y-m-d H:i:s"), PDO::PARAM_STR);
             $jobQuery->flush();
         }
+
+        self::fromTrash();
     }
 
     public static function fromTrash() {
