@@ -1,5 +1,19 @@
 var $sheetCodeInput = $("#paddf input[name='SheetCode']");
 
+$(".tab-content").on("click", ".lightbox", function (e) {
+    e.preventDefault();
+    var img = $(this).attr("href");
+    if ($("#lightbox").length > 0) {
+        $("#lightbox_img").attr('src', img);
+        $("#lightbox").fadeIn("fast");
+    } else {
+        $("body").append('<div id="lightbox"><div id="lightbox_close"></div><img id="lightbox_img" src="' + img + '" alt="obrazek"/></div>');
+    }
+});
+$("body").on("click", "#lightbox_close", function () {
+    $("#lightbox").fadeOut("fast");
+});
+
 function reloadDetails(type) {
     if (typeof (type) == 'undefined') {
         type = 1;
