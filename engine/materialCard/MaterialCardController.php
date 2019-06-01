@@ -96,7 +96,7 @@ class MaterialCardController extends mainController
         ]);
     }
 
-    private function findSheetCodeDigits(string $sheetCode): ?string
+    private function findSheetCodeDigits(string $sheetCode)
     {
         $sheetCodeParts = explode('-', $sheetCode);
         $firstPart = reset($sheetCodeParts);
