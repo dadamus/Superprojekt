@@ -17,16 +17,7 @@ function reloadDetails(type) {
 
         $("#tab" + type + "-content").html(msg);
         $("#tab" + type + "-table").dataTable({
-            "pageLength": 50,
-            'columnDefs': [{
-                'targets': 0,
-                'searchable': false,
-                'orderable': false,
-                'className': 'dt-body-center',
-                'render': function (data, type, full, meta) {
-                    return '<input type="checkbox" name="selected[]" value="' + full[2] + '">';
-                }
-            }]
+            "pageLength": 50
         });
 
         if (type < 4) {
