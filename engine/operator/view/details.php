@@ -11,7 +11,7 @@
     <tr>
         <td>SheetCode:</td>
         <td>
-            <a href="/material/<?= $data['mpwData']["SheetCode"] ?>">
+            <a href="/material/<?= $data['mpwData']["SheetCode"] ?>/" target="_blank">
                 <?= $data['mpwData']["SheetCode"] ?>
             </a>
         </td>
@@ -19,7 +19,7 @@
     <tr>
         <td>ChildSheetCode:</td>
         <td>
-            <a href="/material/<?= $data['mpwData']["ChildSheetCode"] ?>">
+            <a href="/material/<?= $data['mpwData']["ChildSheetCode"] ?>/" target="_blank">
                 <?= $data['mpwData']["ChildSheetCode"] ?>
             </a>
         </td>
