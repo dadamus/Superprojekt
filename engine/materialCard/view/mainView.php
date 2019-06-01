@@ -19,7 +19,11 @@
                             <tbody>
                             <tr>
                                 <td>SheetCode</td>
-                                <td><?= $sheet['SheetCode'] ?></td>
+                                <td>
+                                    <a href="/material/<?= $sheet['SheetCode'] ?>/">
+                                        <?= $sheet['SheetCode'] ?>
+                                    </a>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Parent</td>

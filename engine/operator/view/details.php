@@ -10,11 +10,19 @@
     </tr>
     <tr>
         <td>SheetCode:</td>
-        <td><?= $data['mpwData']["SheetCode"] ?></td>
+        <td>
+            <a href="/material/<?= $data['mpwData']["SheetCode"] ?>">
+                <?= $data['mpwData']["SheetCode"] ?>
+            </a>
+        </td>
     </tr>
     <tr>
         <td>ChildSheetCode:</td>
-        <td><?= $data['mpwData']["ChildSheetCode"] ?></td>
+        <td>
+            <a href="/material/<?= $data['mpwData']["ChildSheetCode"] ?>">
+                <?= $data['mpwData']["ChildSheetCode"] ?>
+            </a>
+        </td>
     </tr>
     <tr>
         <td>Nazwa materiału:</td>
