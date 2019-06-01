@@ -14,7 +14,7 @@
     </tr>
     <tr>
         <td>ChildSheetCode:</td>
-        <td><?= $data['mpwData']["ParentSheetCode"] ?></td>
+        <td><?= $data['mpwData']["ChildSheetCode"] ?></td>
     </tr>
     <tr>
         <td>Nazwa materiału:</td>
@@ -30,7 +30,7 @@
     </tr>
     <tr>
         <td>Obrazek:</td>
-        <td><img src="<?= $data['image'] ?>" width="200px"></td>
+        <td><img src="<?= str_replace('/var/www/html', '', $data['mpwData']['imageSrc']) ?>" width="200px"></td>
     </tr>
     </tbody>
 </table>

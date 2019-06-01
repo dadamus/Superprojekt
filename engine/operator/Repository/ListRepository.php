@@ -212,7 +212,8 @@ class ListRepository
           cq.sheet_name,
           cq.sheet_count,
           qd.LaserMatName,
-          pw2.SheetCode as ParentSheetCode
+          pw2.SheetCode as ChildSheetCode,
+          i.src as imageSrc
           FROM
           cutting_queue_details qd
           LEFT JOIN cutting_queue_list l ON l.id = qd.cutting_queue_list_id
@@ -220,6 +221,7 @@ class ListRepository
           LEFT JOIN plate_warehouse pw ON pw.id = qd.plate_warehouse_id
           LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
           LEFT JOIN plate_warehouse pw2 ON pw2.parentId = pw.id
+          LEFT JOIN sheet_image i ON i.plate_warehouse_id = pw2.id
           WHERE
           cq.id = :cuttingQueueId
           LIMIT 1
