@@ -70,7 +70,8 @@ if ($a == 1) {
 	p.createDate,
 	p.QtyAvailable,
 	si.src,
-	wrc.remnant_check
+	wrc.remnant_check, 
+    (SELECT date FROM plate_warehouse_log l WHERE l.sheetcode = p.SheetCode ORDER BY date DESC LIMIT 1) as lastModified
 	FROM `plate_warehouse` p
 	LEFT JOIN `T_material` m ON m.MaterialName = p.MaterialName
 	LEFT JOIN sheet_image si ON si.plate_warehouse_id = p.id
@@ -84,7 +85,7 @@ if ($a == 1) {
         if ($row['remnant_check']) {
             $warning = '<i class="fa fa-exclamation-circle"></i>';
         }
-        $table .= "<tr><td><a href='/material/" . $row['SheetCode'] . "/' target='_blank'>" . $row['SheetCode'] . "</a> $warning </td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td></td><td>" . $row['QtyAvailable'] . "</td></tr>";
+        $table .= "<tr><td><a href='/material/" . $row['SheetCode'] . "/' target='_blank'>" . $row['SheetCode'] . "</a> $warning </td><td>" . $row['MaterialTypeName'] . "</td><td>" . $row['Width'] . "x" . $row['Height'] . "</td><td>" . $row['Thickness'] . "</td><td>" . $row['createDate'] . "</td><td>" . $row['lastModified'] . "</td><td>" . $row['QtyAvailable'] . "</td></tr>";
     }
     die($table);
 } else if ($a == 2) { //Insert new plate
