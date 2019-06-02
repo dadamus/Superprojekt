@@ -136,6 +136,8 @@ class PlateSyncController
             echo 'Niby znalazlem taki child: ' . $data['SheetCode'] . ' o id: ' . $rowData['id'] . PHP_EOL;
             echo 'Parent id ma takie: ' . $sheetId . PHP_EOL;
 
+            die;
+
             $updateQuery = $db->prepare("UPDATE plate_warehouse SET parentId = $sheetId WHERE id = '" . $rowData['id'] . "'");
             $updateQuery->execute();
             return $rowData['id'];
