@@ -125,6 +125,7 @@ class PlateSyncController
                     sleep(1);
                     continue;
                 }
+                return null;
                 break;
             }
 
