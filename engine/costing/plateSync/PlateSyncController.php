@@ -133,7 +133,7 @@ class PlateSyncController
             $rowData = reset($data);
 
             echo 'Nazwa programu: ' . $programName . PHP_EOL;
-            echo 'Niby znalazlem taki child: ' . $data['SheetCode'] . ' o id: ' . $rowData['id'] . PHP_EOL;
+            echo 'Niby znalazlem taki child: ' . $rowData['SheetCode'] . ' o id: ' . $rowData['id'] . PHP_EOL;
             echo 'Parent id ma takie: ' . $sheetId . PHP_EOL;
 
             die;
