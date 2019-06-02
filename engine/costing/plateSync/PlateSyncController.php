@@ -103,10 +103,11 @@ class PlateSyncController
 
 
     /**
-     * @param int $materialId
+     * @param int $sheetId
      * @param string $programName
+     * @return |null
      */
-    private function setPlateChildren(int $materialId, string $programName)
+    private function setPlateChildren(int $sheetId, string $programName)
     {
         global $db;
 
@@ -131,7 +132,11 @@ class PlateSyncController
 
             $rowData = reset($data);
 
-            $updateQuery = $db->prepare("UPDATE plate_warehouse SET parentId = $materialId WHERE id = '" . $rowData['id'] . "'");
+            echo 'Nazwa programu: ' . $programName . PHP_EOL;
+            echo 'Niby znalazlem taki child: ' . $data['SheetCode'] . ' o id: ' . $rowData['id'] . PHP_EOL;
+            echo 'Parent id ma takie: ' . $sheetId . PHP_EOL;
+
+            $updateQuery = $db->prepare("UPDATE plate_warehouse SET parentId = $sheetId WHERE id = '" . $rowData['id'] . "'");
             $updateQuery->execute();
             return $rowData['id'];
         } while (count($data) === 0);
