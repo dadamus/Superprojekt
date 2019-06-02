@@ -220,7 +220,7 @@ class ListRepository
           LEFT JOIN cutting_queue cq ON cq.id = l.cutting_queue_id
           LEFT JOIN plate_warehouse pw ON pw.id = qd.plate_warehouse_id
           LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
-          LEFT JOIN plate_warehouse pw2 ON pw2.parentId = pw.id
+          LEFT JOIN plate_warehouse pw2 ON pw2.parentId = pw.id AND pw2.SheetCode LIKE CONCAT("%", cq.sheet_name, "%")
           LEFT JOIN sheet_image i ON i.plate_warehouse_id = pw2.id
           WHERE
           cq.id = :cuttingQueueId
