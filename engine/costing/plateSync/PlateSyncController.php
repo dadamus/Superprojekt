@@ -92,7 +92,12 @@ class PlateSyncController
 
             //Ustawie parenta blachy
             $parentId = $this->setPlateChildren($plateData['id'], $sheetName);
-            $this->getImg($parentId, $programId, $sheetNumber);
+
+            $plateId = $parentId;
+            if ($parentId === null) {
+                $plateId = $plateData['id'];
+            }
+            $this->getImg($plateId, $programId, $sheetNumber);
         }
     }
 
