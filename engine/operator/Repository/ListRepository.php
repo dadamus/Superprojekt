@@ -213,7 +213,8 @@ class ListRepository
           cq.sheet_count,
           qd.LaserMatName,
           pw2.SheetCode as ChildSheetCode,
-          i.src as imageSrc
+          i.src as imageSrc,
+          i2.src as altImageSrc
           FROM
           cutting_queue_details qd
           LEFT JOIN cutting_queue_list l ON l.id = qd.cutting_queue_list_id
@@ -222,6 +223,7 @@ class ListRepository
           LEFT JOIN T_material tm ON tm.MaterialName = pw.MaterialName
           LEFT JOIN plate_warehouse pw2 ON pw2.parentId = pw.id AND pw2.SheetCode LIKE CONCAT("%", cq.sheet_name, "%")
           LEFT JOIN sheet_image i ON i.plate_warehouse_id = pw2.id
+          LEFT JOIN sheet_image i2 ON i2.plate_warehouse_id = pw.id
           WHERE
           cq.id = :cuttingQueueId
           LIMIT 1

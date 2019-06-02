@@ -39,8 +39,15 @@
     <tr>
         <td>Obrazek:</td>
         <td>
-            <a href="<?= str_replace('/var/www/html', '', $data['mpwData']['imageSrc']) ?>" class="lightbox">
-                <img src="<?= str_replace('/var/www/html', '', $data['mpwData']['imageSrc']) ?>" width="200px">
+            <?php
+            if($data['mpwData']['imageSrc'] === '') {
+                $image = $data['mpwData']['imageSrc'];
+            } else {
+                $image = $data['mpwData']['altImageSrc'];
+            }
+            ?>
+            <a href="<?= str_replace('/var/www/html', '', $image) ?>" class="lightbox">
+                <img src="<?= str_replace('/var/www/html', '', $image) ?>" width="200px">
             </a>
         </td>
     </tr>
