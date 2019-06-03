@@ -31,7 +31,7 @@
                     <a id="index" class="page-logo" href="index.html"></a>
                     <!-- END LOGO -->
                     <!-- BEGIN SEARCH -->
-                    <form class="search" action="extra_search.html" method="GET">
+                    <form class="search" action="?" method="GET">
                         <input type="text" class="form-control" name="query" placeholder="Szukaj...">
                         <a href="javascript:;" class="btn submit">
                             <i class="fa fa-search"></i>
@@ -365,5 +365,14 @@
     $(document).ready(function () {
         $(".selected").removeClass("open selected");
         $("#mb<?= $mb; ?>").addClass("open selected");
+
+        $('input[name="query"]').focus();
+
+        $('.search').on('submit', function (e) {
+            e.preventDefault();
+
+            let value = $('input[name="query"]').val();
+            window.location.href = "/material/" + value + "/";
+        });
     });
 </script>

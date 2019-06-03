@@ -58,6 +58,10 @@ class MaterialCardController extends mainController
         $childrenDataQuery->bindValue(':parentId', $sheetData['id'], PDO::PARAM_INT);
         $childrenDataQuery->execute();
 
+        if (empty($sheetData)) {
+            return '<div style="text-align: center">Brak podanej blachy!</div>';
+        }
+
         return $this->render('mainView.php', [
             'sheetData' => $sheetData,
             'childrenData' => $childrenDataQuery->fetchAll(PDO::FETCH_ASSOC)
